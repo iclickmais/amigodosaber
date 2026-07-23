@@ -265,6 +265,7 @@ function AdminPage() {
             )}
 
             {adminPhone && tab === "edicts" && <EdictsPanel adminPhone={adminPhone} />}
+            {adminPhone && tab === "books" && <BooksPanel adminPhone={adminPhone} />}
           </>
         )}
       </section>
