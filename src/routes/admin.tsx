@@ -14,6 +14,13 @@ import {
   adminDeleteEdict,
   type EdictRow,
 } from "@/lib/edicts.functions";
+import {
+  adminListBooks,
+  adminCreateBook,
+  adminDeleteBook,
+  type BookRow,
+} from "@/lib/books.functions";
+import { categories as libraryCategories } from "@/lib/library-data";
 import { formatKz } from "@/lib/payment-info";
 import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2 } from "lucide-react";
 
