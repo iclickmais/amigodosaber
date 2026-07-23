@@ -1,12 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck, Flame, Zap, Trophy, Crown } from "lucide-react";
+import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import cardAcademicos from "@/assets/card-academicos.jpg";
 import cardCristaos from "@/assets/card-cristaos.jpg";
 import cardConcurso from "@/assets/card-concurso.jpg";
 import cardPreparatorio from "@/assets/card-preparatorio.jpg";
-import { useStudent } from "@/hooks/use-student";
-import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -105,25 +103,6 @@ const accentText: Record<CardDef["accent"], string> = {
 };
 
 function HomePage() {
-  const { student, hydrated } = useStudent();
-  const [streak, setStreak] = useState(0);
-  const [xp, setXp] = useState(0);
-
-  // Carregar streak/XP do localStorage
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("angopdf.game-stats");
-      if (raw) {
-        const stats = JSON.parse(raw);
-        setStreak(stats.streak ?? 0);
-        setXp(stats.xp ?? 0);
-      }
-    } catch {}
-  }, []);
-
-  const level = Math.floor(xp / 100) + 1;
-  const xpProgress = xp % 100;
-
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <SiteHeader />
@@ -142,46 +121,12 @@ function HomePage() {
             </h1>
           </header>
 
-          {/* Gamificação — barra de XP e streak (só para alunos logados) */}
-          {hydrated && student && (
-            <div className="mb-3 flex items-center gap-4 rounded-xl border border-gold/20 bg-gold/5 px-4 py-2 max-w-md mx-auto">
-              {/* Streak */}
-              <div className="flex items-center gap-1.5">
-                <Flame className="h-4 w-4 text-orange-400" />
-                <span className="text-sm font-bold text-orange-300">{streak}</span>
-                <span className="text-[10px] text-muted-foreground">dias</span>
-              </div>
-              {/* XP & Level */}
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] text-muted-foreground">
-                    Nível {level} · {xp} XP
-                  </span>
-                  <Trophy className="h-3 w-3 text-gold" />
-                </div>
-                <div className="h-1.5 rounded-full bg-border/60 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gold transition-all duration-500"
-                    style={{ width: `${xpProgress}%` }}
-                  />
-                </div>
-              </div>
-              {/* Info badge */}
-              <Zap className="h-4 w-4 text-gold shrink-0" />
-            </div>
-          )}
-
-          {/* Banner de pagamento (só para alunos logados) */}
-          {hydrated && student && (
-            <div className="mb-3 max-w-md mx-auto">
-              <div className="flex items-center gap-2 rounded-xl border border-gold/15 bg-gold/[0.04] px-3 py-2">
-                <Crown className="h-4 w-4 text-gold shrink-0" />
-                <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Com o pagamento, <span className="text-gold font-medium">todas as aulas ficam desbloqueadas</span>. Estuda na tua ordem — podes pular aulas e avançar livremente.
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Gatilho — convite alinhado com os 4 cards */}
+          <div className="mb-3 text-center max-w-lg mx-auto">
+            <p className="text-[11px] sm:text-xs leading-relaxed text-muted-foreground">
+              Cada porta abre um universo. Livros, fé, carreira pública ou universidade — <span className="text-gold font-medium">tudo o que precisas para avançar</span>, num só lugar.
+            </p>
+          </div>
 
           {/* Cards — 4 visíveis sem scroll */}
           <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
