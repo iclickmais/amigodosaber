@@ -108,16 +108,28 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
     );
     if (!found) throw new Error("Aula não encontrada na taxonomia");
 
-    // Gate: aluno precisa de acesso pago activo ao sector
-    const { checkAccess } = await import("@/lib/access.functions");
-    const access = await checkAccess(
-      data.studentId,
-      data.kind as TrackKind,
-      data.trackSlug,
-      data.sectorSlug,
-    );
-    if (!access.hasAccess) {
-      throw new Error("ACCESS_REQUIRED: pagamento necessário para abrir esta aula.");
+    // Gate: aluno precisa de acesso pago activo ao sector (excepto as 3 primeiras aulas)
+    const sector = findSector(data.kind as TrackKind, data.trackSlug, data.sectorSlug);
+    if (!sector) throw new Error("Sector não encontrado");
+
+    // Flatten all lessons in order to find the global index of this lesson
+    const allLessons = sector.sector.modules.flatMap(m => m.lessons);
+    const lessonIndex = allLessons.findIndex(l => l.slug === data.lessonSlug);
+
+    // Rule: First 3 lessons of any sector are FREE
+    const isFreeLesson = lessonIndex >= 0 && lessonIndex < 3;
+
+    if (!isFreeLesson) {
+      const { checkAccess } = await import("@/lib/access.functions");
+      const access = await checkAccess(
+        data.studentId,
+        data.kind as TrackKind,
+        data.trackSlug,
+        data.sectorSlug,
+      );
+      if (!access.hasAccess) {
+        throw new Error("ACCESS_REQUIRED: pagamento necessário para abrir esta aula.");
+      }
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

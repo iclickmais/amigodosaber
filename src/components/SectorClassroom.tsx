@@ -106,19 +106,17 @@ export function SectorClassroom({
   const amount = priceFor(kind);
   const todayIso = new Date().toISOString().slice(0, 10);
 
-  function onLessonClick(e: React.MouseEvent, moduleSlug: string, lessonSlug: string) {
+  function onLessonClick(e: React.MouseEvent, isLocked: boolean) {
     if (!student) {
       e.preventDefault();
       navigate({ to: "/entrar" });
       return;
     }
-    if (!hasAccess) {
+    if (isLocked) {
       e.preventDefault();
       setShowPay(true);
       return;
     }
-    // has access → deixa o Link navegar
-    void moduleSlug; void lessonSlug;
   }
 
   return (
@@ -165,66 +163,103 @@ export function SectorClassroom({
         </div>
       )}
 
-      <div className="space-y-3">
-        {modules.map((mod, i) => {
+      <div className="space-y-4">
+        {modules.map((mod, midx) => {
           const isOpen = openMod === mod.slug;
           return (
             <div
               key={mod.slug}
-              className="overflow-hidden rounded-2xl border border-border bg-card"
+              className={`overflow-hidden rounded-[24px] border transition-all duration-300 ${
+                isOpen ? "border-gold/30 bg-card ring-1 ring-gold/10" : "border-border bg-card/40"
+              }`}
             >
               <button
                 onClick={() => setOpenMod(isOpen ? null : mod.slug)}
-                className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-gold/5"
+                className="flex w-full items-center gap-5 px-6 py-5 text-left transition-colors hover:bg-gold/[0.03]"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/40 font-serif text-gold">
-                  {i + 1}
+                <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 font-serif text-xl transition-all ${
+                  isOpen ? "border-gold bg-gold/10 text-gold" : "border-gold/20 text-gold/40"
+                }`}>
+                  {midx + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="font-serif text-lg text-foreground">{mod.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {mod.lessons.length} aulas
+                  <div className="font-serif text-xl text-foreground sm:text-2xl">{mod.title}</div>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <PlayCircle className="h-3 w-3" /> {mod.lessons.length} aulas
+                    </span>
                   </div>
                 </div>
-                <ChevronDown
-                  className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
-                />
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-muted/20 transition-transform ${isOpen ? "rotate-180 bg-gold/10 text-gold" : ""}`}>
+                  <ChevronDown className="h-5 w-5" />
+                </div>
               </button>
+              
               {isOpen && (
-                <ul className="border-t border-border/60 divide-y divide-border/40">
-                  {mod.lessons.map((lesson) => {
-                    const locked = !hasAccess;
-                    return (
-                      <li key={lesson.slug}>
-                        <Link
-                          to="/aula/$kind/$track/$sector/$module/$lesson"
-                          params={{
-                            kind,
-                            track: trackSlug,
-                            sector: sectorSlug,
-                            module: mod.slug,
-                            lesson: lesson.slug,
-                          }}
-                          onClick={(e) => onLessonClick(e, mod.slug, lesson.slug)}
-                          className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${
-                            locked
-                              ? "text-muted-foreground/70 hover:bg-gold/5"
-                              : "text-muted-foreground hover:bg-gold/5 hover:text-gold"
-                          }`}
-                        >
-                          {locked ? (
-                            <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
-                          ) : (
-                            <PlayCircle className="h-4 w-4 shrink-0 text-gold" />
-                          )}
-                          <span className="flex-1">{lesson.title}</span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className="border-t border-border/60 bg-black/10 px-4 py-4 sm:px-6">
+                  <ul className="space-y-3">
+                    {mod.lessons.map((lesson, lidx) => {
+                      const globalIndex = modules.slice(0, midx).reduce((acc, curr) => acc + curr.lessons.length, 0) + lidx;
+                      const isFree = globalIndex < 3;
+                      const locked = !hasAccess && !isFree;
+
+                      return (
+                        <li key={lesson.slug}>
+                          <Link
+                            to="/aula/$kind/$track/$sector/$module/$lesson"
+                            params={{
+                              kind,
+                              track: trackSlug,
+                              sector: sectorSlug,
+                              module: mod.slug,
+                              lesson: lesson.slug,
+                            }}
+                            onClick={(e) => onLessonClick(e, locked)}
+                            className={`group relative flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all duration-300 ${
+                              locked
+                                ? "border-border/40 bg-card/40 opacity-70"
+                                : "border-border bg-card hover:border-gold/50 hover:bg-gold/[0.02] hover:shadow-lg hover:shadow-gold/5"
+                            }`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 transition-transform group-hover:scale-110 ${
+                                locked 
+                                  ? "border-border/40 bg-muted/20 text-muted-foreground" 
+                                  : isFree 
+                                    ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-500"
+                                    : "border-gold/30 bg-gold/5 text-gold"
+                              }`}>
+                                {locked ? <Lock className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <p className={`text-sm font-semibold tracking-tight ${locked ? "text-muted-foreground" : "text-foreground"}`}>
+                                    {lesson.title}
+                                  </p>
+                                  {isFree && !hasAccess && (
+                                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-500 border border-emerald-500/20">
+                                      Grátis
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70">
+                                  Aula {globalIndex + 1}
+                                </p>
+                              </div>
+                            </div>
+                            <div className={`flex h-9 w-9 items-center justify-center rounded-full transition-all ${
+                              locked 
+                                ? "bg-muted/10 text-muted-foreground/40" 
+                                : "bg-gold/10 text-gold group-hover:bg-gold group-hover:text-primary-foreground"
+                            }`}>
+                              {locked ? <Lock className="h-4 w-4" /> : <ChevronRight className="h-5 w-5" />}
+                            </div>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               )}
             </div>
           );

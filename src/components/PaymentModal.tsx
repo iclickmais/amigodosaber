@@ -31,7 +31,6 @@ export function PaymentModal({
 
   useEffect(() => {
     if (!open) return;
-    // regista o pedido (não bloqueia se falhar)
     requestPayment({
       data: { studentId: student.id, kind, trackSlug, sectorSlug },
     }).catch(() => {});
@@ -57,87 +56,98 @@ export function PaymentModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-gold/40 bg-card shadow-2xl"
+        className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-gold/30 bg-[#1A1614] shadow-[0_0_50px_-12px_rgba(212,175,55,0.3)]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="absolute right-5 top-5 rounded-full p-1 text-muted-foreground transition-colors hover:bg-white/10 hover:text-white"
           aria-label="Fechar"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="border-b border-border/60 bg-[linear-gradient(180deg,oklch(0.78_0.13_78/0.12),transparent)] px-6 py-5">
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-gold">
+        <div className="px-8 pt-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-gold">
             <Lock className="h-3 w-3" /> Acesso pago
           </div>
-          <h2 className="mt-3 font-serif text-2xl text-foreground">
+          <h2 className="mt-4 font-serif text-2xl leading-tight text-white sm:text-3xl">
             {kindLabel} — {sectorName}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Aulas e questionários deste sector. Validade: <span className="text-gold">{validityLabel(kind)}</span>.
+          <p className="mt-2 text-sm text-muted-foreground">
+            Aulas e questionários deste sector. Validade: <span className="text-gold font-medium">{validityLabel(kind)}</span>.
           </p>
         </div>
 
-        <div className="space-y-5 px-6 py-5 text-sm">
-          <div className="flex items-baseline justify-between rounded-xl border border-gold/30 bg-gold/5 px-4 py-3">
-            <span className="text-muted-foreground">Valor a pagar</span>
-            <span className="font-serif text-2xl text-gold">{formatKz(amount)}</span>
+        <div className="mt-8 space-y-6 px-8 pb-8">
+          <div className="flex items-center justify-between rounded-2xl border border-gold/20 bg-white/[0.03] px-6 py-5">
+            <span className="text-sm text-muted-foreground">Valor a pagar</span>
+            <span className="font-serif text-3xl text-gold">{formatKz(amount)}</span>
           </div>
 
-          <div className="rounded-xl border border-border bg-background/50 p-4">
-            <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Transferência bancária</p>
-            <dl className="mt-3 space-y-2">
-              <div className="flex items-center justify-between gap-3">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">Transferência bancária</p>
+            <dl className="mt-4 space-y-3 text-sm">
+              <div className="flex items-center justify-between">
                 <dt className="text-muted-foreground">Banco</dt>
-                <dd className="font-medium text-foreground">{PAYMENT_INFO.bank}</dd>
+                <dd className="font-semibold text-white">{PAYMENT_INFO.bank}</dd>
               </div>
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between">
                 <dt className="text-muted-foreground">Titular</dt>
-                <dd className="font-medium text-foreground">{PAYMENT_INFO.holder}</dd>
+                <dd className="font-semibold text-white">{PAYMENT_INFO.holder}</dd>
               </div>
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-4">
                 <dt className="text-muted-foreground">IBAN</dt>
-                <dd className="flex items-center gap-2">
-                  <code className="font-mono text-xs text-foreground">{PAYMENT_INFO.iban}</code>
+                <dd className="flex items-center gap-2 overflow-hidden">
+                  <code className="truncate font-mono text-[13px] text-white/90">{PAYMENT_INFO.iban}</code>
                   <button
                     onClick={copyIban}
-                    className="rounded-md border border-border p-1 text-muted-foreground hover:border-gold hover:text-gold"
+                    className="flex-shrink-0 rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground transition-all hover:border-gold/50 hover:text-gold active:scale-95"
                     aria-label="Copiar IBAN"
                   >
-                    {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </dd>
               </div>
             </dl>
-            <p className="mt-3 text-xs text-muted-foreground">
+            <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground/70">
               Qualquer banco pode transferir para este IBAN.
             </p>
           </div>
 
-          <ol className="space-y-2 rounded-xl border border-border bg-background/30 p-4 text-xs text-muted-foreground">
-            <li><span className="text-gold">1.</span> Faça a transferência de {formatKz(amount)}.</li>
-            <li><span className="text-gold">2.</span> Envie o comprovativo pelo WhatsApp abaixo.</li>
-            <li><span className="text-gold">3.</span> O acesso é liberado após confirmação.</li>
-          </ol>
+          <div className="space-y-3 rounded-2xl border border-white/5 bg-white/[0.01] p-5">
+            {[
+              `Faça a transferência de ${formatKz(amount)}.`,
+              "Envie o comprovativo pelo WhatsApp abaixo.",
+              "O acesso é liberado após confirmação."
+            ].map((step, i) => (
+              <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground/80">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gold/10 text-[10px] font-bold text-gold">
+                  {i + 1}
+                </span>
+                <p className="pt-0.5">{step}</p>
+              </div>
+            ))}
+          </div>
 
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90"
-          >
-            <MessageCircle className="h-4 w-4" />
-            Enviar comprovativo ({PAYMENT_INFO.whatsapp})
-          </a>
-          <p className="text-center text-[11px] text-muted-foreground">
-            A mensagem vai pré-preenchida com o seu nome, telefone e curso.
-          </p>
+          <div className="space-y-3 pt-2">
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full items-center justify-center gap-3 rounded-full bg-gold py-4 text-sm font-bold text-[#1A1614] transition-all hover:scale-[1.02] hover:shadow-[0_8px_20px_-8px_rgba(212,175,55,0.5)] active:scale-[0.98]"
+            >
+              <MessageCircle className="h-5 w-5" />
+              Enviar comprovativo ({PAYMENT_INFO.whatsapp})
+            </a>
+            <p className="text-center text-[10px] leading-relaxed text-muted-foreground/60">
+              A mensagem vai pré-preenchida com o seu nome, telefone e curso.
+            </p>
+          </div>
         </div>
       </div>
     </div>

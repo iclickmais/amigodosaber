@@ -53,29 +53,52 @@ export function QuizRunner({ quiz }: Props) {
       <h2 className="font-serif text-2xl text-foreground">Quiz — {quiz.questions.length} perguntas</h2>
 
       {submitted && (
-        <div className={`mt-6 rounded-xl border p-5 text-center ${
+        <div className={`mt-8 animate-in fade-in slide-in-from-top-4 duration-500 rounded-2xl border p-8 text-center shadow-2xl ${
           submitted.score / submitted.total >= 0.6
-            ? "border-gold/40 bg-gold/10"
-            : "border-burgundy/40 bg-burgundy/10"
+            ? "border-emerald-500/40 bg-emerald-500/10 shadow-emerald-500/5"
+            : "border-burgundy/40 bg-burgundy/10 shadow-burgundy/5"
         }`}>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Resultado</p>
-          <p className="mt-2 font-serif text-5xl text-gold">
-            {submitted.score} <span className="text-2xl text-muted-foreground">/ {submitted.total}</span>
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-background border-4 border-current mb-4">
+            {submitted.score / submitted.total >= 0.6 ? (
+              <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+            ) : (
+              <XCircle className="h-10 w-10 text-burgundy" />
+            )}
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">O teu desempenho</p>
+          <p className="mt-2 font-serif text-6xl text-foreground">
+            {submitted.score}<span className="text-2xl text-muted-foreground mx-1">/</span>{submitted.total}
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {submitted.score / submitted.total >= 0.6
-              ? "Aula concluída — bom trabalho!"
-              : "Rever a matéria e tentar de novo."}
-          </p>
-          {!student && (
-            <p className="mt-3 text-xs text-muted-foreground">
-              <Link to="/entrar" className="text-gold underline">Entre</Link> para guardar o seu progresso.
+          <div className="mt-4 space-y-2">
+            <p className={`text-lg font-serif ${submitted.score / submitted.total >= 0.6 ? "text-emerald-500" : "text-burgundy"}`}>
+              {submitted.score / submitted.total >= 0.6
+                ? "Incrível! Dominaste esta aula."
+                : "Quase lá! Precisas de 60% para concluir."}
             </p>
-          )}
-          {saving && <p className="mt-2 text-xs text-muted-foreground">A guardar…</p>}
-          <button onClick={reset} className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold/40 px-4 py-2 text-xs text-gold hover:bg-gold/10">
-            <RotateCcw className="h-3 w-3" /> Refazer
-          </button>
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+              {submitted.score / submitted.total >= 0.6
+                ? "O teu progresso foi registado e estás mais perto do teu objectivo."
+                : "Recomendamos que releias a matéria e faças o quiz novamente."}
+            </p>
+          </div>
+          
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <button 
+              onClick={reset} 
+              className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-sm font-medium transition-all hover:bg-white/10 active:scale-95"
+            >
+              <RotateCcw className="h-4 w-4" /> Tentar de novo
+            </button>
+            {!student && (
+              <Link 
+                to="/entrar" 
+                className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-2.5 text-sm font-bold text-primary-foreground transition-all hover:scale-105 active:scale-95 shadow-lg shadow-gold/20"
+              >
+                Guardar progresso
+              </Link>
+            )}
+          </div>
+          {saving && <p className="mt-4 text-[10px] uppercase tracking-widest text-gold animate-pulse">A sincronizar com a nuvem…</p>}
         </div>
       )}
 
