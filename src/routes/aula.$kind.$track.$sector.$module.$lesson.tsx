@@ -252,18 +252,23 @@ function AulaPage() {
           </div>
         )}
         {needsPayment && !loadingLesson && student && (
-          <div className="rounded-2xl border border-gold/40 bg-gold/5 p-6 text-center">
-            <Lock className="mx-auto h-8 w-8 text-gold" />
-            <h2 className="mt-3 font-serif text-2xl">Acesso pago necessário</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Para abrir as aulas de <span className="text-foreground">{sector.name}</span> é necessário confirmar o pagamento.
-            </p>
-            <button
-              onClick={() => setShowPayModal(true)}
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90"
-            >
-              <Lock className="h-4 w-4" /> Ver dados de pagamento
-            </button>
+          <div className="relative overflow-hidden rounded-2xl border border-gold/25 bg-gradient-to-br from-gold/[0.08] via-gold/[0.03] to-transparent p-6 text-center">
+            <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-gold/5 blur-2xl" />
+            <div className="relative">
+              <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/30 mb-4">
+                <Lock className="h-6 w-6 text-gold" />
+              </div>
+              <h2 className="font-serif text-2xl text-white">Acesso pago necessário</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
+                Para abrir as aulas de <span className="text-foreground font-medium">{sector.name}</span>, todas as aulas ficam desbloqueadas com o pagamento. Estuda na tua ordem.
+              </p>
+              <button
+                onClick={() => setShowPayModal(true)}
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-bold text-primary-foreground hover:opacity-90 transition-all hover:shadow-glow active:scale-95"
+              >
+                Desbloquear agora
+              </button>
+            </div>
           </div>
         )}
         {error && !loadingLesson && !needsPayment && (

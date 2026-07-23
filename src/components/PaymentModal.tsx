@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { X, Copy, Check, MessageCircle, Lock } from "lucide-react";
+import {
+  X, Copy, Check, MessageCircle, Lock, Crown, BookOpen, Target,
+  Rocket, Shield, ChevronRight, CheckCircle2,
+} from "lucide-react";
 import { PAYMENT_INFO, priceFor, validityLabel, formatKz, buildWhatsAppLink } from "@/lib/payment-info";
 import { requestPayment } from "@/lib/access.functions";
 import type { StudentSession } from "@/hooks/use-student";
@@ -26,11 +29,13 @@ export function PaymentModal({
   sectorName,
 }: Props) {
   const [copied, setCopied] = useState(false);
+  const [step, setStep] = useState<"paywall" | "details">("paywall");
   const amount = priceFor(kind);
   const kindLabel = kind === "concurso" ? "Concurso Público" : "Preparatório";
 
   useEffect(() => {
     if (!open) return;
+    setStep("paywall");
     requestPayment({
       data: { studentId: student.id, kind, trackSlug, sectorSlug },
     }).catch(() => {});
@@ -48,107 +53,199 @@ export function PaymentModal({
   });
 
   function copyIban() {
-    navigator.clipboard.writeText(PAYMENT_INFO.iban.replace(/\s/g, "")).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    navigator.clipboard
+      .writeText(PAYMENT_INFO.iban.replace(/\s/g, ""))
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
   }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md"
       onClick={onClose}
     >
       <div
-        className="payment-modal-inner relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-[20px] sm:rounded-[24px] border border-gold/30 bg-[#1A1614] shadow-[0_0_50px_-12px_rgba(212,175,55,0.3)]"
+        className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-[#0f0d0b] sm:rounded-[24px] rounded-t-[24px] border border-gold/20 shadow-[0_-8px_50px_-10px_rgba(212,175,55,0.25)]"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-1 text-muted-foreground transition-colors hover:bg-white/10 hover:text-white"
+          className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-white"
           aria-label="Fechar"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="px-6 pt-6 sm:px-8 sm:pt-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-gold">
-            <Lock className="h-3 w-3" /> Acesso pago
-          </div>
-          <h2 className="mt-4 font-serif text-2xl leading-tight text-white sm:text-3xl">
-            {kindLabel} — {sectorName}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Aulas e questionários deste sector. Validade: <span className="text-gold font-medium">{validityLabel(kind)}</span>.
-          </p>
-        </div>
+        {/* ===== STEP 1: Paywall Hero ===== */}
+        {step === "paywall" && (
+          <div className="px-6 pt-10 pb-8 sm:px-8 sm:pt-12">
+            {/* Top badge */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-gold/5 flex items-center justify-center border border-gold/30">
+                  <Crown className="h-7 w-7 text-gold" />
+                </div>
+                {/* Glow ring */}
+                <div className="absolute inset-0 rounded-full border border-gold/20 animate-pulse" />
+              </div>
+            </div>
 
-        <div className="mt-6 space-y-5 sm:mt-8 sm:space-y-6 px-6 pb-6 sm:px-8 sm:pb-8">
-          <div className="flex items-center justify-between rounded-2xl border border-gold/20 bg-white/[0.03] px-6 py-5">
-            <span className="text-sm text-muted-foreground">Valor a pagar</span>
-            <span className="font-serif text-3xl text-gold">{formatKz(amount)}</span>
-          </div>
+            {/* Title */}
+            <h2 className="text-center font-serif text-2xl sm:text-3xl text-white leading-tight">
+              Acesso Total
+            </h2>
+            <p className="text-center mt-2 text-sm text-muted-foreground">
+              {kindLabel} — <span className="text-foreground font-medium">{sectorName}</span>
+            </p>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">Transferência bancária</p>
-            <dl className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <dt className="text-muted-foreground">Banco</dt>
-                <dd className="font-semibold text-white">{PAYMENT_INFO.bank}</dd>
+            {/* Price card */}
+            <div className="mt-6 rounded-2xl bg-gradient-to-br from-gold/10 to-gold/[0.03] border border-gold/25 p-6 text-center">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Investimento único</p>
+              <p className="mt-2 font-serif text-4xl sm:text-5xl text-gold">{formatKz(amount)}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{validityLabel(kind)}</p>
+            </div>
+
+            {/* Benefits grid */}
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              {[
+                { icon: BookOpen, text: "Todas as aulas" },
+                { icon: Target, text: "Todos os quizzes" },
+                { icon: Rocket, text: "Simulados completos" },
+                { icon: Shield, text: "Suporte via WhatsApp" },
+              ].map((b, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-3"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gold/10">
+                    <b.icon className="h-4 w-4 text-gold" />
+                  </div>
+                  <span className="text-xs text-foreground">{b.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Key message */}
+            <div className="mt-5 rounded-xl border border-gold/15 bg-gold/[0.04] p-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-gold mt-0.5" />
+                <div>
+                  <p className="text-sm text-foreground font-medium">
+                    Estuda na tua ordem
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    Podes pular aulas e avançar livremente, sem precisar seguir roboticamente. Todas as aulas deste sector ficam desbloqueadas de imediato.
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-muted-foreground">Titular</dt>
-                <dd className="font-semibold text-white">{PAYMENT_INFO.holder}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted-foreground">IBAN</dt>
-                <dd className="flex items-center gap-2 overflow-hidden">
-                  <code className="truncate font-mono text-[13px] text-white/90">{PAYMENT_INFO.iban}</code>
-                  <button
-                    onClick={copyIban}
-                    className="flex-shrink-0 rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground transition-all hover:border-gold/50 hover:text-gold active:scale-95"
-                    aria-label="Copiar IBAN"
-                  >
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </button>
-                </dd>
-              </div>
-            </dl>
-            <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground/70">
-              Qualquer banco pode transferir para este IBAN.
+            </div>
+
+            {/* CTA */}
+            <button
+              onClick={() => setStep("details")}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold py-4 text-sm font-bold text-[#0f0d0b] transition-all hover:shadow-[0_8px_20px_-8px_rgba(212,175,55,0.5)] active:scale-[0.98]"
+            >
+              Continuar com o pagamento
+              <ChevronRight className="h-4 w-4" />
+            </button>
+
+            <p className="mt-3 text-center text-[10px] text-muted-foreground/50">
+              Pagamento seguro via transferência bancária
             </p>
           </div>
+        )}
 
-          <div className="space-y-3 rounded-2xl border border-white/5 bg-white/[0.01] p-5">
-            {[
-              `Faça a transferência de ${formatKz(amount)}.`,
-              "Envie o comprovativo pelo WhatsApp abaixo.",
-              "O acesso é liberado após confirmação."
-            ].map((step, i) => (
-              <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground/80">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gold/10 text-[10px] font-bold text-gold">
-                  {i + 1}
+        {/* ===== STEP 2: Payment Details ===== */}
+        {step === "details" && (
+          <div className="px-6 pt-10 pb-8 sm:px-8 sm:pt-12">
+            {/* Back button */}
+            <button
+              onClick={() => setStep("paywall")}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-gold transition-colors mb-4"
+            >
+              <ChevronRight className="h-3 w-3 rotate-180" /> Voltar
+            </button>
+
+            <h3 className="font-serif text-xl text-white">Dados de pagamento</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Transferência bancária — qualquer banco em Angola
+            </p>
+
+            {/* Bank details card */}
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-8 w-8 rounded-lg bg-gold/10 flex items-center justify-center">
+                  <Crown className="h-4 w-4 text-gold" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+                  Transferência bancária
                 </span>
-                <p className="pt-0.5">{step}</p>
               </div>
-            ))}
-          </div>
+              <dl className="space-y-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Banco</dt>
+                  <dd className="font-semibold text-white">{PAYMENT_INFO.bank}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Titular</dt>
+                  <dd className="font-semibold text-white">{PAYMENT_INFO.holder}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <dt className="text-muted-foreground">IBAN</dt>
+                  <dd className="flex items-center gap-2 overflow-hidden">
+                    <code className="truncate font-mono text-[13px] text-white/90">{PAYMENT_INFO.iban}</code>
+                    <button
+                      onClick={copyIban}
+                      className={`flex-shrink-0 rounded-lg border p-2 transition-all active:scale-95 ${
+                        copied
+                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                          : "border-white/10 bg-white/5 text-muted-foreground hover:border-gold/50 hover:text-gold"
+                      }`}
+                      aria-label="Copiar IBAN"
+                    >
+                      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </dd>
+                </div>
+              </dl>
+            </div>
 
-          <div className="space-y-3 pt-2">
+            {/* Steps */}
+            <div className="mt-6 space-y-3 rounded-2xl border border-white/5 bg-white/[0.01] p-5">
+              {[
+                `Faça a transferência de ${formatKz(amount)} para o IBAN acima.`,
+                "Envie o comprovativo pelo WhatsApp abaixo.",
+                "O acesso é activado após confirmação (até 24h).",
+              ].map((s, i) => (
+                <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground/80">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gold/10 text-[10px] font-bold text-gold">
+                    {i + 1}
+                  </span>
+                  <p className="pt-0.5">{s}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* WhatsApp CTA */}
             <a
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-3 rounded-full bg-gold py-4 text-sm font-bold text-[#1A1614] transition-all hover:scale-[1.02] hover:shadow-[0_8px_20px_-8px_rgba(212,175,55,0.5)] active:scale-[0.98]"
+              className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-emerald-600 py-4 text-sm font-bold text-white transition-all hover:shadow-[0_8px_20px_-8px_rgba(22,163,74,0.5)] active:scale-[0.98]"
             >
               <MessageCircle className="h-5 w-5" />
-              Enviar comprovativo ({PAYMENT_INFO.whatsapp})
+              Enviar comprovativo
             </a>
-            <p className="text-center text-[10px] leading-relaxed text-muted-foreground/60">
-              A mensagem vai pré-preenchida com o seu nome, telefone e curso.
+            <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground/60">
+              WhatsApp: {PAYMENT_INFO.whatsapp}
+              <br />
+              A mensagem vai pré-preenchida com os seus dados.
             </p>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

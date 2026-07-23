@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { PlayCircle, ChevronDown, ChevronRight, Lock, Timer, Calendar, Megaphone, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { PlayCircle, ChevronDown, ChevronRight, Lock, Timer, Calendar, Megaphone, CheckCircle2, Loader2, Sparkles, Crown, BookOpen, Shield, Target } from "lucide-react";
 import type { Module } from "@/lib/study-tracks";
 import { useStudent } from "@/hooks/use-student";
 import { getAccessStatus } from "@/lib/access.functions";
@@ -129,37 +129,71 @@ export function SectorClassroom({
       </div>
 
       {hydrated && !student && (
-        <div className="mb-8 rounded-2xl border border-gold/30 bg-gold/5 p-5 text-sm">
-          <p className="text-foreground">
-            <span className="font-serif text-lg text-gold">Entre na sala.</span>{" "}
-            Registe-se com o seu número e apelido para guardar o seu progresso e desbloquear as aulas.
-          </p>
+        <div className="mb-8 rounded-2xl border border-gold/20 bg-gradient-to-br from-gold/[0.06] to-gold/[0.01] p-5 text-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-10 w-10 rounded-full bg-gold/10 flex items-center justify-center">
+              <Crown className="h-5 w-5 text-gold" />
+            </div>
+            <div>
+              <p className="font-serif text-lg text-gold">Entre na sala</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Guarde o seu progresso e desbloqueie as aulas</p>
+            </div>
+          </div>
           <Link
             to="/entrar"
-            className="mt-3 inline-flex rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90"
+            className="mt-2 inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-xs font-medium text-primary-foreground hover:opacity-90 transition-all hover:shadow-glow"
           >
             Entrar / Registar
+            <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
 
       {hydrated && student && hasAccess === false && (
-        <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-gold/40 bg-gold/5 p-5 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3">
-            <Lock className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
-            <div>
-              <p className="font-serif text-lg text-foreground">Acesso Total — {formatKz(amount)}</p>
-              <p className="text-xs text-muted-foreground">
-                Com o pagamento, <span className="text-gold">todas as aulas ficam desbloqueadas</span>. Estuda na tua ordem — podes pular aulas e avançar livremente, sem precisar seguir roboticamente.
-              </p>
+        <div className="mb-8">
+          {/* Hero banner */}
+          <div className="relative overflow-hidden rounded-2xl border border-gold/25 bg-gradient-to-br from-gold/[0.08] via-gold/[0.03] to-transparent">
+            {/* Decorative glow */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gold/5 blur-3xl" />
+            <div className="relative p-5 sm:p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/30">
+                  <Crown className="h-6 w-6 text-gold" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gold/70">Acesso Premium</p>
+                  <p className="font-serif text-xl text-white">Acesso Total — {formatKz(amount)}</p>
+                </div>
+              </div>
+
+              {/* Benefits mini-grid */}
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {[
+                  { icon: BookOpen, label: "Todas as aulas" },
+                  { icon: Target, label: "Todos os quizzes" },
+                  { icon: Shield, label: "3 meses de acesso" },
+                  { icon: CheckCircle2, label: "Liberdade total" },
+                ].map((b, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs text-foreground">
+                    <b.icon className="h-3.5 w-3.5 text-gold shrink-0" />
+                    <span>{b.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground max-w-xs">
+                  Estuda na tua ordem — podes pular aulas e avançar livremente.
+                </p>
+                <button
+                  onClick={() => setShowPay(true)}
+                  className="shrink-0 rounded-full bg-gold px-6 py-2.5 text-xs font-bold text-primary-foreground hover:opacity-90 transition-all hover:shadow-glow active:scale-95"
+                >
+                  Desbloquear agora
+                </button>
+              </div>
             </div>
           </div>
-          <button
-            onClick={() => setShowPay(true)}
-            className="shrink-0 rounded-full bg-gold px-5 py-2 text-xs font-medium text-primary-foreground hover:opacity-90"
-          >
-            Pagar acesso
-          </button>
         </div>
       )}
 

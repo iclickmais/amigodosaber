@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck, Flame, Zap, Trophy } from "lucide-react";
+import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck, Flame, Zap, Trophy, Crown } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import cardAcademicos from "@/assets/card-academicos.jpg";
 import cardCristaos from "@/assets/card-cristaos.jpg";
@@ -171,13 +171,13 @@ function HomePage() {
             </div>
           )}
 
-          {/* Banner de pagamento (só para alunos logados sem acesso) */}
+          {/* Banner de pagamento (só para alunos logados) */}
           {hydrated && student && (
             <div className="mb-3 max-w-md mx-auto">
-              <div className="flex items-start gap-2 rounded-xl border border-gold/20 bg-card/80 px-3 py-2">
-                <Zap className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+              <div className="flex items-center gap-2 rounded-xl border border-gold/15 bg-gold/[0.04] px-3 py-2">
+                <Crown className="h-4 w-4 text-gold shrink-0" />
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Com o pagamento, <span className="text-gold font-medium">todas as aulas ficam desbloqueadas</span>. Estuda na tua ordem — podes pular aulas e avançar livremente, sem precisar seguir roboticamente.
+                  Com o pagamento, <span className="text-gold font-medium">todas as aulas ficam desbloqueadas</span>. Estuda na tua ordem — podes pular aulas e avançar livremente.
                 </p>
               </div>
             </div>
