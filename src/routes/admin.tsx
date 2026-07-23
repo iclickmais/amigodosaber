@@ -183,6 +183,7 @@ function AdminPage() {
                   ["pending", `Pendentes (${data?.pending.length ?? 0})`],
                   ["recent", "Histórico"],
                   ["students", `Alunos (${data?.students.length ?? 0})`],
+                  ["edicts", "Editais"],
                 ] as const
               ).map(([id, label]) => (
                 <button
