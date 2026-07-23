@@ -43,7 +43,7 @@ function FaculdadePage() {
           <div className="mt-4 flex items-center gap-4">
             <div className="text-5xl">{track.icon}</div>
             <div>
-              <h1 className="font-serif text-4xl sm:text-5xl">{track.name}</h1>
+              <h1 className="font-serif text-3xl sm:text-5xl">{track.name}</h1>
               <p className="mt-1 text-muted-foreground">{track.tagline}</p>
             </div>
           </div>
@@ -51,7 +51,7 @@ function FaculdadePage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <h2 className="font-serif text-2xl sm:text-3xl">Escolha o seu curso</h2>
+        <h2 className="font-serif text-xl sm:text-3xl">Escolha o seu curso</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {track.sectors.map((sector: Sector) => (
             <Link

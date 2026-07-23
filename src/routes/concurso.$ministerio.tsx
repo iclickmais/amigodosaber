@@ -51,11 +51,11 @@ function MinisterioPage() {
                 loading="lazy"
               />
             ) : (
-              <div className="text-5xl">{track.icon}</div>
+              <div className="text-4xl sm:text-5xl">{track.icon}</div>
             )}
             <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="font-serif text-4xl sm:text-5xl">{track.name}</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-serif text-3xl sm:text-5xl">{track.name}</h1>
                 {(track.slug === "minint" || track.slug === "minsa" || track.slug === "mined") && (
                   <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-gold">
                     Concurso 2026/2027
@@ -69,7 +69,7 @@ function MinisterioPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <h2 className="font-serif text-2xl sm:text-3xl">Escolha um sector</h2>
+        <h2 className="font-serif text-xl sm:text-3xl">Escolha um sector</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {track.sectors.map((sector: Sector) => (
             <Link

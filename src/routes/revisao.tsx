@@ -131,7 +131,7 @@ function RevisionPage() {
         )}
 
         {!loading && !done && card && (
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>
                 Cartão {index + 1} / {cards.length}
@@ -157,7 +157,7 @@ function RevisionPage() {
                 </span>
               )}
             </div>
-            <p className="font-serif text-xl text-foreground">{card.question.q}</p>
+            <p className="font-serif text-lg sm:text-xl text-foreground">{card.question.q}</p>
             <div className="mt-4 space-y-2">
               {card.question.options.map((opt, oi) => {
                 const isChosen = chosen === oi;
@@ -209,7 +209,7 @@ function RevisionPage() {
                 Ver resposta
               </button>
             ) : (
-              <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   onClick={() => respond(false)}
                   disabled={saving}

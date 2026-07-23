@@ -104,23 +104,23 @@ const accentText: Record<CardDef["accent"], string> = {
 
 function HomePage() {
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <main className="relative flex flex-1 flex-col overflow-hidden">
+      <main className="relative flex flex-1 flex-col">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.78_0.13_78/0.08),transparent_60%)]" />
 
-        <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4 lg:px-8">
-          <header className="mb-3 text-center sm:mb-4">
+        <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-4 pb-6 pt-3 sm:px-6 sm:pb-8 sm:pt-4 lg:px-8">
+          <header className="mb-4 text-center sm:mb-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
               Escolha o seu caminho
             </div>
-            <h1 className="mt-2 font-serif text-2xl leading-tight sm:text-3xl lg:text-4xl">
+            <h1 className="mt-3 font-serif text-2xl leading-tight sm:text-3xl lg:text-4xl">
               Quatro portas, uma <span className="text-gradient-gold italic">biblioteca</span>.
             </h1>
           </header>
 
-          <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {cards.map((c) => {
               const Icon = c.icon;
               const linkProps = c.params
@@ -130,7 +130,7 @@ function HomePage() {
                 <Link
                   key={c.title}
                   {...(linkProps as { to: string })}
-                  className={`group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-500 hover:shadow-glow ${accentRing[c.accent]}`}
+                  className={`group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-500 hover:shadow-glow min-h-[200px] sm:min-h-[280px] ${accentRing[c.accent]}`}
                 >
                   <img
                     src={c.image}
@@ -169,6 +169,13 @@ function HomePage() {
           </div>
         </div>
       </main>
+
+      {/* Footer inline na homepage para mobile */}
+      <footer className="border-t border-border/40 px-4 py-8 sm:hidden">
+        <div className="text-center text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Amigo do Saber · Feito com dedicação em Luanda
+        </div>
+      </footer>
     </div>
   );
 }

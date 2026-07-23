@@ -171,7 +171,7 @@ function AulaPage() {
     <div className="min-h-screen">
       <SiteHeader />
       <section className="border-b border-border/60 bg-[linear-gradient(180deg,oklch(0.18_0.03_150/0.35),transparent)]">
-        <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
           <nav className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <Link to={kind === "concurso" ? "/concurso" : "/preparatorio"} className="hover:text-gold">
               {kind === "concurso" ? "Concurso" : "Preparatório"}
@@ -185,7 +185,7 @@ function AulaPage() {
           </nav>
           <p className="mt-3 text-xs uppercase tracking-[0.2em] text-gold">{mod.title}</p>
           <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl">{lesson.title}</h1>
+            <h1 className="font-serif text-2xl sm:text-4xl lg:text-5xl">{lesson.title}</h1>
             {content && (
               <OfflineLessonToggle
                 kind={kind}
@@ -206,7 +206,7 @@ function AulaPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mb-6">
           <MotivationBanner kind={kind} trackSlug={track.slug} compact />
         </div>

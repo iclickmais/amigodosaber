@@ -159,3 +159,69 @@
   font-weight: 600;
 }
 /* Trigger deploy */
+/* ─── Lesson Prose — melhorias de leitura e responsividade ─── */
+.lesson-prose {
+  max-width: 100%;
+}
+
+.lesson-prose h1,
+.lesson-prose h2 {
+  line-height: 1.2;
+}
+
+.lesson-prose h3 {
+  line-height: 1.3;
+}
+
+/* Code blocks: scroll horizontal em mobile */
+.lesson-prose pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lesson-prose pre code {
+  white-space: pre;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* Tabelas: scroll horizontal suave */
+.lesson-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+/* ─── Mobile responsividade global ─── */
+
+/* Melhorar padding em mobile */
+@media (max-width: 640px) {
+  /* Aulas — conteúdo mais compacto */
+  .lesson-prose h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .lesson-prose h3 {
+    font-size: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .lesson-prose p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  /* QuizRunner — card de resultado */
+  .quiz-result-score {
+    font-size: 3rem;
+  }
+}
+
+/* ─── Payment Modal — scroll em mobile ─── */
+@media (max-width: 480px) {
+  .payment-modal-inner {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}

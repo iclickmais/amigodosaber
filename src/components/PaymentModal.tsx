@@ -56,11 +56,11 @@ export function PaymentModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-gold/30 bg-[#1A1614] shadow-[0_0_50px_-12px_rgba(212,175,55,0.3)]"
+        className="payment-modal-inner relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-[20px] sm:rounded-[24px] border border-gold/30 bg-[#1A1614] shadow-[0_0_50px_-12px_rgba(212,175,55,0.3)]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -71,7 +71,7 @@ export function PaymentModal({
           <X className="h-5 w-5" />
         </button>
 
-        <div className="px-8 pt-8">
+        <div className="px-6 pt-6 sm:px-8 sm:pt-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-gold">
             <Lock className="h-3 w-3" /> Acesso pago
           </div>
@@ -83,7 +83,7 @@ export function PaymentModal({
           </p>
         </div>
 
-        <div className="mt-8 space-y-6 px-8 pb-8">
+        <div className="mt-6 space-y-5 sm:mt-8 sm:space-y-6 px-6 pb-6 sm:px-8 sm:pb-8">
           <div className="flex items-center justify-between rounded-2xl border border-gold/20 bg-white/[0.03] px-6 py-5">
             <span className="text-sm text-muted-foreground">Valor a pagar</span>
             <span className="font-serif text-3xl text-gold">{formatKz(amount)}</span>

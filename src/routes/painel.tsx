@@ -149,10 +149,10 @@ function PanelPage() {
         )}
 
         {/* Widgets de destaque */}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             to="/revisao"
-            className="rounded-2xl border border-gold/30 bg-gold/5 p-5 transition-colors hover:border-gold"
+            className="rounded-2xl border border-gold/30 bg-gold/5 p-4 sm:p-5 transition-colors hover:border-gold"
           >
             <div className="flex items-center gap-2 text-gold">
               <Sparkles className="h-5 w-5" />
@@ -164,7 +164,7 @@ function PanelPage() {
             </p>
           </Link>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="flex items-center gap-2 text-gold">
               <WifiOff className="h-5 w-5" />
               <span className="text-xs uppercase tracking-widest text-muted-foreground">Aulas offline</span>
@@ -173,7 +173,7 @@ function PanelPage() {
             <p className="mt-1 text-xs text-muted-foreground">Guardadas neste dispositivo</p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="flex items-center gap-2 text-gold">
               <BookOpen className="h-5 w-5" />
               <span className="text-xs uppercase tracking-widest text-muted-foreground">Aulas concluídas</span>
@@ -181,7 +181,7 @@ function PanelPage() {
             <p className="mt-2 font-serif text-3xl">{data?.completedLessons.length ?? 0}</p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="flex items-center gap-2 text-gold">
               <Trophy className="h-5 w-5" />
               <span className="text-xs uppercase tracking-widest text-muted-foreground">Quizzes</span>

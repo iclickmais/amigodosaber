@@ -26,11 +26,11 @@ function ConcursoIndex() {
       <SiteHeader />
       <section className="relative overflow-hidden border-b border-border/60">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.78_0.13_78/0.12),transparent_70%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-24 lg:px-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-gold">
             <Sparkles className="h-3 w-3" /> Sala de aula digital
           </div>
-          <h1 className="mt-6 font-serif text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
+          <h1 className="mt-4 font-serif text-3xl sm:text-5xl lg:text-7xl leading-[1.05]">
             <span className="text-gradient-gold italic">Concurso Público</span>
             <br />
             <span className="text-foreground">preparação séria, para todos.</span>

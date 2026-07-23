@@ -43,7 +43,7 @@ function SectorPage() {
             <ChevronRight className="h-3 w-3" />
             <span className="text-gold">{sector.name}</span>
           </nav>
-          <h1 className="mt-4 font-serif text-3xl sm:text-4xl">{sector.name}</h1>
+          <h1 className="mt-4 font-serif text-2xl sm:text-4xl">{sector.name}</h1>
           <p className="mt-1 text-muted-foreground">{sector.description}</p>
         </div>
       </section>

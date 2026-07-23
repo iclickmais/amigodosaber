@@ -49,16 +49,16 @@ export function QuizRunner({ quiz }: Props) {
   const allAnswered = Object.keys(answers).length === quiz.questions.length;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-      <h2 className="font-serif text-2xl text-foreground">Quiz — {quiz.questions.length} perguntas</h2>
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 lg:p-8">
+      <h2 className="font-serif text-xl sm:text-2xl text-foreground">Quiz — {quiz.questions.length} perguntas</h2>
 
       {submitted && (
-        <div className={`mt-8 animate-in fade-in slide-in-from-top-4 duration-500 rounded-2xl border p-8 text-center shadow-2xl ${
+        <div className={`mt-6 sm:mt-8 animate-in fade-in slide-in-from-top-4 duration-500 rounded-2xl border p-5 sm:p-8 text-center shadow-2xl ${
           submitted.score / submitted.total >= 0.6
             ? "border-emerald-500/40 bg-emerald-500/10 shadow-emerald-500/5"
             : "border-burgundy/40 bg-burgundy/10 shadow-burgundy/5"
         }`}>
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-background border-4 border-current mb-4">
+          <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-background border-4 border-current mb-4">
             {submitted.score / submitted.total >= 0.6 ? (
               <CheckCircle2 className="h-10 w-10 text-emerald-500" />
             ) : (
@@ -66,7 +66,7 @@ export function QuizRunner({ quiz }: Props) {
             )}
           </div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">O teu desempenho</p>
-          <p className="mt-2 font-serif text-6xl text-foreground">
+          <p className="mt-2 font-serif text-4xl sm:text-6xl text-foreground">
             {submitted.score}<span className="text-2xl text-muted-foreground mx-1">/</span>{submitted.total}
           </p>
           <div className="mt-4 space-y-2">
@@ -75,7 +75,7 @@ export function QuizRunner({ quiz }: Props) {
                 ? "Incrível! Dominaste esta aula."
                 : "Quase lá! Precisas de 60% para concluir."}
             </p>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            <p className="text-sm text-muted-foreground mx-auto">
               {submitted.score / submitted.total >= 0.6
                 ? "O teu progresso foi registado e estás mais perto do teu objectivo."
                 : "Recomendamos que releias a matéria e faças o quiz novamente."}
@@ -108,8 +108,8 @@ export function QuizRunner({ quiz }: Props) {
         {quiz.questions.map((q, i) => {
           const chosen = answers[i];
           return (
-            <li key={i} className="rounded-xl border border-border/60 bg-background p-5">
-              <p className="font-serif text-lg text-foreground">
+            <li key={i} className="rounded-xl border border-border/60 bg-background p-4 sm:p-5">
+              <p className="font-serif text-base sm:text-lg text-foreground">
                 <span className="mr-2 text-gold">{i + 1}.</span>
                 {q.q}
               </p>
