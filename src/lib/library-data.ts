@@ -403,7 +403,22 @@ export const categories: Category[] = [
       },
     ],
   },
+  {
+    slug: "nacionais",
+    name: "Nacionais (Angolanos)",
+    tagline: "Obras de autores angolanos e livros sobre Angola",
+    totalCount: 0,
+    subcategories: [
+      { slug: "literatura-angolana", name: "Literatura Angolana", count: 0, authors: [], templates: [] },
+      { slug: "historia-angola", name: "História de Angola", count: 0, authors: [], templates: [] },
+      { slug: "cultura-e-linguas", name: "Cultura e Línguas Bantu", count: 0, authors: [], templates: [] },
+      { slug: "direito-angolano", name: "Direito Angolano", count: 0, authors: [], templates: [] },
+      { slug: "economia-angolana", name: "Economia e Sociedade", count: 0, authors: [], templates: [] },
+      { slug: "biografias-angolanas", name: "Biografias Angolanas", count: 0, authors: [], templates: [] },
+    ],
+  },
 ];
+
 
 const topicsAcad: Record<string, string[]> = {
   direito: ["Direito Constitucional", "Direito Civil", "Direito Penal", "Direito Comercial", "Direito Administrativo", "Direito Internacional", "Direito do Trabalho", "Direito Tributário", "Direito Processual", "Direito de Família", "Direitos Humanos", "Direito Ambiental"],
