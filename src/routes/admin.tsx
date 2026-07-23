@@ -589,3 +589,214 @@ function EdictsPanel({ adminPhone }: { adminPhone: string }) {
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Books panel — manage the real PDF catalog (WhatsApp-based fulfillment)
+// ---------------------------------------------------------------------------
+
+function BooksPanel({ adminPhone }: { adminPhone: string }) {
+  const [books, setBooks] = useState<BookRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    title: "",
+    author: "",
+    category_slug: "academicos",
+    subcategory_slug: "",
+    price_kz: 2000,
+    cover_url: "",
+    description: "",
+    relevance: 0,
+  });
+
+  const category = libraryCategories.find((c) => c.slug === form.category_slug);
+  const subOptions = category?.subcategories ?? [];
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const rows = await adminListBooks({ data: { adminPhone } });
+      setBooks(rows);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro a carregar livros.");
+    } finally {
+      setLoading(false);
+    }
+  }, [adminPhone]);
+
+  useState(() => {
+    void reload();
+    return undefined;
+  });
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title.trim() || !form.subcategory_slug) {
+      setError("Título e subcategoria são obrigatórios.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await adminCreateBook({
+        data: {
+          adminPhone,
+          title: form.title,
+          author: form.author,
+          category_slug: form.category_slug,
+          subcategory_slug: form.subcategory_slug,
+          price_kz: Number(form.price_kz) || 0,
+          cover_url: form.cover_url,
+          description: form.description,
+          relevance: Number(form.relevance) || 0,
+        },
+      });
+      setForm({
+        title: "",
+        author: "",
+        category_slug: form.category_slug,
+        subcategory_slug: form.subcategory_slug,
+        price_kz: 2000,
+        cover_url: "",
+        description: "",
+        relevance: 0,
+      });
+      await reload();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao criar livro.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Remover este livro do catálogo?")) return;
+    try {
+      await adminDeleteBook({ data: { adminPhone, id } });
+      setBooks((prev) => prev.filter((b) => b.id !== id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro a apagar.");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-5 space-y-3">
+        <h3 className="font-serif text-lg">Adicionar novo livro</h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <input
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            placeholder="Título"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+          <input
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            placeholder="Autor"
+            value={form.author}
+            onChange={(e) => setForm({ ...form, author: e.target.value })}
+          />
+          <select
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            value={form.category_slug}
+            onChange={(e) =>
+              setForm({ ...form, category_slug: e.target.value, subcategory_slug: "" })
+            }
+          >
+            {libraryCategories.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))}
+          </select>
+          <select
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            value={form.subcategory_slug}
+            onChange={(e) => setForm({ ...form, subcategory_slug: e.target.value })}
+          >
+            <option value="">— Escolher subcategoria —</option>
+            {subOptions.map((s) => (
+              <option key={s.slug} value={s.slug}>{s.name}</option>
+            ))}
+          </select>
+          <input
+            type="number"
+            min={0}
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            placeholder="Preço (Kz)"
+            value={form.price_kz}
+            onChange={(e) => setForm({ ...form, price_kz: Number(e.target.value) })}
+          />
+          <input
+            type="number"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            placeholder="Relevância (mais alto aparece antes)"
+            value={form.relevance}
+            onChange={(e) => setForm({ ...form, relevance: Number(e.target.value) })}
+          />
+          <input
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm sm:col-span-2"
+            placeholder="URL da capa (opcional)"
+            value={form.cover_url}
+            onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
+          />
+          <textarea
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm sm:col-span-2"
+            placeholder="Descrição / sinopse"
+            rows={3}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
+        </div>
+        {error && (
+          <p className="rounded-lg border border-burgundy/40 bg-burgundy/10 px-3 py-2 text-xs text-burgundy">
+            {error}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={saving}
+          className="gradient-gold inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm text-primary-foreground disabled:opacity-50"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          {saving ? "A guardar…" : "Adicionar livro"}
+        </button>
+      </form>
+
+      <div>
+        <h3 className="mb-3 font-serif text-lg">Catálogo actual ({books.length})</h3>
+        {loading ? (
+          <p className="text-sm text-muted-foreground">A carregar…</p>
+        ) : books.length === 0 ? (
+          <p className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
+            Nenhum livro adicionado ainda.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {books.map((b) => (
+              <li
+                key={b.id}
+                className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-4"
+              >
+                <div className="min-w-0">
+                  <div className="font-medium">{b.title}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {b.author || "—"} · {b.category_slug}/{b.subcategory_slug} · {formatKz(b.price_kz)}
+                  </div>
+                </div>
+                <button
+                  onClick={() => remove(b.id)}
+                  className="text-muted-foreground hover:text-burgundy"
+                  aria-label="Remover"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
