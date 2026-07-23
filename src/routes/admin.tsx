@@ -346,3 +346,244 @@ function PaymentCard({
     </div>
   );
 }
+
+function EdictsPanel({ adminPhone }: { adminPhone: string }) {
+  const [rows, setRows] = useState<EdictRow[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    kind: "concurso" as "concurso" | "preparatorio",
+    trackSlug: "",
+    sectorSlug: "",
+    title: "",
+    descriptionMd: "",
+    deadline: "",
+    sourceUrl: "",
+  });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setRows(await listEdicts());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  if (rows === null && !loading && !error) {
+    void load();
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      await adminCreateEdict({
+        data: {
+          adminPhone,
+          kind: form.kind,
+          trackSlug: form.trackSlug.trim(),
+          sectorSlug: form.sectorSlug.trim() || null,
+          title: form.title.trim(),
+          descriptionMd: form.descriptionMd,
+          deadline: form.deadline || null,
+          sourceUrl: form.sourceUrl.trim() || null,
+        },
+      });
+      setForm({
+        kind: form.kind,
+        trackSlug: form.trackSlug,
+        sectorSlug: "",
+        title: "",
+        descriptionMd: "",
+        deadline: "",
+        sourceUrl: "",
+      });
+      setShowForm(false);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha ao publicar");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove(id: string) {
+    if (!window.confirm("Remover este edital?")) return;
+    await adminDeleteEdict({ data: { adminPhone, id } });
+    await load();
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {rows ? `${rows.length} edital(is) publicados` : "A carregar…"}
+        </p>
+        <button
+          onClick={() => setShowForm((v) => !v)}
+          className="inline-flex items-center gap-1 rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90"
+        >
+          <Plus className="h-3.5 w-3.5" /> Novo edital
+        </button>
+      </div>
+
+      {showForm && (
+        <form
+          onSubmit={submit}
+          className="space-y-3 rounded-2xl border border-gold/30 bg-card p-5"
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="text-xs">
+              <span className="mb-1 block uppercase tracking-wider text-muted-foreground">Tipo</span>
+              <select
+                value={form.kind}
+                onChange={(e) => setForm({ ...form, kind: e.target.value as typeof form.kind })}
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              >
+                <option value="concurso">Concurso público</option>
+                <option value="preparatorio">Preparatório</option>
+              </select>
+            </label>
+            <label className="text-xs">
+              <span className="mb-1 block uppercase tracking-wider text-muted-foreground">
+                Prazo (opcional)
+              </span>
+              <input
+                type="date"
+                value={form.deadline}
+                onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="text-xs">
+              <span className="mb-1 block uppercase tracking-wider text-muted-foreground">
+                Track slug
+              </span>
+              <input
+                required
+                value={form.trackSlug}
+                onChange={(e) => setForm({ ...form, trackSlug: e.target.value })}
+                placeholder="ex: administracao-publica"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="text-xs">
+              <span className="mb-1 block uppercase tracking-wider text-muted-foreground">
+                Sector slug (opcional)
+              </span>
+              <input
+                value={form.sectorSlug}
+                onChange={(e) => setForm({ ...form, sectorSlug: e.target.value })}
+                placeholder="ex: assistente-tecnico"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
+          <label className="block text-xs">
+            <span className="mb-1 block uppercase tracking-wider text-muted-foreground">Título</span>
+            <input
+              required
+              minLength={3}
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-xs">
+            <span className="mb-1 block uppercase tracking-wider text-muted-foreground">
+              Descrição
+            </span>
+            <textarea
+              rows={4}
+              value={form.descriptionMd}
+              onChange={(e) => setForm({ ...form, descriptionMd: e.target.value })}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-xs">
+            <span className="mb-1 block uppercase tracking-wider text-muted-foreground">
+              Link oficial (URL)
+            </span>
+            <input
+              type="url"
+              value={form.sourceUrl}
+              onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })}
+              placeholder="https://..."
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+          </label>
+          {error && (
+            <p className="rounded-lg border border-burgundy/40 bg-burgundy/10 px-3 py-2 text-xs text-burgundy">
+              {error}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center gap-1 rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            >
+              {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+              Publicar
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              className="rounded-full border border-border px-4 py-2 text-xs text-muted-foreground"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      )}
+
+      {loading && (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> A carregar…
+        </p>
+      )}
+
+      {rows && rows.length === 0 && !showForm && (
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+          <Megaphone className="mx-auto mb-2 h-5 w-5 text-gold" />
+          Ainda não publicaste nenhum edital.
+        </div>
+      )}
+
+      <ul className="space-y-2">
+        {rows?.map((e) => (
+          <li key={e.id} className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-widest text-gold">
+                  {e.kind === "concurso" ? "Concurso" : "Preparatório"} · {e.track_slug}
+                  {e.sector_slug ? ` / ${e.sector_slug}` : " (geral)"}
+                </p>
+                <p className="mt-1 text-sm font-medium">{e.title}</p>
+                {e.deadline && (
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Prazo: {new Date(e.deadline).toLocaleDateString("pt-PT")}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => remove(e.id)}
+                className="rounded-full border border-burgundy/40 p-2 text-burgundy hover:bg-burgundy/10"
+                aria-label="Remover edital"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
