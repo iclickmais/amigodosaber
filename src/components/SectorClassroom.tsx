@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { PlayCircle, ChevronDown, Lock, Timer, Calendar, Megaphone, CheckCircle2, Loader2 } from "lucide-react";
+import { PlayCircle, ChevronDown, ChevronRight, Lock, Timer, Calendar, Megaphone, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import type { Module } from "@/lib/study-tracks";
 import { useStudent } from "@/hooks/use-student";
 import { getAccessStatus } from "@/lib/access.functions";
