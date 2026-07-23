@@ -1,0 +1,143 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Biblioteca Digital — Dark Premium Bookstore
+ * Deep obsidian backgrounds, aged parchment gold, burgundy accents.
+ * Editorial serif headlines paired with clean sans body.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-burgundy: var(--burgundy);
+  --color-parchment: var(--parchment);
+
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--gold) 45%, transparent);
+  --shadow-book: 0 20px 40px -20px oklch(0 0 0 / 0.7), 0 8px 16px -12px oklch(0 0 0 / 0.6);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* Dark by default — this is a night library */
+  --background: oklch(0.14 0.012 60);
+  --foreground: oklch(0.94 0.015 80);
+
+  --card: oklch(0.18 0.014 55);
+  --card-foreground: oklch(0.94 0.015 80);
+
+  --popover: oklch(0.16 0.013 55);
+  --popover-foreground: oklch(0.94 0.015 80);
+
+  --primary: oklch(0.78 0.13 78);            /* aged gold */
+  --primary-foreground: oklch(0.14 0.012 60);
+
+  --secondary: oklch(0.24 0.02 50);
+  --secondary-foreground: oklch(0.94 0.015 80);
+
+  --muted: oklch(0.22 0.015 55);
+  --muted-foreground: oklch(0.68 0.02 70);
+
+  --accent: oklch(0.36 0.11 25);              /* burgundy */
+  --accent-foreground: oklch(0.96 0.015 80);
+
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.98 0.003 80);
+
+  --border: oklch(0.26 0.018 60);
+  --input: oklch(0.24 0.015 55);
+  --ring: oklch(0.78 0.13 78);
+
+  --gold: oklch(0.82 0.14 82);
+  --gold-soft: oklch(0.68 0.09 78);
+  --burgundy: oklch(0.38 0.13 22);
+  --parchment: oklch(0.92 0.03 82);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(ellipse at top, oklch(0.22 0.03 55 / 0.6), transparent 60%),
+      radial-gradient(ellipse at bottom, oklch(0.16 0.02 25 / 0.4), transparent 70%);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, h4, .font-serif {
+    font-family: var(--font-serif);
+    letter-spacing: -0.01em;
+  }
+}
+
+@utility text-gold {
+  color: var(--gold);
+}
+@utility bg-gold {
+  background-color: var(--gold);
+}
+@utility border-gold {
+  border-color: var(--gold);
+}
+@utility shadow-book {
+  box-shadow: var(--shadow-book);
+}
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+@utility gradient-gold {
+  background-image: linear-gradient(135deg, var(--gold) 0%, var(--gold-soft) 100%);
+}
+@utility gradient-burgundy {
+  background-image: linear-gradient(135deg, var(--burgundy) 0%, oklch(0.22 0.08 25) 100%);
+}
+@utility text-gradient-gold {
+  background-image: linear-gradient(135deg, var(--gold) 0%, var(--parchment) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 320px 480px;
+}
+
