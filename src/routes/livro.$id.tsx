@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronRight, Download, FileText, MessageCircle, Shield, Star } from "lucide-react";
+import { ChevronRight, FileText, MessageCircle, Shield, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BookCover } from "@/components/BookCover";
@@ -7,32 +8,17 @@ import { BookCard } from "@/components/BookCard";
 import {
   formatNumber,
   formatPrice,
-  getBook,
   getCategory,
   getSubcategory,
-  listBooksBySubcategory,
+  dbBookToDisplay,
   whatsappCheckoutUrl,
   type Book,
 } from "@/lib/library-data";
+import { getBookById, listBooks } from "@/lib/books.functions";
 
 export const Route = createFileRoute("/livro/$id")({
-  loader: ({ params }) => {
-    const book = getBook(params.id);
-    if (!book) throw notFound();
-    return { book };
-  },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.book.title} — ${loaderData.book.author}` },
-          { name: "description", content: loaderData.book.synopsis },
-          {
-            property: "og:title",
-            content: `${loaderData.book.title} — Amigo do Saber`,
-          },
-          { property: "og:description", content: loaderData.book.synopsis },
-        ]
-      : [{ title: "Livro — Amigo do Saber" }],
+  head: () => ({
+    meta: [{ title: "Livro — Amigo do Saber" }],
   }),
   component: BookPage,
   notFoundComponent: () => (
@@ -43,13 +29,75 @@ export const Route = createFileRoute("/livro/$id")({
 });
 
 function BookPage() {
-  const { book } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const [book, setBook] = useState<Book | null>(null);
+  const [related, setRelated] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [missing, setMissing] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setMissing(false);
+    void getBookById({ data: { id } })
+      .then(async (row) => {
+        if (!alive) return;
+        if (!row) {
+          setMissing(true);
+          setBook(null);
+          setRelated([]);
+          return;
+        }
+        const display = dbBookToDisplay(row);
+        setBook(display);
+        try {
+          const res = await listBooks({
+            data: {
+              category: row.category_slug,
+              subcategory: row.subcategory_slug,
+              limit: 6,
+            },
+          });
+          if (!alive) return;
+          setRelated(
+            res.items
+              .filter((r) => r.id !== row.id)
+              .slice(0, 5)
+              .map(dbBookToDisplay),
+          );
+        } catch {
+          if (alive) setRelated([]);
+        }
+      })
+      .catch(() => {
+        if (alive) setMissing(true);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <SiteHeader />
+        <div className="flex justify-center py-24">
+          <Loader2 className="h-6 w-6 animate-spin text-gold" />
+        </div>
+        <SiteFooter />
+      </div>
+    );
+  }
+
+  if (missing || !book) {
+    throw notFound();
+  }
+
   const cat = getCategory(book.category);
   const sub = getSubcategory(book.category, book.subcategory);
-  const related = listBooksBySubcategory(book.category, book.subcategory, 0, 6)
-    .items.filter((b: Book) => b.id !== book.id)
-    .slice(0, 5);
-
   const checkoutUrl = whatsappCheckoutUrl(book);
 
   return (
@@ -85,29 +133,25 @@ function BookPage() {
           </div>
 
           <div className="min-w-0">
-            <div className="text-xs uppercase tracking-[0.25em] text-gold">
-              {sub?.name}
-            </div>
+            {sub && (
+              <div className="text-xs uppercase tracking-[0.25em] text-gold">
+                {sub.name}
+              </div>
+            )}
             <h1 className="mt-3 font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl">
               {book.title}
             </h1>
-            <p className="mt-3 text-base text-muted-foreground sm:text-lg">por {book.author}</p>
+            {book.author && (
+              <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+                por {book.author}
+              </p>
+            )}
 
             <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm sm:gap-6">
-              <span className="flex items-center gap-1.5 text-gold">
-                <Star className="h-4 w-4 fill-current" strokeWidth={0} />
-                <span className="font-medium">{book.rating}</span>
-                <span className="text-muted-foreground">/ 5</span>
-              </span>
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <Download className="h-4 w-4" />
-                {formatNumber(book.downloads)} descargas
-              </span>
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <FileText className="h-4 w-4" />
-                {book.pages} pág · PDF
+                PDF
               </span>
-              <span className="text-muted-foreground">{book.year}</span>
             </div>
 
             <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:mt-8 sm:p-6">
@@ -116,7 +160,7 @@ function BookPage() {
                   {formatPrice(book.price)}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Pagamento único · Descarga imediata
+                  Pagamento e entrega directamente no WhatsApp
                 </div>
               </div>
 
@@ -134,56 +178,37 @@ function BookPage() {
 
               <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <Shield className="h-3.5 w-3.5 text-gold" />
-                Sem cadastro · Checkout directo no WhatsApp
+                Após confirmarmos o pagamento, enviamos o PDF pelo WhatsApp.
               </div>
             </div>
 
-            <div className="mt-8 sm:mt-10">
-              <h2 className="font-serif text-xl sm:text-2xl">Sinopse</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {book.synopsis}
-              </p>
-              <p className="mt-4 leading-relaxed text-muted-foreground">
-                Esta obra faz parte do acervo curado da Biblioteca Digital, com mais
-                de {formatNumber(cat?.totalCount ?? 0)} títulos na categoria{" "}
-                {cat?.name.toLowerCase()}. Cada PDF é revisto para garantir qualidade
-                de leitura em qualquer dispositivo.
-              </p>
-            </div>
-
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:grid-cols-4 sm:gap-4">
-              <Fact label="Formato" value="PDF" />
-              <Fact label="Páginas" value={String(book.pages)} />
-              <Fact label="Idioma" value="Português" />
-              <Fact label="Publicado" value={String(book.year)} />
-            </div>
+            {book.synopsis && (
+              <div className="mt-8 sm:mt-10">
+                <h2 className="font-serif text-xl sm:text-2xl">Sobre este livro</h2>
+                <p className="mt-3 whitespace-pre-line leading-relaxed text-muted-foreground">
+                  {book.synopsis}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {related.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-          <h2 className="font-serif text-2xl sm:text-3xl">Leitores também compraram</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl">Também nesta secção</h2>
           <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-8 sm:mt-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-5">
-            {related.map((b: Book) => (
+            {related.map((b) => (
               <BookCard key={b.id} book={b} />
             ))}
+          </div>
+          <div className="mt-4 text-xs text-muted-foreground">
+            {formatNumber(related.length)} títulos relacionados
           </div>
         </section>
       )}
 
       <SiteFooter />
-    </div>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-card/60 p-4">
-      <div className="text-xs uppercase tracking-wider text-muted-foreground">
-        {label}
-      </div>
-      <div className="mt-1 font-serif text-lg text-foreground">{value}</div>
     </div>
   );
 }
