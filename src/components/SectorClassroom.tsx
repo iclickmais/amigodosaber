@@ -60,7 +60,51 @@ export function SectorClassroom({
     };
   }, [hydrated, student, kind, trackSlug, sectorSlug]);
 
+  // Carrega plano actual + editais quando estudante entra
+  useEffect(() => {
+    if (!hydrated || !student) return;
+    let cancelled = false;
+    getStudyPlans({ data: { studentId: student.id } })
+      .then((plans) => {
+        if (cancelled) return;
+        const mine = plans.find(
+          (p) => p.kind === kind && p.trackSlug === trackSlug && p.sectorSlug === sectorSlug,
+        );
+        if (mine) {
+          setSavedTarget(mine.targetDate);
+          setTargetDate(mine.targetDate);
+        }
+      })
+      .catch(() => {});
+    listEdictsForSector({ data: { kind, trackSlug, sectorSlug } })
+      .then((rows) => {
+        if (!cancelled) setEdicts(rows);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, student, kind, trackSlug, sectorSlug]);
+
+  async function saveTarget() {
+    if (!student || !targetDate) return;
+    setSavingTarget(true);
+    try {
+      await setStudyPlanTarget({
+        data: { studentId: student.id, kind, trackSlug, sectorSlug, targetDate },
+      });
+      setSavedTarget(targetDate);
+      setTargetJustSaved(true);
+      setTimeout(() => setTargetJustSaved(false), 2500);
+    } catch {
+      // ignore — botão volta a ficar activo
+    } finally {
+      setSavingTarget(false);
+    }
+  }
+
   const amount = priceFor(kind);
+  const todayIso = new Date().toISOString().slice(0, 10);
 
   function onLessonClick(e: React.MouseEvent, moduleSlug: string, lessonSlug: string) {
     if (!student) {
