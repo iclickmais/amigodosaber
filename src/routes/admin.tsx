@@ -8,8 +8,14 @@ import {
   adminApprovePayment,
   adminRejectPayment,
 } from "@/lib/admin.functions";
+import {
+  listEdicts,
+  adminCreateEdict,
+  adminDeleteEdict,
+  type EdictRow,
+} from "@/lib/edicts.functions";
 import { formatKz } from "@/lib/payment-info";
-import { ShieldCheck, Check, X, Phone, User, Clock } from "lucide-react";
+import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2 } from "lucide-react";
 
 const ADMIN_KEY = "angopdf.admin";
 
