@@ -633,10 +633,9 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
     }
   }, [adminPhone]);
 
-  useState(() => {
+  useEffect(() => {
     void reload();
-    return undefined;
-  });
+  }, [reload]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
