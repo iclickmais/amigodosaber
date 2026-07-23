@@ -10,11 +10,11 @@ import {
   formatPrice,
   getCategory,
   getSubcategory,
-  dbBookToDisplay,
+  getBook,
+  listBooksBySubcategory,
   whatsappCheckoutUrl,
   type Book,
 } from "@/lib/library-data";
-import { getBookById, listBooks } from "@/lib/books.functions";
 
 export const Route = createFileRoute("/livro/$id")({
   head: () => ({
@@ -36,48 +36,17 @@ function BookPage() {
   const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    let alive = true;
     setLoading(true);
-    setMissing(false);
-    void getBookById({ data: { id } })
-      .then(async (row) => {
-        if (!alive) return;
-        if (!row) {
-          setMissing(true);
-          setBook(null);
-          setRelated([]);
-          return;
-        }
-        const display = dbBookToDisplay(row);
-        setBook(display);
-        try {
-          const res = await listBooks({
-            data: {
-              category: row.category_slug,
-              subcategory: row.subcategory_slug,
-              limit: 6,
-            },
-          });
-          if (!alive) return;
-          setRelated(
-            res.items
-              .filter((r) => r.id !== row.id)
-              .slice(0, 5)
-              .map(dbBookToDisplay),
-          );
-        } catch {
-          if (alive) setRelated([]);
-        }
-      })
-      .catch(() => {
-        if (alive) setMissing(true);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
+    const b = getBook(id);
+    if (!b) {
+      setMissing(true);
+      setLoading(false);
+      return;
+    }
+    setBook(b);
+    const res = listBooksBySubcategory(b.category, b.subcategory, 0, 6);
+    setRelated(res.items.filter((r) => r.id !== b.id).slice(0, 5));
+    setLoading(false);
   }, [id]);
 
   if (loading) {

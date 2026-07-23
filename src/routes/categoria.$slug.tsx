@@ -7,11 +7,11 @@ import { BookCard } from "@/components/BookCard";
 import {
   formatNumber,
   getCategory,
-  dbBookToDisplay,
+  listBooksByCategory,
+  listBooksBySubcategory,
   type Subcategory,
   type Book,
 } from "@/lib/library-data";
-import { listBooks } from "@/lib/books.functions";
 
 const PAGE_SIZE = 24;
 
@@ -48,33 +48,15 @@ function CategoryPage() {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    let alive = true;
     setLoading(true);
-    void listBooks({
-      data: {
-        category: cat.slug,
-        subcategory: subFilter ?? undefined,
-        limit: PAGE_SIZE,
-        offset: page * PAGE_SIZE,
-      },
-    })
-      .then((res) => {
-        if (!alive) return;
-        const mapped = res.items.map(dbBookToDisplay);
-        setItems((prev) => (page === 0 ? mapped : [...prev, ...mapped]));
-        setTotal(res.total);
-      })
-      .catch(() => {
-        if (!alive) return;
-        setItems([]);
-        setTotal(0);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
+    const offset = page * PAGE_SIZE;
+    const res = subFilter
+      ? listBooksBySubcategory(cat.slug, subFilter, offset, PAGE_SIZE)
+      : listBooksByCategory(cat.slug, offset, PAGE_SIZE);
+
+    setItems((prev) => (page === 0 ? res.items : [...prev, ...res.items]));
+    setTotal(res.total);
+    setLoading(false);
   }, [cat.slug, subFilter, page]);
 
   const hasMore = items.length < total;
