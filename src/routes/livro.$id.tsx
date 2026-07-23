@@ -154,31 +154,47 @@ function BookPage() {
               </span>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:mt-8 sm:p-6">
-              <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <div className="font-serif text-3xl text-gold sm:text-4xl">
-                  {formatPrice(book.price)}
+            <div className="mt-6 rounded-2xl border border-gold/40 bg-gradient-to-br from-gold/5 to-gold/10 p-5 sm:mt-8 sm:p-8 shadow-lg shadow-gold/10">
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.15em] text-gold font-medium">Preço</p>
+                  <div className="font-serif text-4xl text-gold sm:text-5xl mt-1">
+                    {formatPrice(book.price)}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Pagamento e entrega directamente no WhatsApp
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground mb-1">Pagamento seguro</p>
+                  <p className="text-xs text-gold font-medium">via WhatsApp</p>
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <div className="space-y-3">
                 <a
                   href={checkoutUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="gradient-gold flex flex-1 items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.01]"
+                  className="gradient-gold flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-semibold text-primary-foreground transition-all hover:shadow-lg hover:shadow-gold/30 hover:scale-[1.02]"
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-5 w-5" />
                   Comprar via WhatsApp
                 </a>
               </div>
 
-              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-3.5 w-3.5 text-gold" />
-                Após confirmarmos o pagamento, enviamos o PDF pelo WhatsApp.
+              <div className="mt-5 rounded-lg bg-white/5 p-4 border border-gold/20">
+                <div className="space-y-2 text-xs text-muted-foreground">
+                  <div className="flex items-start gap-2">
+                    <Shield className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
+                    <span>Após confirmar o pagamento, enviamos o PDF pelo WhatsApp</span>
+                  </div>
+                  <div className="flex items-start gap-2 ml-6">
+                    <span className="text-gold">✓</span>
+                    <span>Entrega rápida e segura</span>
+                  </div>
+                  <div className="flex items-start gap-2 ml-6">
+                    <span className="text-gold">✓</span>
+                    <span>Suporte direto no WhatsApp</span>
+                  </div>
+                </div>
               </div>
             </div>
 

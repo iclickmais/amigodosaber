@@ -149,8 +149,11 @@ function CategoryPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="font-serif text-2xl sm:text-3xl">Catálogo</h2>
+        <div className="flex items-end justify-between gap-4 mb-2">
+          <div>
+            <h2 className="font-serif text-2xl sm:text-3xl">Catálogo</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Selecione um PDF para mais detalhes e comprar via WhatsApp</p>
+          </div>
           <span className="text-xs text-muted-foreground">
             {formatNumber(items.length)} de {formatNumber(total)}
           </span>

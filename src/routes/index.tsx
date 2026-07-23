@@ -47,7 +47,7 @@ const cards: CardDef[] = [
     title: "Acadêmicos",
     italic: "saber",
     description:
-      "Direito, Medicina, Engenharia, Economia, Psicologia — mais de 25 áreas do ensino superior em manuais e obras de referência.",
+      "Catálogo com PDFs de Direito, Medicina, Engenharia, Economia, Psicologia — mais de 25 áreas. Compre via WhatsApp.",
     image: cardAcademicos,
     icon: GraduationCap,
     accent: "gold",
@@ -59,7 +59,7 @@ const cards: CardDef[] = [
     title: "Cristãos",
     italic: "fé",
     description:
-      "Bíblias de estudo, teologia sistemática, vida cristã, pregação, família e louvor — literatura para nutrir a fé.",
+      "Catálogo de PDFs: Bíblias de estudo, teologia sistemática, vida cristã, pregação — compre e receba via WhatsApp.",
     image: cardCristaos,
     icon: Cross,
     accent: "burgundy",
