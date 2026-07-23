@@ -66,7 +66,7 @@ function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Overview | null>(null);
-  const [tab, setTab] = useState<"pending" | "recent" | "students">("pending");
+  const [tab, setTab] = useState<"pending" | "recent" | "students" | "edicts">("pending");
 
   const load = useCallback(async (phone: string) => {
     setLoading(true);
