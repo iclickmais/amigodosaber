@@ -1,20 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BookCard } from "@/components/BookCard";
 import {
   formatNumber,
   getCategory,
-  listBooksByCategory,
-  listBooksBySubcategory,
+  dbBookToDisplay,
   type Subcategory,
   type Book,
 } from "@/lib/library-data";
+import { listBooks } from "@/lib/books.functions";
 
 const PAGE_SIZE = 24;
-
 
 export const Route = createFileRoute("/categoria/$slug")({
   loader: ({ params }) => {
@@ -43,37 +42,47 @@ export const Route = createFileRoute("/categoria/$slug")({
 function CategoryPage() {
   const { cat } = Route.useLoaderData();
   const [subFilter, setSubFilter] = useState<string | null>(null);
-  const [pages, setPages] = useState(1);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-
-  const { items, total } = subFilter
-    ? listBooksBySubcategory(cat.slug, subFilter, 0, PAGE_SIZE * pages)
-    : listBooksByCategory(cat.slug, 0, PAGE_SIZE * pages);
-
-  const hasMore = items.length < total;
+  const [items, setItems] = useState<Book[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
-    if (!hasMore) return;
-    const el = sentinelRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setPages((p) => p + 1);
-        }
+    let alive = true;
+    setLoading(true);
+    void listBooks({
+      data: {
+        category: cat.slug,
+        subcategory: subFilter ?? undefined,
+        limit: PAGE_SIZE,
+        offset: page * PAGE_SIZE,
       },
-      { rootMargin: "600px 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [hasMore, subFilter, cat.slug]);
+    })
+      .then((res) => {
+        if (!alive) return;
+        const mapped = res.items.map(dbBookToDisplay);
+        setItems((prev) => (page === 0 ? mapped : [...prev, ...mapped]));
+        setTotal(res.total);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setItems([]);
+        setTotal(0);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [cat.slug, subFilter, page]);
 
+  const hasMore = items.length < total;
 
   return (
     <div className="min-h-screen">
       <SiteHeader />
 
-      {/* Header */}
       <section className="relative overflow-hidden border-b border-border/60">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.78_0.13_78/0.12),transparent_70%)]" />
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
@@ -96,22 +105,21 @@ function CategoryPage() {
             </div>
             <div className="text-xs text-muted-foreground sm:text-sm">
               <span className="font-serif text-3xl text-gold sm:text-4xl">
-                {formatNumber(cat.totalCount)}
+                {formatNumber(total)}
               </span>{" "}
-              PDFs · {cat.subcategories.length} subcategorias
+              PDFs disponíveis · {cat.subcategories.length} subcategorias
             </div>
           </div>
         </div>
       </section>
 
-      {/* Subcategories */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <h2 className="font-serif text-xl sm:text-2xl">Navegar por subcategoria</h2>
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2 sm:mt-6 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-4">
           <button
             onClick={() => {
               setSubFilter(null);
-              setPages(1);
+              setPage(0);
             }}
             className={`shrink-0 whitespace-nowrap rounded-xl border px-4 py-3 text-left text-sm transition-all ${
               subFilter === null
@@ -120,16 +128,13 @@ function CategoryPage() {
             }`}
           >
             <div className="font-medium">Todas</div>
-            <div className="text-xs text-muted-foreground">
-              {formatNumber(cat.totalCount)} títulos
-            </div>
           </button>
           {cat.subcategories.map((sub: Subcategory) => (
             <button
               key={sub.slug}
               onClick={() => {
                 setSubFilter(sub.slug);
-                setPages(1);
+                setPage(0);
               }}
               className={`shrink-0 whitespace-nowrap rounded-xl border px-4 py-3 text-left text-sm transition-all ${
                 subFilter === sub.slug
@@ -138,49 +143,53 @@ function CategoryPage() {
               }`}
             >
               <div className="font-medium">{sub.name}</div>
-              <div className="text-xs text-muted-foreground">
-                {formatNumber(sub.count)} títulos
-              </div>
             </button>
           ))}
         </div>
       </section>
 
-      {/* Books grid */}
       <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
         <div className="flex items-end justify-between gap-4">
-          <h2 className="font-serif text-2xl sm:text-3xl">Mais relevantes</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl">Catálogo</h2>
           <span className="text-xs text-muted-foreground">
             {formatNumber(items.length)} de {formatNumber(total)}
           </span>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-8 sm:mt-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-5">
-          {items.map((book: Book) => (
+          {items.map((book) => (
             <BookCard key={book.id} book={book} />
           ))}
         </div>
 
-        {items.length === 0 && (
-          <p className="py-16 text-center text-muted-foreground">
-            Ainda não há títulos nesta secção.
-          </p>
+        {loading && items.length === 0 && (
+          <div className="flex justify-center py-16">
+            <Loader2 className="h-6 w-6 animate-spin text-gold" />
+          </div>
+        )}
+
+        {!loading && items.length === 0 && (
+          <div className="rounded-2xl border border-border/60 bg-card/40 p-10 text-center">
+            <p className="font-serif text-lg text-foreground">
+              Esta secção ainda não tem títulos publicados.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Voltamos em breve com novos PDFs. Enquanto isso, explora outras categorias.
+            </p>
+          </div>
         )}
 
         {hasMore && (
-          <>
-            <div ref={sentinelRef} aria-hidden className="h-1" />
-            <div className="mt-10 flex justify-center sm:mt-12">
-              <button
-                onClick={() => setPages((p) => p + 1)}
-                className="rounded-full border border-gold/40 px-8 py-3 text-sm text-gold transition-colors hover:bg-gold/10"
-              >
-                Carregar mais títulos
-              </button>
-            </div>
-          </>
+          <div className="mt-10 flex justify-center sm:mt-12">
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={loading}
+              className="rounded-full border border-gold/40 px-8 py-3 text-sm text-gold transition-colors hover:bg-gold/10 disabled:opacity-50"
+            >
+              {loading ? "A carregar…" : "Carregar mais títulos"}
+            </button>
+          </div>
         )}
-
       </section>
 
       <SiteFooter />
