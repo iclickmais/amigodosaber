@@ -112,14 +112,27 @@ function AdminPage() {
 
   async function approve(id: string) {
     if (!adminPhone) return;
-    await adminApprovePayment({ data: { adminPhone, requestId: id } });
-    await load(adminPhone);
+    setLoading(true);
+    try {
+      await adminApprovePayment({ data: { adminPhone, requestId: id } });
+      await load(adminPhone);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha ao aprovar");
+      setLoading(false);
+    }
   }
 
   async function reject(id: string) {
     if (!adminPhone) return;
-    await adminRejectPayment({ data: { adminPhone, requestId: id } });
-    await load(adminPhone);
+    if (!window.confirm("Tem certeza que deseja REJEITAR este pagamento? O acesso será revogado.")) return;
+    setLoading(true);
+    try {
+      await adminRejectPayment({ data: { adminPhone, requestId: id } });
+      await load(adminPhone);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha ao rejeitar");
+      setLoading(false);
+    }
   }
 
   // Auto load on mount if we have stored phone

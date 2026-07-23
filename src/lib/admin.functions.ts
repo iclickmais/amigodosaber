@@ -118,24 +118,28 @@ export const adminApprovePayment = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (existing) {
-      await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from("access_grants")
         .update({ expires_at: expiresAt })
         .eq("id", existing.id);
+      if (updateError) throw new Error(`Falha ao atualizar acesso: ${updateError.message}`);
     } else {
-      await supabaseAdmin.from("access_grants").insert({
+      const { error: insertError } = await supabaseAdmin.from("access_grants").insert({
         student_id: req.student_id,
         kind: req.kind,
         track_slug: req.track_slug,
         sector_slug: req.sector_slug,
         expires_at: expiresAt,
       });
+      if (insertError) throw new Error(`Falha ao criar acesso: ${insertError.message}`);
     }
 
-    await supabaseAdmin
+    const { error: statusError } = await supabaseAdmin
       .from("payment_requests")
       .update({ status: "approved" })
       .eq("id", req.id);
+    
+    if (statusError) throw new Error(`Falha ao atualizar status do pedido: ${statusError.message}`);
 
     return { ok: true };
   });
@@ -145,9 +149,30 @@ export const adminRejectPayment = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     assertAdmin(data.adminPhone);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
+    
+    // Primeiro, remover qualquer acesso que possa existir para este sector/estudante (em caso de revogação)
+    const { data: req } = await supabaseAdmin
+      .from("payment_requests")
+      .select("student_id, kind, track_slug, sector_slug")
+      .eq("id", data.requestId)
+      .single();
+    
+    if (req) {
+      await supabaseAdmin
+        .from("access_grants")
+        .delete()
+        .eq("student_id", req.student_id)
+        .eq("kind", req.kind)
+        .eq("track_slug", req.track_slug)
+        .eq("sector_slug", req.sector_slug);
+    }
+
+    const { error: statusError } = await supabaseAdmin
       .from("payment_requests")
       .update({ status: "rejected" })
       .eq("id", data.requestId);
+    
+    if (statusError) throw new Error(`Falha ao rejeitar pedido: ${statusError.message}`);
+    
     return { ok: true };
   });
