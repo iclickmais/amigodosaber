@@ -33,6 +33,15 @@ export function SectorClassroom({
   const { student, hydrated } = useStudent();
   const navigate = useNavigate();
 
+  // Study plan
+  const [targetDate, setTargetDate] = useState<string>("");
+  const [savedTarget, setSavedTarget] = useState<string | null>(null);
+  const [savingTarget, setSavingTarget] = useState(false);
+  const [targetJustSaved, setTargetJustSaved] = useState(false);
+
+  // Sector edicts
+  const [edicts, setEdicts] = useState<EdictRow[]>([]);
+
   useEffect(() => {
     if (!hydrated || !student) {
       setHasAccess(false);
