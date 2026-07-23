@@ -132,14 +132,30 @@ function RevisionPage() {
 
         {!loading && !done && card && (
           <div className="rounded-2xl border border-border bg-card p-6">
-            <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>
                 Cartão {index + 1} / {cards.length}
               </span>
-              <span className="flex items-center gap-1 text-gold">
-                <BookOpen className="h-3 w-3" />
-                {card.lesson?.title ?? "Aula"}
-              </span>
+              {card.lesson ? (
+                <Link
+                  to="/aula/$kind/$track/$sector/$module/$lesson"
+                  params={{
+                    kind: card.lesson.track_kind,
+                    track: card.lesson.track_slug,
+                    sector: card.lesson.sector_slug,
+                    module: card.lesson.module_slug,
+                    lesson: card.lesson.lesson_slug,
+                  }}
+                  className="flex items-center gap-1 text-gold hover:underline"
+                >
+                  <BookOpen className="h-3 w-3" />
+                  {card.lesson.title}
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1 text-gold">
+                  <BookOpen className="h-3 w-3" /> Aula
+                </span>
+              )}
             </div>
             <p className="font-serif text-xl text-foreground">{card.question.q}</p>
             <div className="mt-4 space-y-2">
