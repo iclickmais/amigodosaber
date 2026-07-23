@@ -231,6 +231,129 @@ export function SectorClassroom({
         })}
       </div>
 
+      {/* Extras — plano, simulado e editais (só faz sentido com sessão) */}
+      {hydrated && student && (
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {/* Plano de estudo */}
+          <div className="rounded-2xl border border-gold/30 bg-gold/5 p-5">
+            <div className="flex items-center gap-2 text-gold">
+              <Calendar className="h-5 w-5" />
+              <h3 className="font-serif text-lg">Plano de estudo</h3>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Escolhe a data da prova e distribuímos as aulas dia a dia no teu painel.
+            </p>
+            <label className="mt-3 block text-xs uppercase tracking-widest text-muted-foreground">
+              Data da prova
+            </label>
+            <input
+              type="date"
+              min={todayIso}
+              value={targetDate}
+              onChange={(e) => setTargetDate(e.target.value)}
+              disabled={!hasAccess}
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground disabled:opacity-50"
+            />
+            <button
+              onClick={saveTarget}
+              disabled={
+                !hasAccess ||
+                !targetDate ||
+                savingTarget ||
+                targetDate === savedTarget
+              }
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-40"
+            >
+              {savingTarget ? (
+                <>
+                  <Loader2 className="h-3 w-3 animate-spin" /> A guardar…
+                </>
+              ) : targetJustSaved ? (
+                <>
+                  <CheckCircle2 className="h-3 w-3" /> Plano guardado
+                </>
+              ) : savedTarget ? (
+                "Actualizar plano"
+              ) : (
+                "Criar meu plano"
+              )}
+            </button>
+            {!hasAccess && (
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Disponível após confirmação do pagamento.
+              </p>
+            )}
+            {savedTarget && (
+              <p className="mt-2 text-[11px] text-gold">
+                Plano activo. Vê o dia a dia em{" "}
+                <Link to="/painel" className="underline">o meu painel</Link>.
+              </p>
+            )}
+          </div>
+
+          {/* Simulado */}
+          <div className="rounded-2xl border border-gold/30 bg-card p-5">
+            <div className="flex items-center gap-2 text-gold">
+              <Timer className="h-5 w-5" />
+              <h3 className="font-serif text-lg">Simulado cronometrado</h3>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              30 perguntas em 45 minutos com correcção e explicação. Os erros vão automaticamente para a revisão.
+            </p>
+            {hasAccess ? (
+              <Link
+                to="/simulado/$kind/$track/$sector"
+                params={{ kind, track: trackSlug, sector: sectorSlug }}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90"
+              >
+                <Timer className="h-3.5 w-3.5" /> Fazer simulado
+              </Link>
+            ) : (
+              <button
+                onClick={() => setShowPay(true)}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-gold/40 px-4 py-2 text-xs text-gold hover:bg-gold/10"
+              >
+                <Lock className="h-3.5 w-3.5" /> Desbloquear
+              </button>
+            )}
+          </div>
+
+          {/* Editais */}
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="flex items-center gap-2 text-gold">
+              <Megaphone className="h-5 w-5" />
+              <h3 className="font-serif text-lg">Editais deste sector</h3>
+            </div>
+            {edicts.length === 0 ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Nenhum edital aberto neste momento. Publicamos aqui assim que sair.
+              </p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {edicts.slice(0, 3).map((ed) => (
+                  <li key={ed.id} className="rounded-lg border border-border/60 bg-background/50 p-2">
+                    <p className="text-sm text-foreground line-clamp-2">{ed.title}</p>
+                    {ed.deadline && (
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        Prazo: {new Date(ed.deadline).toLocaleDateString("pt-PT")}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link
+              to="/editais"
+              className="mt-3 inline-block text-xs text-gold hover:underline"
+            >
+              Ver todos os editais →
+            </Link>
+          </div>
+        </div>
+      )}
+
+
+
       {student && (
         <PaymentModal
           open={showPay}
