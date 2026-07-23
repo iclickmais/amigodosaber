@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import bandeiraAngola from "@/assets/bandeira-angola.jpg";
 
 const SEEN_KEY = "angopdf.splash-seen";
 
@@ -7,23 +8,18 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<0 | 1 | 2 | 3>(0);
 
   useEffect(() => {
-    // Se já viu o splash, não mostrar
     if (sessionStorage.getItem(SEEN_KEY)) {
       setVisible(false);
       return;
     }
 
-    // Phase 0: bandeira aparece (0–800ms)
-    const t1 = setTimeout(() => setPhase(1), 800);
-    // Phase 1: texto aparece (800–2400ms)
-    const t2 = setTimeout(() => setPhase(2), 2400);
-    // Phase 2: fade out (2400–3600ms)
+    const t1 = setTimeout(() => setPhase(1), 600);
+    const t2 = setTimeout(() => setPhase(2), 2200);
     const t3 = setTimeout(() => setPhase(3), 3600);
-    // Phase 3: remover
     const t4 = setTimeout(() => {
       setVisible(false);
       sessionStorage.setItem(SEEN_KEY, "1");
-    }, 4200);
+    }, 4400);
 
     return () => {
       clearTimeout(t1);
@@ -41,60 +37,31 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
         phase === 3 ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
-      {/* Bandeira de Angola animada */}
+      {/* Imagem da bandeira de Angola */}
       <div
         className={`relative transition-all duration-1000 ease-out ${
           phase >= 0 ? "scale-100 opacity-100" : "scale-75 opacity-0"
         }`}
       >
-        {/* Bandeira CSS pura */}
-        <div className="w-52 h-32 sm:w-64 sm:h-40 relative overflow-hidden rounded-lg shadow-2xl shadow-black/50">
-          {/* Faixa superior preta */}
-          <div
-            className="absolute top-0 left-0 w-full h-1/2 bg-black"
-            style={{
-              animation: phase >= 0 ? "flagWave 2s ease-in-out infinite" : "none",
-            }}
+        {/* Bandeira com efeito de pulsação e brilho */}
+        <div
+          className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden shadow-2xl shadow-black/60"
+          style={{
+            animation: phase >= 0 ? "flagPulse 3s ease-in-out infinite" : "none",
+          }}
+        >
+          <img
+            src={bandeiraAngola}
+            alt="Bandeira de Angola"
+            className="w-full h-full object-cover"
           />
-          {/* Faixa inferior vermelha */}
-          <div
-            className="absolute bottom-0 left-0 w-full h-1/2"
-            style={{
-              background: "linear-gradient(180deg, #cc092f 0%, #e30613 100%)",
-              animation: phase >= 0 ? "flagWave 2s ease-in-out infinite reverse" : "none",
-            }}
-          />
-          {/* Emblema central — catana + estrela + engrenagem simplificado */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className="relative"
-              style={{
-                animation: phase >= 1 ? "emblemGlow 2s ease-in-out infinite" : "none",
-              }}
-            >
-              {/* Estrela */}
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 28 28"
-                className="drop-shadow-lg"
-              >
-                <polygon
-                  points="14,2 17.5,10 26,10 19,15.5 22,24 14,19 6,24 9,15.5 2,10 10.5,10"
-                  fill="#FFCC00"
-                  stroke="#cc9900"
-                  strokeWidth="0.5"
-                />
-              </svg>
-            </div>
-          </div>
         </div>
 
-        {/* Brilho atrás da bandeira */}
+        {/* Brilho dourado atrás da bandeira */}
         <div
-          className="absolute inset-0 -z-10 rounded-3xl opacity-30 blur-xl"
+          className="absolute inset-0 -z-10 rounded-3xl opacity-30 blur-2xl"
           style={{
-            background: "radial-gradient(circle, rgba(255,204,0,0.4) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,204,0,0.5) 0%, transparent 70%)",
             animation: phase >= 0 ? "splashGlow 3s ease-in-out infinite" : "none",
           }}
         />
@@ -148,18 +115,13 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
 
       {/* CSS keyframes inline */}
       <style>{`
-        @keyframes flagWave {
-          0%, 100% { transform: skewY(0deg) scaleX(1); }
-          25% { transform: skewY(-1deg) scaleX(0.99); }
-          75% { transform: skewY(1deg) scaleX(0.99); }
-        }
-        @keyframes emblemGlow {
-          0%, 100% { filter: drop-shadow(0 0 4px rgba(255,204,0,0.3)); }
-          50% { filter: drop-shadow(0 0 12px rgba(255,204,0,0.7)); }
+        @keyframes flagPulse {
+          0%, 100% { transform: scale(1); filter: brightness(1); }
+          50% { transform: scale(1.02); filter: brightness(1.1); }
         }
         @keyframes splashGlow {
           0%, 100% { opacity: 0.2; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(1.1); }
+          50% { opacity: 0.5; transform: scale(1.15); }
         }
       `}</style>
     </div>
