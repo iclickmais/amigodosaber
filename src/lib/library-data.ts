@@ -766,3 +766,52 @@ export const WHATSAPP_DISPLAY = "+244 951 201 628";
 export const WHATSAPP_REQUEST_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
   "Olá! Gostaria de pedir um livro em PDF no Amigo do Saber.\n\nTítulo/autor procurado: ",
 )}`;
+
+// ---------------------------------------------------------------------------
+// DB adapter — turn a row from public.books into a Book shape used by
+// BookCard/BookCover. Cover palette/ornament are derived deterministically
+// from the row id so the visuals are stable without extra storage.
+// ---------------------------------------------------------------------------
+
+const _palettes: Palette[] = ["gold", "burgundy", "emerald", "sapphire", "ivory"];
+const _ornAcad: Ornament[] = ["book", "quill", "star", "crown", "leaf"];
+const _ornCristao: Ornament[] = ["cross", "book", "star", "crown", "leaf"];
+const _ornNacional: Ornament[] = ["leaf", "star", "book", "crown", "quill"];
+
+export function dbBookToDisplay(row: {
+  id: string;
+  title: string;
+  author: string;
+  category_slug: string;
+  subcategory_slug: string;
+  price_kz: number;
+  cover_url: string | null;
+  description: string;
+  created_at: string;
+}): Book {
+  const h = hash32(row.id);
+  const orn =
+    row.category_slug === "cristaos"
+      ? _ornCristao
+      : row.category_slug === "nacionais"
+        ? _ornNacional
+        : _ornAcad;
+  return {
+    id: row.id,
+    title: row.title,
+    author: row.author,
+    category: row.category_slug,
+    subcategory: row.subcategory_slug,
+    price: row.price_kz,
+    pages: 0,
+    year: new Date(row.created_at).getFullYear(),
+    rating: 5,
+    downloads: 0,
+    cover: {
+      palette: _palettes[h % _palettes.length],
+      ornament: orn[(h >>> 3) % orn.length],
+    },
+    synopsis: row.description,
+  };
+}
+
