@@ -184,6 +184,7 @@ function AdminPage() {
                   ["recent", "Histórico"],
                   ["students", `Alunos (${data?.students.length ?? 0})`],
                   ["edicts", "Editais"],
+                  ["books", "Livros"],
                 ] as const
               ).map(([id, label]) => (
                 <button
