@@ -10,8 +10,9 @@ import { listEdicts, type EdictRow } from "@/lib/edicts.functions";
 import { countOfflineLessons } from "@/lib/offline-cache";
 import {
   GraduationCap, Trophy, BookOpen, Bell, CheckCircle2, XCircle, Clock, LogOut,
-  Sparkles, Calendar, WifiOff, Timer, Megaphone,
+  Sparkles, Calendar, WifiOff, Timer, Megaphone, Flame, Zap,
 } from "lucide-react";
+import { getGameStats } from "@/lib/gamification";
 
 export const Route = createFileRoute("/painel")({
   head: () => ({
@@ -149,7 +150,43 @@ function PanelPage() {
         )}
 
         {/* Widgets de destaque */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Level & XP */}
+          {(() => {
+            const stats = getGameStats();
+            const xpProgress = stats.xp % 100;
+            return (
+              <div className="rounded-2xl border border-gold/30 bg-gold/5 p-4 sm:p-5">
+                <div className="flex items-center gap-2 text-gold">
+                  <Zap className="h-5 w-5" />
+                  <span className="text-xs uppercase tracking-widest text-muted-foreground">Nível {stats.level}</span>
+                </div>
+                <p className="mt-1 font-serif text-2xl">{stats.xp} XP</p>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border/60">
+                  <div className="h-full bg-gold transition-all duration-500" style={{ width: `${xpProgress}%` }} />
+                </div>
+                <p className="mt-1 text-[10px] text-muted-foreground">Próximo nível: {100 - xpProgress} XP</p>
+              </div>
+            );
+          })()}
+
+          {/* Streak */}
+          {(() => {
+            const stats = getGameStats();
+            return (
+              <div className="rounded-2xl border border-orange-400/30 bg-orange-400/5 p-4 sm:p-5">
+                <div className="flex items-center gap-2 text-orange-400">
+                  <Flame className="h-5 w-5" />
+                  <span className="text-xs uppercase tracking-widest text-muted-foreground">Streak</span>
+                </div>
+                <p className="mt-1 font-serif text-2xl">{stats.streak}</p>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  {stats.streak === 0 ? "Começa hoje!" : stats.streak >= 7 ? "Incrível!" : "Dias seguidos"}
+                </p>
+              </div>
+            );
+          })()}
+
           <Link
             to="/revisao"
             className="rounded-2xl border border-gold/30 bg-gold/5 p-4 sm:p-5 transition-colors hover:border-gold"

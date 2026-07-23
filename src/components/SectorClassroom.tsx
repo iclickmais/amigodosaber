@@ -148,9 +148,9 @@ export function SectorClassroom({
           <div className="flex items-start gap-3">
             <Lock className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
             <div>
-              <p className="font-serif text-lg text-foreground">Sala fechada — {formatKz(amount)}</p>
+              <p className="font-serif text-lg text-foreground">Acesso Total — {formatKz(amount)}</p>
               <p className="text-xs text-muted-foreground">
-                Confirme o pagamento para abrir todas as aulas e questionários deste sector.
+                Com o pagamento, <span className="text-gold">todas as aulas ficam desbloqueadas</span>. Estuda na tua ordem — podes pular aulas e avançar livremente, sem precisar seguir roboticamente.
               </p>
             </div>
           </div>

@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck } from "lucide-react";
+import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck, Flame, Zap, Trophy } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import cardAcademicos from "@/assets/card-academicos.jpg";
 import cardCristaos from "@/assets/card-cristaos.jpg";
 import cardConcurso from "@/assets/card-concurso.jpg";
 import cardPreparatorio from "@/assets/card-preparatorio.jpg";
+import { useStudent } from "@/hooks/use-student";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -70,7 +72,7 @@ const cards: CardDef[] = [
     title: "Concursos",
     italic: "público",
     description:
-      "Aulas e questionários por sector: Saúde, Educação, Justiça, Forças Armadas e mais — preparação séria para o Estado.",
+      "Aulas e questionários por sector: MININT, MINSA, MED e tantos outros — preparação séria para o Estado.",
     image: cardConcurso,
     icon: Landmark,
     accent: "emerald",
@@ -103,24 +105,86 @@ const accentText: Record<CardDef["accent"], string> = {
 };
 
 function HomePage() {
+  const { student, hydrated } = useStudent();
+  const [streak, setStreak] = useState(0);
+  const [xp, setXp] = useState(0);
+
+  // Carregar streak/XP do localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("angopdf.game-stats");
+      if (raw) {
+        const stats = JSON.parse(raw);
+        setStreak(stats.streak ?? 0);
+        setXp(stats.xp ?? 0);
+      }
+    } catch {}
+  }, []);
+
+  const level = Math.floor(xp / 100) + 1;
+  const xpProgress = xp % 100;
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       <SiteHeader />
 
-      <main className="relative flex flex-1 flex-col">
+      <main className="relative flex flex-1 flex-col overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.78_0.13_78/0.08),transparent_60%)]" />
 
-        <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-4 pb-6 pt-3 sm:px-6 sm:pb-8 sm:pt-4 lg:px-8">
-          <header className="mb-4 text-center sm:mb-6">
+        <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4 lg:px-8">
+          {/* Header */}
+          <header className="mb-3 text-center sm:mb-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
               Escolha o seu caminho
             </div>
-            <h1 className="mt-3 font-serif text-2xl leading-tight sm:text-3xl lg:text-4xl">
+            <h1 className="mt-2 font-serif text-2xl leading-tight sm:text-3xl lg:text-4xl">
               Quatro portas, uma <span className="text-gradient-gold italic">biblioteca</span>.
             </h1>
           </header>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Gamificação — barra de XP e streak (só para alunos logados) */}
+          {hydrated && student && (
+            <div className="mb-3 flex items-center gap-4 rounded-xl border border-gold/20 bg-gold/5 px-4 py-2 max-w-md mx-auto">
+              {/* Streak */}
+              <div className="flex items-center gap-1.5">
+                <Flame className="h-4 w-4 text-orange-400" />
+                <span className="text-sm font-bold text-orange-300">{streak}</span>
+                <span className="text-[10px] text-muted-foreground">dias</span>
+              </div>
+              {/* XP & Level */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[10px] text-muted-foreground">
+                    Nível {level} · {xp} XP
+                  </span>
+                  <Trophy className="h-3 w-3 text-gold" />
+                </div>
+                <div className="h-1.5 rounded-full bg-border/60 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gold transition-all duration-500"
+                    style={{ width: `${xpProgress}%` }}
+                  />
+                </div>
+              </div>
+              {/* Info badge */}
+              <Zap className="h-4 w-4 text-gold shrink-0" />
+            </div>
+          )}
+
+          {/* Banner de pagamento (só para alunos logados sem acesso) */}
+          {hydrated && student && (
+            <div className="mb-3 max-w-md mx-auto">
+              <div className="flex items-start gap-2 rounded-xl border border-gold/20 bg-card/80 px-3 py-2">
+                <Zap className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  Com o pagamento, <span className="text-gold font-medium">todas as aulas ficam desbloqueadas</span>. Estuda na tua ordem — podes pular aulas e avançar livremente, sem precisar seguir roboticamente.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Cards — 4 visíveis sem scroll */}
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {cards.map((c) => {
               const Icon = c.icon;
               const linkProps = c.params
@@ -130,7 +194,7 @@ function HomePage() {
                 <Link
                   key={c.title}
                   {...(linkProps as { to: string })}
-                  className={`group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-500 hover:shadow-glow min-h-[200px] sm:min-h-[280px] ${accentRing[c.accent]}`}
+                  className={`group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-500 hover:shadow-glow ${accentRing[c.accent]}`}
                 >
                   <img
                     src={c.image}
@@ -169,13 +233,6 @@ function HomePage() {
           </div>
         </div>
       </main>
-
-      {/* Footer inline na homepage para mobile */}
-      <footer className="border-t border-border/40 px-4 py-8 sm:hidden">
-        <div className="text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Amigo do Saber · Feito com dedicação em Luanda
-        </div>
-      </footer>
     </div>
   );
 }

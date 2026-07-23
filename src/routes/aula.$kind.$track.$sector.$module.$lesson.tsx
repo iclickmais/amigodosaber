@@ -11,6 +11,8 @@ import { useStudent } from "@/hooks/use-student";
 import { PaymentModal } from "@/components/PaymentModal";
 import { MotivationBanner } from "@/components/MotivationBanner";
 import { OfflineLessonToggle } from "@/components/OfflineLessonToggle";
+import { GamificationToast } from "@/components/GamificationToast";
+import { updateStreak, addLessonXp, getMotivationalMessage } from "@/lib/gamification";
 import {
   offlineKey,
   readLessonOffline,
@@ -58,6 +60,8 @@ function AulaPage() {
   const [quiz, setQuiz] = useState<QuizPayload | null>(null);
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [servedFromCache, setServedFromCache] = useState(false);
+  const [toast, setToast] = useState<{ reward: string; message: string; type: "xp" | "level-up" | "streak" | "badge" } | null>(null);
+  const [lessonXpAdded, setLessonXpAdded] = useState(false);
 
   const cacheKey = offlineKey({
     kind,
@@ -96,6 +100,36 @@ function AulaPage() {
       .then((res) => {
         if (cancelled) return;
         setContent(res);
+
+        // Gamificação: actualizar streak e adicionar XP pela aula
+        const streakResult = updateStreak();
+        if (!lessonXpAdded) {
+          const lessonResult = addLessonXp(lesson.slug);
+          setLessonXpAdded(true);
+          if (lessonResult.newStats.level > Math.floor((lessonResult.newStats.xp - 25) / 100)) {
+            setToast({
+              reward: `+25 XP · Nível ${lessonResult.newStats.level}!`,
+              message: getMotivationalMessage("lesson"),
+              type: "level-up",
+            });
+          } else {
+            setToast({
+              reward: `+25 XP`,
+              message: getMotivationalMessage("lesson"),
+              type: "xp",
+            });
+          }
+          // Se acabou de começar um novo streak, mostrar
+          if (streakResult.streak > 1 && streakResult.lastActiveDate === new Date().toISOString().split("T")[0]) {
+            setTimeout(() => {
+              setToast({
+                reward: `🔥 ${streakResult.streak} dias seguidos!`,
+                message: getMotivationalMessage("streak"),
+                type: "streak",
+              });
+            }, 4000);
+          }
+        }
         // Guarda a aula em cache offline automaticamente.
         void saveLessonOffline({
           key: cacheKey,
@@ -288,6 +322,15 @@ function AulaPage() {
         />
       )}
       <SiteFooter />
+
+    {toast && (
+      <GamificationToast
+        reward={toast.reward}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={() => setToast(null)}
+      />
+    )}
     </div>
   );
 }

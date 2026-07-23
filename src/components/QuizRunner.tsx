@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import type { QuizPayload } from "@/lib/study.functions";
 import { submitAttempt } from "@/lib/study.functions";
 import { useStudent } from "@/hooks/use-student";
 import { Link } from "@tanstack/react-router";
+import { addQuizXp, getMotivationalMessage } from "@/lib/gamification";
+import { GamificationToast } from "@/components/GamificationToast";
 
 interface Props {
   quiz: QuizPayload;
@@ -15,6 +17,7 @@ export function QuizRunner({ quiz }: Props) {
   const [submitted, setSubmitted] = useState<{ score: number; total: number } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ reward: string; message: string; type: "xp" | "level-up" | "streak" | "badge" } | null>(null);
 
   async function onSubmit() {
     setError(null);
@@ -31,6 +34,17 @@ export function QuizRunner({ quiz }: Props) {
             quizId: quiz.id,
             answers: arr.map((a) => (a >= 0 ? a : 0)),
           },
+        });
+        // Gamificação: adicionar XP
+        const passed = score / quiz.questions.length >= 0.6;
+        const result = addQuizXp(score, quiz.questions.length);
+        const msg = passed
+          ? getMotivationalMessage("quiz-pass")
+          : getMotivationalMessage("quiz-fail");
+        setToast({
+          reward: result.reward,
+          message: msg,
+          type: result.newStats.level > Math.floor((result.newStats.xp - (passed ? 50 : 15)) / 100) ? "level-up" : "xp",
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Falha ao guardar tentativa");
@@ -49,6 +63,7 @@ export function QuizRunner({ quiz }: Props) {
   const allAnswered = Object.keys(answers).length === quiz.questions.length;
 
   return (
+    <Fragment>
     <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 lg:p-8">
       <h2 className="font-serif text-xl sm:text-2xl text-foreground">Quiz — {quiz.questions.length} perguntas</h2>
 
@@ -165,5 +180,14 @@ export function QuizRunner({ quiz }: Props) {
         </button>
       )}
     </div>
+    {toast && (
+      <GamificationToast
+        reward={toast.reward}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={() => setToast(null)}
+      />
+    )}
+    </Fragment>
   );
 }
