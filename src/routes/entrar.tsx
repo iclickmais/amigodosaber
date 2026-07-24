@@ -39,17 +39,20 @@ function safeNext(next: string | undefined): string {
 
 function EntrarPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { student, save, hydrated } = useStudent();
   const [phone, setPhone] = useState("");
   const [surname, setSurname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Já entrou uma vez? Vai directo para o painel — sem repetir apelido/número.
+  const nextPath = safeNext(search.next);
+
+  // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
   if (hydrated && student) {
     const isAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
-    navigate({ to: isAdmin ? "/admin" : "/painel" });
+    navigate({ to: isAdmin ? "/admin" : nextPath });
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -68,10 +71,10 @@ function EntrarPage() {
           navigate({ to: "/admin" });
           return;
         } catch {
-          // Se não for admin válido, cai no painel normal
+          // Se não for admin válido, cai no destino normal
         }
       }
-      navigate({ to: "/painel" });
+      navigate({ to: nextPath });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao registar");
     } finally {
