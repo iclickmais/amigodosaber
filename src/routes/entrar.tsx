@@ -92,10 +92,16 @@ function EntrarPage() {
               <GraduationCap className="h-6 w-6" />
             </span>
             <div>
-              <h1 className="font-serif text-2xl">Sala de aula</h1>
-              <p className="text-xs text-muted-foreground">Entre para guardar o seu progresso</p>
+              <h1 className="font-serif text-2xl">Registo</h1>
+              <p className="text-xs text-muted-foreground">
+                Registo obrigatório para usar a aplicação
+              </p>
             </div>
           </div>
+          <p className="mb-6 text-xs text-muted-foreground">
+            Usamos o seu apelido e telefone para o contactar via WhatsApp quando pedir um livro,
+            se inscrever num concurso ou preparatório, e para guardar o seu progresso.
+          </p>
 
           {student ? (
             <p className="text-sm text-muted-foreground">A redireccionar para o seu painel…</p>
