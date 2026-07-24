@@ -16,30 +16,43 @@ function isAdminPhone(raw: string): boolean {
 }
 
 export const Route = createFileRoute("/entrar")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Entrar — Sala de aula | Amigo do Saber" },
-      { name: "description", content: "Entre com o seu número de telefone e apelido para começar a estudar." },
+      { name: "description", content: "Registe o seu apelido e número de telefone para começar a usar a aplicação." },
       { property: "og:title", content: "Entrar — Amigo do Saber" },
-      { property: "og:description", content: "Registo simples para começar a estudar." },
+      { property: "og:description", content: "Registo obrigatório: apelido e telefone." },
     ],
   }),
   component: EntrarPage,
 });
 
+function safeNext(next: string | undefined): string {
+  if (!next) return "/painel";
+  if (!next.startsWith("/") || next.startsWith("//")) return "/painel";
+  if (next.startsWith("/entrar")) return "/painel";
+  return next;
+}
+
 function EntrarPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { student, save, hydrated } = useStudent();
   const [phone, setPhone] = useState("");
   const [surname, setSurname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Já entrou uma vez? Vai directo para o painel — sem repetir apelido/número.
+  const nextPath = safeNext(search.next);
+
+  // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
   if (hydrated && student) {
     const isAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
-    navigate({ to: isAdmin ? "/admin" : "/painel" });
+    navigate({ to: isAdmin ? "/admin" : nextPath });
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -58,10 +71,10 @@ function EntrarPage() {
           navigate({ to: "/admin" });
           return;
         } catch {
-          // Se não for admin válido, cai no painel normal
+          // Se não for admin válido, cai no destino normal
         }
       }
-      navigate({ to: "/painel" });
+      navigate({ to: nextPath });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao registar");
     } finally {
@@ -79,10 +92,16 @@ function EntrarPage() {
               <GraduationCap className="h-6 w-6" />
             </span>
             <div>
-              <h1 className="font-serif text-2xl">Sala de aula</h1>
-              <p className="text-xs text-muted-foreground">Entre para guardar o seu progresso</p>
+              <h1 className="font-serif text-2xl">Registo</h1>
+              <p className="text-xs text-muted-foreground">
+                Registo obrigatório para usar a aplicação
+              </p>
             </div>
           </div>
+          <p className="mb-6 text-xs text-muted-foreground">
+            Usamos o seu apelido e telefone para o contactar via WhatsApp quando pedir um livro,
+            se inscrever num concurso ou preparatório, e para guardar o seu progresso.
+          </p>
 
           {student ? (
             <p className="text-sm text-muted-foreground">A redireccionar para o seu painel…</p>
