@@ -1,0 +1,12 @@
+GRANT ALL ON public.payment_requests TO service_role;
+GRANT ALL ON public.access_grants TO service_role;
+GRANT ALL ON public.students TO service_role;
+GRANT ALL ON public.attempts TO service_role;
+GRANT ALL ON public.progress TO service_role;
+GRANT ALL ON public.revision_queue TO service_role;
+GRANT ALL ON public.simulado_attempts TO service_role;
+GRANT ALL ON public.study_plans TO service_role;
+GRANT ALL ON public.books TO service_role;
+GRANT ALL ON public.edicts TO service_role;
+GRANT ALL ON public.lessons TO service_role;
+GRANT ALL ON public.quizzes TO service_role;
