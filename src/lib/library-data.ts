@@ -38,6 +38,7 @@ export type Book = {
   rating: number;
   downloads: number;
   cover: { palette: Palette; ornament: Ornament };
+  coverUrl?: string;
   synopsis: string;
   featured?: boolean;
 };
@@ -259,145 +260,145 @@ export const categories: Category[] = [
         name: "Teologia Sistemática",
         count: 12420,
         authors: ["Wayne Grudem", "Louis Berkhof", "John Stott", "R. C. Sproul", "Millard Erickson", "Herman Bavinck", "J. I. Packer", "Charles Hodge"],
-        templates: ["Teologia {topic}", "Doutrina {topic}", "A Doutrina de {topic}", "Fundamentos de {topic}", "O Deus de {topic}", "Estudos em {topic}", "Introdução a {topic}", "Tratado sobre {topic}"],
+        templates: ["Teologia {topic}", "Doutrina de {topic}", "Fundamentos da {topic}", "Curso de {topic}", "Manual de {topic}", "Introdução à {topic}", "Tratado de {topic}", "Estudos em {topic}"],
       },
       {
         slug: "vida-crista",
         name: "Vida Cristã",
-        count: 14360,
-        authors: ["John Bunyan", "A. W. Tozer", "Andrew Murray", "Charles Spurgeon", "Watchman Nee", "Oswald Chambers", "Elisabeth Elliot", "Max Lucado"],
-        templates: ["O Cristão e {topic}", "Vivendo {topic}", "Meditações sobre {topic}", "Andando em {topic}", "A Jornada de {topic}", "Crescendo em {topic}", "Devocional — {topic}", "Reflexões sobre {topic}"],
+        count: 15340,
+        authors: ["C. S. Lewis", "A. W. Tozer", "John Bunyan", "John Piper", "Timothy Keller", "Charles Spurgeon", "E. M. Bounds", "Andrew Murray"],
+        templates: ["A Vida com {topic}", "O Caminho da {topic}", "Crescendo em {topic}", "O Poder da {topic}", "Segredos da {topic}", "Manual de {topic}", "Desafios da {topic}", "Frutos da {topic}"],
       },
       {
         slug: "pregacao",
         name: "Pregação & Homilética",
-        count: 7840,
-        authors: ["Bryan Chapell", "Haddon Robinson", "John Piper", "James Braga", "Martyn Lloyd-Jones", "Charles Spurgeon", "Steven Lawson", "Harold Bryson"],
-        templates: ["Pregação {topic}", "Como Pregar sobre {topic}", "Homilética — {topic}", "Sermões em {topic}", "A Arte de Pregar {topic}", "Pregando {topic}", "Manual de Pregação — {topic}", "O Pregador e {topic}"],
+        count: 6840,
+        authors: ["Charles Spurgeon", "Martyn Lloyd-Jones", "Bryan Chapell", "Haddon Robinson", "John Stott", "Timothy Keller", "Steven Lawson", "Albert Mohler"],
+        templates: ["A Arte de Pregar {topic}", "Manual de Homilética sobre {topic}", "O Pregador e {topic}", "Exposição de {topic}", "Sermões sobre {topic}", "A Mensagem de {topic}", "Pregando {topic}", "Fundamentos de {topic}"],
       },
       {
         slug: "familia",
-        name: "Família Cristã",
-        count: 8320,
-        authors: ["Larry Christenson", "Gary Chapman", "James Dobson", "Renato Cardoso", "Cristiane Cardoso", "Josh McDowell", "Tim Kimmel", "Voddie Baucham"],
-        templates: ["O Lar e {topic}", "Casamento e {topic}", "Educando Filhos em {topic}", "Família Cristã — {topic}", "O Pai Cristão e {topic}", "A Mãe Cristã e {topic}", "Princípios de {topic} no Lar", "{topic} para a Família"],
+        name: "Família & Casamento",
+        count: 11240,
+        authors: ["James Dobson", "Gary Chapman", "Paul Tripp", "Renato Cardoso", "Cristiane Cardoso", "Jaime Kemp", "Douglas Wilson", "Elizabeth George"],
+        templates: ["O Lar e {topic}", "Casamento e {topic}", "Criando Filhos com {topic}", "O Desafio de {topic}", "A Bênção de {topic}", "Manual da Família sobre {topic}", "Amor e {topic}", "Vida Familiar em {topic}"],
       },
       {
         slug: "louvor",
         name: "Louvor & Adoração",
-        count: 5360,
-        authors: ["A. W. Tozer", "Matt Redman", "Bob Sorge", "Mattos Nascimento", "Ana Nóbrega", "Ron Kenoly", "Judson Cornwall", "Graham Kendrick"],
-        templates: ["Adoração {topic}", "Louvor e {topic}", "O Adorador e {topic}", "A Igreja que {topic}", "Meditações de {topic}", "Cânticos de {topic}", "Chamados a {topic}", "A Arte de {topic}"],
+        count: 5720,
+        authors: ["A. W. Tozer", "Bob Kauflin", "Harold Best", "D. A. Carson", "John Piper", "Matt Redman", "Keith Getty", "Marco Feliciano"],
+        templates: ["A Essência do Louvor em {topic}", "Adoração e {topic}", "O Coração do Adorador de {topic}", "Teologia do Louvor em {topic}", "Cânticos de {topic}", "Manual de Adoração sobre {topic}", "Louvando com {topic}", "A Prioridade de {topic}"],
       },
       {
         slug: "apologetica",
         name: "Apologética",
-        count: 4680,
-        authors: ["Josh McDowell", "William Lane Craig", "Lee Strobel", "Ravi Zacharias", "C. S. Lewis", "Timothy Keller", "Norman Geisler", "Alister McGrath"],
-        templates: ["Em Defesa de {topic}", "Evidências de {topic}", "Apologética {topic}", "Respondendo a {topic}", "A Fé e {topic}", "Cristianismo e {topic}", "O Caso de {topic}", "Razões para {topic}"],
+        count: 8240,
+        authors: ["William Lane Craig", "Josh McDowell", "Ravi Zacharias", "Lee Strobel", "Norman Geisler", "Alister McGrath", "C. S. Lewis", "Francis Schaeffer"],
+        templates: ["Em Defesa de {topic}", "Razões para {topic}", "O Caso de {topic}", "Resposta ao {topic}", "Evidências de {topic}", "Manual de Apologética sobre {topic}", "Verdade sobre {topic}", "Diálogos sobre {topic}"],
       },
       {
         slug: "missoes",
         name: "Missões & Evangelismo",
-        count: 4780,
-        authors: ["René Padilla", "David Bosch", "John Piper", "Roland Allen", "Lesslie Newbigin", "Ed Stetzer", "Ralph Winter", "Elisabeth Elliot"],
-        templates: ["Missão {topic}", "Evangelismo {topic}", "A Igreja em {topic}", "Missões e {topic}", "O Missionário e {topic}", "Chamados para {topic}", "Estratégias de {topic}", "Manual de {topic}"],
+        count: 7460,
+        authors: ["David Platt", "John Piper", "Paul Washer", "Ronaldo Lidório", "Oswald Smith", "Hudson Taylor", "William Carey", "René Padilla"],
+        templates: ["Ide e Pregai {topic}", "A Missão de {topic}", "Coração Missionário por {topic}", "Evangelismo e {topic}", "Alcançando o Mundo com {topic}", "Manual de Missões sobre {topic}", "O Campo de {topic}", "Desafio Missionário em {topic}"],
       },
       {
         slug: "biblias",
         name: "Bíblias",
-        count: 12960,
-        authors: ["Almeida Revista e Atualizada", "Almeida Corrigida Fiel", "Nova Versão Internacional", "Nova Almeida Atualizada", "Nova Tradução na Linguagem de Hoje", "King James Atualizada", "Bíblia de Jerusalém", "Edição Ave-Maria"],
-        templates: ["Bíblia Sagrada — {topic}", "Bíblia {topic}", "Nova Bíblia {topic}", "Bíblia — Edição {topic}", "Bíblia Sagrada Edição {topic}", "Bíblia — {topic}", "Sagrada Bíblia — {topic}", "Bíblia Ilustrada — {topic}"],
+        count: 4200,
+        authors: ["João Ferreira de Almeida", "Sociedade Bíblica", "Editora Vida", "Mundo Cristão", "CPAD", "Thomas Nelson", "Zondervan", "Crossway"],
+        templates: ["Bíblia {topic}", "Sagrada Escritura {topic}", "A Palavra de Deus {topic}", "Bíblia Sagrada {topic}", "O Livro de {topic}", "Testamento {topic}", "Escrituras {topic}", "Bíblia de {topic}"],
       },
       {
         slug: "biblias-estudo",
         name: "Bíblias de Estudo",
-        count: 10440,
-        authors: ["John MacArthur", "R. C. Sproul", "Charles Stanley", "David Jeremiah", "John Piper", "Hernandes Dias Lopes", "Russell Shedd", "Warren Wiersbe"],
-        templates: ["Bíblia de Estudo {topic}", "Bíblia de Estudo — {topic}", "Bíblia Comentada — {topic}", "Bíblia de Aplicação {topic}", "Bíblia Anotada — {topic}", "Bíblia de Referência — {topic}", "Bíblia de Estudo Devocional — {topic}", "Bíblia — Guia de Estudo {topic}"],
+        count: 3800,
+        authors: ["SBB", "CPAD", "Vida Nova", "Fiel", "Hagnos", "Geográfica", "Paulus", "Vozes"],
+        templates: ["Bíblia de Estudo {topic}", "Bíblia Anotada {topic}", "Bíblia Comentada {topic}", "Bíblia Temática {topic}", "Bíblia de Referência {topic}", "Bíblia Expositiva {topic}", "Bíblia de Aplicação {topic}", "Bíblia do Pregador {topic}"],
       },
       {
         slug: "devocionais",
         name: "Devocionais",
-        count: 8520,
-        authors: ["Charles Spurgeon", "Oswald Chambers", "A. W. Tozer", "Sarah Young", "Max Lucado", "John Piper", "Elisabeth Elliot", "Andrew Murray"],
-        templates: ["Devocional Diário — {topic}", "Meditações sobre {topic}", "365 Dias com {topic}", "Manhãs com {topic}", "Pão Diário — {topic}", "Devocionais em {topic}", "Momentos de {topic}", "Reflexões Diárias — {topic}"],
+        count: 9120,
+        authors: ["Charles Spurgeon", "Oswald Chambers", "Max Lucado", "Billy Graham", "Sarah Young", "Rick Warren", "John Piper", "Stormie Omartian"],
+        templates: ["365 Dias com {topic}", "Manhã e Noite com {topic}", "Gotas de {topic}", "Pão Diário de {topic}", "Minutos com {topic}", "Devocional de {topic}", "Caminhando com {topic}", "Reflexões sobre {topic}"],
       },
       {
         slug: "discipulado",
-        name: "Discipulado & Liderança",
-        count: 6560,
-        authors: ["Robert Coleman", "Bill Hull", "Greg Ogden", "John Maxwell", "Dallas Willard", "Francis Chan", "Ed Stetzer", "Rick Warren"],
-        templates: ["Discipulado {topic}", "Formando Discípulos em {topic}", "Liderança e {topic}", "Manual de {topic}", "O Discípulo e {topic}", "Igreja e {topic}", "Multiplicando {topic}", "Fundamentos de {topic}"],
+        name: "Discipulado",
+        count: 6240,
+        authors: ["Dietrich Bonhoeffer", "Robert Coleman", "A. B. Bruce", "John Stott", "David Platt", "Francis Chan", "Edmund Chan", "Neil Anderson"],
+        templates: ["O Custo do Discipulado em {topic}", "Plano de Discipulado para {topic}", "Seguindo a Cristo em {topic}", "Mestre e {topic}", "A Jornada do Discípulo de {topic}", "Manual de Discipulado sobre {topic}", "Vida de Discípulo em {topic}", "Multiplicando {topic}"],
       },
       {
         slug: "juventude",
-        name: "Juventude & Adolescentes",
-        count: 3200,
-        authors: ["Josh McDowell", "Doug Fields", "Jonathan McKee", "Rick Warren", "Louie Giglio", "Cristiane Cardoso", "Renato Cardoso", "Kevin DeYoung"],
-        templates: ["Jovens e {topic}", "Adolescentes em {topic}", "Manual do Jovem — {topic}", "Ministério com Jovens — {topic}", "Desafios de {topic}", "Vida de Jovem — {topic}", "{topic} para Adolescentes", "Guia do Jovem — {topic}"],
+        name: "Juventude",
+        count: 8560,
+        authors: ["Joshua Harris", "Paul Washer", "Duglas Gonçalves", "Lucinho Barreto", "Tiago Brunet", "Jefferson Neto", "Fabíola Melo", "Teo Hayashi"],
+        templates: ["Jovem e {topic}", "Geração de {topic}", "O Desafio Jovem de {topic}", "Radical por {topic}", "Identidade e {topic}", "Manual do Jovem sobre {topic}", "Escolhas e {topic}", "Vida com Propósito em {topic}"],
       },
       {
         slug: "mulheres",
-        name: "Mulheres Cristãs",
-        count: 3600,
-        authors: ["Elisabeth Elliot", "Joyce Meyer", "Priscilla Shirer", "Beth Moore", "Cristiane Cardoso", "Ester Bezerra", "Sarah Young", "Ann Voskamp"],
-        templates: ["A Mulher e {topic}", "Mulheres de {topic}", "Devocional para Mulheres — {topic}", "A Esposa e {topic}", "Meditações Femininas — {topic}", "Chamadas a {topic}", "Coração de Mulher — {topic}", "Mulher Cristã e {topic}"],
+        name: "Mulheres",
+        count: 7940,
+        authors: ["Elizabeth George", "Nancy DeMoss Wolgemuth", "Elisabeth Elliot", "Francine Rivers", "Lysa TerKeurst", "Stormie Omartian", "Devi Titus", "Helena Tannure"],
+        templates: ["Mulher de {topic}", "O Coração da Mulher de {topic}", "Desafios Femininos em {topic}", "Mulher Segundo o Coração de {topic}", "Beleza e {topic}", "Manual da Mulher sobre {topic}", "Vida de Oração e {topic}", "Mulheres de {topic}"],
       },
       {
         slug: "homens",
-        name: "Homens Cristãos",
-        count: 2400,
-        authors: ["John Eldredge", "Stu Weber", "James Dobson", "Kent Hughes", "Robert Lewis", "Steve Farrar", "Patrick Morley", "R. Kent Hughes"],
-        templates: ["O Homem e {topic}", "Homens de {topic}", "Devocional para Homens — {topic}", "O Marido e {topic}", "Chamados a {topic}", "Coração de Homem — {topic}", "Guerreiros de {topic}", "Homem Cristão e {topic}"],
+        name: "Homens",
+        count: 7280,
+        authors: ["Edwin Louis Cole", "Robert Lewis", "Stephen Kendrick", "Alex Kendrick", "John Eldredge", "R. C. Sproul", "Voddie Baucham", "Claudio Duarte"],
+        templates: ["Homem de {topic}", "O Coração do Homem de {topic}", "Desafios Masculinos em {topic}", "Homem Segundo o Coração de {topic}", "Integridade e {topic}", "Manual do Homem sobre {topic}", "Liderança e {topic}", "Homens de {topic}"],
       },
       {
         slug: "aconselhamento",
-        name: "Aconselhamento Cristão",
-        count: 2800,
-        authors: ["Jay Adams", "David Powlison", "Paul Tripp", "Larry Crabb", "Ed Welch", "Gary Collins", "Wayne Mack", "Timothy Lane"],
-        templates: ["Aconselhamento em {topic}", "Cura Interior e {topic}", "Manual de {topic}", "Pastoreando o Coração em {topic}", "{topic} à Luz da Bíblia", "Restauração em {topic}", "Fundamentos de {topic}", "Ajuda Cristã em {topic}"],
+        name: "Aconselhamento",
+        count: 5420,
+        authors: ["Jay Adams", "Edward Welch", "Paul Tripp", "Larry Crabb", "Gary Collins", "David Powlison", "Timothy Lane", "Elyse Fitzpatrick"],
+        templates: ["Cura para {topic}", "Aconselhando em {topic}", "Vencendo {topic}", "Esperança para {topic}", "Lidando com {topic}", "Manual de Aconselhamento sobre {topic}", "Paz em {topic}", "Restaurando {topic}"],
       },
       {
         slug: "escatologia",
-        name: "Escatologia & Profecia",
-        count: 2600,
-        authors: ["Hal Lindsey", "Tim LaHaye", "John Walvoord", "Antônio Gilberto", "Russell Shedd", "Kim Riddlebarger", "Anthony Hoekema", "Erwin Lutzer"],
-        templates: ["Escatologia {topic}", "Estudos de {topic}", "Profecia e {topic}", "O Fim dos Tempos — {topic}", "Manual de {topic}", "Apocalipse e {topic}", "As Últimas Coisas — {topic}", "Perspectivas sobre {topic}"],
+        name: "Escatologia",
+        count: 4860,
+        authors: ["John Walvoord", "Dwight Pentecost", "Tim LaHaye", "Heber Campos", "Augustus Nicodemus", "Ciro Zibordi", "Esequias Soares", "Antônio Gilberto"],
+        templates: ["O Fim de {topic}", "Sinais de {topic}", "A Vinda de {topic}", "Estudos sobre {topic}", "Apocalipse e {topic}", "Manual de Escatologia sobre {topic}", "O Reino de {topic}", "Profecias sobre {topic}"],
       },
       {
         slug: "historia-igreja",
         name: "História da Igreja",
-        count: 2900,
-        authors: ["Justo González", "Earle Cairns", "Bruce Shelley", "Philip Schaff", "Kenneth Latourette", "Diarmaid MacCulloch", "Alister McGrath", "Roland Bainton"],
-        templates: ["História da Igreja — {topic}", "A Igreja em {topic}", "Cristianismo e {topic}", "Estudos de {topic}", "Vida e Obra — {topic}", "Movimento {topic}", "Reforma e {topic}", "Patrística — {topic}"],
+        count: 6140,
+        authors: ["Justo González", "Eusebio de Cesarea", "Kenneth Curtis", "Bruce Shelley", "Mark Noll", "Iain Murray", "Timothy George", "Franklin Ferreira"],
+        templates: ["História de {topic}", "A Igreja e {topic}", "O Legado de {topic}", "Caminhos de {topic}", "Grandes Momentos de {topic}", "Manual de História sobre {topic}", "Retratos de {topic}", "A Herança de {topic}"],
       },
       {
         slug: "oracao",
-        name: "Oração & Espiritualidade",
-        count: 3400,
-        authors: ["E. M. Bounds", "Andrew Murray", "Watchman Nee", "Richard Foster", "Charles Spurgeon", "Paul Miller", "Timothy Keller", "Dallas Willard"],
-        templates: ["A Oração e {topic}", "Escola de Oração — {topic}", "Espiritualidade e {topic}", "O Poder da Oração em {topic}", "Manual de Oração — {topic}", "Vida Devocional — {topic}", "Intercessão e {topic}", "Comunhão com Deus — {topic}"],
+        name: "Oração",
+        count: 8920,
+        authors: ["E. M. Bounds", "Andrew Murray", "Charles Spurgeon", "R. A. Torrey", "Stormie Omartian", "Timothy Keller", "John Piper", "Brother Lawrence"],
+        templates: ["O Poder da Oração em {topic}", "A Vida de Oração e {topic}", "Falando com Deus sobre {topic}", "O Segredo da Oração em {topic}", "Intercessão por {topic}", "Manual de Oração sobre {topic}", "Ajoelhados por {topic}", "Comunhão e {topic}"],
       },
       {
         slug: "financas-cristas",
         name: "Finanças Cristãs",
-        count: 1800,
-        authors: ["Dave Ramsey", "Larry Burkett", "Randy Alcorn", "Ron Blue", "Howard Dayton", "Crown Financial", "Silas Malafaia", "Renato Cardoso"],
-        templates: ["Finanças à Luz da Bíblia — {topic}", "Mordomia e {topic}", "O Cristão e {topic}", "Prosperidade Bíblica — {topic}", "Manual de {topic}", "Dízimos, Ofertas e {topic}", "Vida Financeira Cristã — {topic}", "Sabedoria para {topic}"],
+        count: 3940,
+        authors: ["Howard Dayton", "Larry Burkett", "Ron Blue", "Dave Ramsey", "Crown Financial", "Tiago Brunet", "Paulo Vieira", "Benny Hinn"],
+        templates: ["Mordomia de {topic}", "Finanças e {topic}", "O Cristão e {topic}", "Prosperidade em {topic}", "Gestão de {topic}", "Manual Financeiro sobre {topic}", "Liberdade em {topic}", "Princípios de {topic}"],
       },
       {
         slug: "infantil",
-        name: "Ministério Infantil",
-        count: 2100,
-        authors: ["Sally Lloyd-Jones", "Marty Machowski", "Bíblia Infantil", "Silas Malafaia", "Cristiane Cardoso", "Focus on the Family", "Ana Nóbrega", "Aroldo Menezes"],
-        templates: ["Bíblia para Crianças — {topic}", "Ensinando às Crianças — {topic}", "Escola Bíblica Infantil — {topic}", "Manual do Professor — {topic}", "Devocional Infantil — {topic}", "Histórias Bíblicas de {topic}", "Crianças e {topic}", "Ministério com Crianças — {topic}"],
+        name: "Infantil",
+        count: 7520,
+        authors: ["Max Lucado", "SBB", "CPAD", "Editora Vida", "Mundo Cristão", "Zondervan", "Thomas Nelson", "Paulus"],
+        templates: ["Bíblia para Crianças sobre {topic}", "Histórias de {topic}", "O Pequeno Discípulo de {topic}", "Aventuras com {topic}", "Aprendendo sobre {topic}", "Manual Infantil sobre {topic}", "Valores e {topic}", "Crescendo com {topic}"],
       },
       {
         slug: "biografias",
-        name: "Biografias Cristãs",
-        count: 3100,
+        name: "Biografias",
+        count: 5240,
         authors: ["John Piper", "Iain Murray", "Eric Metaxas", "James Boice", "Elisabeth Elliot", "Erwin Lutzer", "Faith Cook", "Stephen Nichols"],
         templates: ["Vida de {topic}", "Biografia de {topic}", "A Herança de {topic}", "O Legado de {topic}", "Nas Pegadas de {topic}", "Retratos de {topic}", "Testemunhos de {topic}", "Fé e Coragem — {topic}"],
       },
@@ -483,28 +484,280 @@ const topicsBySlug: Record<string, string[]> = { ...topicsAcad, ...topicsCristao
 type Seed = Omit<Book, "id" | "featured"> & { featured?: boolean };
 
 const seedList: Seed[] = [
-  { title: "Manual de Direito Constitucional Angolano", author: "Prof. Carlos Feijó", category: "academicos", subcategory: "direito", price: 2400, pages: 682, year: 2023, rating: 4.9, downloads: 12480, cover: { palette: "burgundy", ornament: "crown" }, synopsis: "Análise integral da Constituição da República de Angola, doutrina e jurisprudência actualizada.", featured: true },
-  { title: "Tratado de Semiologia Médica", author: "Dr. António Cascais", category: "academicos", subcategory: "medicina", price: 2500, pages: 914, year: 2024, rating: 4.8, downloads: 9820, cover: { palette: "sapphire", ornament: "book" }, synopsis: "Guia essencial para o diagnóstico clínico, com casos práticos e imagens ilustrativas.", featured: true },
-  { title: "Resistência dos Materiais", author: "Eng. José Timóteo", category: "academicos", subcategory: "engenharia", price: 2100, pages: 540, year: 2022, rating: 4.7, downloads: 7640, cover: { palette: "gold", ornament: "star" }, synopsis: "Fundamentos e aplicações práticas para engenharia civil e mecânica.", featured: true },
-  { title: "Macroeconomia Aplicada", author: "Dr. Alves da Rocha", category: "academicos", subcategory: "economia", price: 2300, pages: 612, year: 2024, rating: 4.8, downloads: 8210, cover: { palette: "emerald", ornament: "leaf" }, synopsis: "Teoria macroeconómica com foco nas economias africanas emergentes e no caso angolano.", featured: true },
-  { title: "Introdução à Filosofia Africana", author: "Prof. Severino Ngoenha", category: "academicos", subcategory: "filosofia", price: 1900, pages: 384, year: 2022, rating: 4.9, downloads: 5480, cover: { palette: "burgundy", ornament: "quill" }, synopsis: "Pensamento africano contemporâneo: identidade, colonialidade e sabedoria ancestral.", featured: true },
-  { title: "Literatura Angolana Contemporânea", author: "Prof. Luís Kandjimbo", category: "academicos", subcategory: "literatura", price: 2000, pages: 412, year: 2024, rating: 4.9, downloads: 7180, cover: { palette: "gold", ornament: "leaf" }, synopsis: "De Agostinho Neto a Ondjaki: percursos, estéticas e vozes da literatura nacional.", featured: true },
-  { title: "Programação em Python — Do Zero ao Avançado", author: "Eng. Miguel Bandua", category: "academicos", subcategory: "informatica", price: 2200, pages: 528, year: 2024, rating: 4.8, downloads: 11240, cover: { palette: "emerald", ornament: "star" }, synopsis: "Curso completo com projectos práticos, ciência de dados e IA.", featured: true },
-  { title: "História de Angola — Volume I", author: "Prof. René Pélissier", category: "academicos", subcategory: "historia", price: 2500, pages: 764, year: 2021, rating: 4.9, downloads: 9540, cover: { palette: "burgundy", ornament: "crown" }, synopsis: "Das origens dos povos bantu à independência: a história abrangente da nação angolana.", featured: true },
+  { 
+    title: "Manual de Direito Constitucional Angolano", 
+    author: "Prof. Carlos Feijó", 
+    category: "academicos", 
+    subcategory: "direito", 
+    price: 2400, 
+    pages: 682, 
+    year: 2023, 
+    rating: 4.9, 
+    downloads: 12480, 
+    cover: { palette: "burgundy", ornament: "crown" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71yLz9V1OXL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Análise integral da Constituição da República de Angola, doutrina e jurisprudência actualizada.", 
+    featured: true 
+  },
+  { 
+    title: "Tratado de Semiologia Médica", 
+    author: "Dr. António Cascais", 
+    category: "academicos", 
+    subcategory: "medicina", 
+    price: 2500, 
+    pages: 914, 
+    year: 2024, 
+    rating: 4.8, 
+    downloads: 9820, 
+    cover: { palette: "sapphire", ornament: "book" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81T6L1l6fXL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Guia essencial para o diagnóstico clínico, com casos práticos e imagens ilustrativas.", 
+    featured: true 
+  },
+  { 
+    title: "Resistência dos Materiais", 
+    author: "Eng. José Timóteo", 
+    category: "academicos", 
+    subcategory: "engenharia", 
+    price: 2100, 
+    pages: 540, 
+    year: 2022, 
+    rating: 4.7, 
+    downloads: 7640, 
+    cover: { palette: "gold", ornament: "star" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81E7O7vU7NL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Fundamentos e aplicações práticas para engenharia civil e mecânica.", 
+    featured: true 
+  },
+  { 
+    title: "Macroeconomia Aplicada", 
+    author: "Dr. Alves da Rocha", 
+    category: "academicos", 
+    subcategory: "economia", 
+    price: 2300, 
+    pages: 612, 
+    year: 2024, 
+    rating: 4.8, 
+    downloads: 8210, 
+    cover: { palette: "emerald", ornament: "leaf" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71X8R0f2LGL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Teoria macroeconómica com foco nas economias africanas emergentes e no caso angolano.", 
+    featured: true 
+  },
+  { 
+    title: "Introdução à Filosofia Africana", 
+    author: "Prof. Severino Ngoenha", 
+    category: "academicos", 
+    subcategory: "filosofia", 
+    price: 1900, 
+    pages: 384, 
+    year: 2022, 
+    rating: 4.9, 
+    downloads: 5480, 
+    cover: { palette: "burgundy", ornament: "quill" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/61N7z-1nUUL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Pensamento africano contemporâneo: identidade, colonialidade e sabedoria ancestral.", 
+    featured: true 
+  },
+  { 
+    title: "Literatura Angolana Contemporânea", 
+    author: "Prof. Luís Kandjimbo", 
+    category: "academicos", 
+    subcategory: "literatura", 
+    price: 2000, 
+    pages: 412, 
+    year: 2024, 
+    rating: 4.9, 
+    downloads: 7180, 
+    cover: { palette: "gold", ornament: "leaf" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71u9v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "De Agostinho Neto a Ondjaki: percursos, estéticas e vozes da literatura nacional.", 
+    featured: true 
+  },
+  { 
+    title: "Programação em Python — Do Zero ao Avançado", 
+    author: "Eng. Miguel Bandua", 
+    category: "academicos", 
+    subcategory: "informatica", 
+    price: 2200, 
+    pages: 528, 
+    year: 2024, 
+    rating: 4.8, 
+    downloads: 11240, 
+    cover: { palette: "emerald", ornament: "star" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71h3v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Curso completo com projectos práticos, ciência de dados e IA.", 
+    featured: true 
+  },
+  { 
+    title: "História de Angola — Volume I", 
+    author: "Prof. René Pélissier", 
+    category: "academicos", 
+    subcategory: "historia", 
+    price: 2500, 
+    pages: 764, 
+    year: 2021, 
+    rating: 4.9, 
+    downloads: 9540, 
+    cover: { palette: "burgundy", ornament: "crown" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81h3v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Das origens dos povos bantu à independência: a história abrangente da nação angolana.", 
+    featured: true 
+  },
   { title: "Redes Neurais e Deep Learning", author: "Eng. Adilson Neto", category: "academicos", subcategory: "informatica", price: 2400, pages: 508, year: 2024, rating: 4.9, downloads: 8320, cover: { palette: "burgundy", ornament: "star" }, synopsis: "Fundamentos práticos de IA com TensorFlow e PyTorch." },
   { title: "Psicologia do Desenvolvimento", author: "Dra. Filomena Silva", category: "academicos", subcategory: "psicologia", price: 1800, pages: 468, year: 2023, rating: 4.6, downloads: 6320, cover: { palette: "ivory", ornament: "quill" }, synopsis: "Do nascimento à velhice: os processos que moldam a mente humana." },
   { title: "Sociologia do Trabalho", author: "Dr. Nelson Pestana", category: "academicos", subcategory: "ciencias-sociais", price: 1500, pages: 322, year: 2023, rating: 4.5, downloads: 4120, cover: { palette: "sapphire", ornament: "book" }, synopsis: "Transformações do mundo do trabalho na era digital." },
 
-  { title: "Comentário Bíblico — Novo Testamento", author: "Pr. Hernandes Dias Lopes", category: "cristaos", subcategory: "biblia-estudos", price: 2200, pages: 1240, year: 2023, rating: 4.9, downloads: 18420, cover: { palette: "burgundy", ornament: "cross" }, synopsis: "Exposição versículo por versículo dos 27 livros do Novo Testamento.", featured: true },
-  { title: "Teologia Sistemática", author: "Dr. Wayne Grudem", category: "cristaos", subcategory: "teologia", price: 2500, pages: 1568, year: 2022, rating: 4.9, downloads: 24680, cover: { palette: "gold", ornament: "cross" }, synopsis: "Obra de referência que abrange todas as doutrinas fundamentais da fé cristã.", featured: true },
-  { title: "O Peregrino", author: "John Bunyan", category: "cristaos", subcategory: "vida-crista", price: 900, pages: 286, year: 2020, rating: 4.9, downloads: 32140, cover: { palette: "ivory", ornament: "book" }, synopsis: "A alegoria eterna da jornada da alma cristã rumo à Cidade Celestial.", featured: true },
-  { title: "A Cruz de Cristo", author: "John Stott", category: "cristaos", subcategory: "teologia", price: 1900, pages: 468, year: 2021, rating: 4.9, downloads: 14820, cover: { palette: "burgundy", ornament: "cross" }, synopsis: "Um estudo profundo do coração do evangelho: o significado da cruz.", featured: true },
-  { title: "Pregação Expositiva Passo a Passo", author: "Dr. Bryan Chapell", category: "cristaos", subcategory: "pregacao", price: 2000, pages: 412, year: 2023, rating: 4.8, downloads: 8920, cover: { palette: "emerald", ornament: "quill" }, synopsis: "Manual prático para pregadores que desejam expor a Palavra com fidelidade.", featured: true },
-  { title: "Adoração — A Prioridade da Igreja", author: "A. W. Tozer", category: "cristaos", subcategory: "louvor", price: 1100, pages: 224, year: 2021, rating: 4.9, downloads: 13260, cover: { palette: "sapphire", ornament: "star" }, synopsis: "Clássico devocional sobre a adoração como propósito supremo do cristão.", featured: true },
-  { title: "Bíblia de Estudo — Vida Plena", author: "Edição Comentada", category: "cristaos", subcategory: "biblia-estudos", price: 2500, pages: 2140, year: 2024, rating: 4.9, downloads: 28640, cover: { palette: "gold", ornament: "cross" }, synopsis: "Bíblia com notas de estudo, mapas, cronologias e artigos temáticos.", featured: true },
-  { title: "Casamento Blindado", author: "Renato & Cristiane Cardoso", category: "cristaos", subcategory: "familia", price: 1300, pages: 224, year: 2023, rating: 4.7, downloads: 18240, cover: { palette: "burgundy", ornament: "crown" }, synopsis: "Ferramentas práticas para proteger e fortalecer o casamento.", featured: true },
-  { title: "Em Defesa da Fé", author: "Josh McDowell", category: "cristaos", subcategory: "apologetica", price: 2100, pages: 782, year: 2023, rating: 4.8, downloads: 9820, cover: { palette: "burgundy", ornament: "crown" }, synopsis: "Evidências históricas e racionais para a fé cristã.", featured: true },
-  { title: "Missão Integral", author: "René Padilla", category: "cristaos", subcategory: "missoes", price: 1600, pages: 318, year: 2022, rating: 4.7, downloads: 6120, cover: { palette: "emerald", ornament: "leaf" }, synopsis: "A missão da igreja para o mundo contemporâneo.", featured: true },
+  { 
+    title: "Comentário Bíblico — Novo Testamento", 
+    author: "Pr. Hernandes Dias Lopes", 
+    category: "cristaos", 
+    subcategory: "biblia-estudos", 
+    price: 2200, 
+    pages: 1240, 
+    year: 2023, 
+    rating: 4.9, 
+    downloads: 18420, 
+    cover: { palette: "burgundy", ornament: "cross" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71u9v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Exposição versículo por versículo dos 27 livros do Novo Testamento.", 
+    featured: true 
+  },
+  { 
+    title: "Teologia Sistemática", 
+    author: "Dr. Wayne Grudem", 
+    category: "cristaos", 
+    subcategory: "teologia", 
+    price: 2500, 
+    pages: 1568, 
+    year: 2022, 
+    rating: 4.9, 
+    downloads: 24680, 
+    cover: { palette: "gold", ornament: "cross" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Obra de referência que abrange todas as doutrinas fundamentais da fé cristã.", 
+    featured: true 
+  },
+  { 
+    title: "O Peregrino", 
+    author: "John Bunyan", 
+    category: "cristaos", 
+    subcategory: "vida-crista", 
+    price: 900, 
+    pages: 286, 
+    year: 2020, 
+    rating: 4.9, 
+    downloads: 32140, 
+    cover: { palette: "ivory", ornament: "book" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "A alegoria eterna da jornada da alma cristã rumo à Cidade Celestial.", 
+    featured: true 
+  },
+  { 
+    title: "A Cruz de Cristo", 
+    author: "John Stott", 
+    category: "cristaos", 
+    subcategory: "teologia", 
+    price: 1900, 
+    pages: 468, 
+    year: 2021, 
+    rating: 4.9, 
+    downloads: 14820, 
+    cover: { palette: "burgundy", ornament: "cross" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Um estudo profundo do coração do evangelho: o significado da cruz.", 
+    featured: true 
+  },
+  { 
+    title: "Pregação Expositiva Passo a Passo", 
+    author: "Dr. Bryan Chapell", 
+    category: "cristaos", 
+    subcategory: "pregacao", 
+    price: 2000, 
+    pages: 412, 
+    year: 2023, 
+    rating: 4.8, 
+    downloads: 8920, 
+    cover: { palette: "emerald", ornament: "quill" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Manual prático para pregadores que desejam expor a Palavra com fidelidade.", 
+    featured: true 
+  },
+  { 
+    title: "Adoração — A Prioridade da Igreja", 
+    author: "A. W. Tozer", 
+    category: "cristaos", 
+    subcategory: "louvor", 
+    price: 1100, 
+    pages: 224, 
+    year: 2021, 
+    rating: 4.9, 
+    downloads: 13260, 
+    cover: { palette: "sapphire", ornament: "star" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Clássico devocional sobre a adoração como propósito supremo do cristão.", 
+    featured: true 
+  },
+  { 
+    title: "Bíblia de Estudo — Vida Plena", 
+    author: "Edição Comentada", 
+    category: "cristaos", 
+    subcategory: "biblia-estudos", 
+    price: 2500, 
+    pages: 2140, 
+    year: 2024, 
+    rating: 4.9, 
+    downloads: 28640, 
+    cover: { palette: "gold", ornament: "cross" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Bíblia com notas de estudo, mapas, cronologias e artigos temáticos.", 
+    featured: true 
+  },
+  { 
+    title: "Casamento Blindado", 
+    author: "Renato & Cristiane Cardoso", 
+    category: "cristaos", 
+    subcategory: "familia", 
+    price: 1300, 
+    pages: 224, 
+    year: 2023, 
+    rating: 4.7, 
+    downloads: 18240, 
+    cover: { palette: "burgundy", ornament: "crown" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Ferramentas práticas para proteger e fortalecer o casamento.", 
+    featured: true 
+  },
+  { 
+    title: "Em Defesa da Fé", 
+    author: "Josh McDowell", 
+    category: "cristaos", 
+    subcategory: "apologetica", 
+    price: 2100, 
+    pages: 782, 
+    year: 2023, 
+    rating: 4.8, 
+    downloads: 9820, 
+    cover: { palette: "burgundy", ornament: "crown" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Evidências históricas e racionais para a fé cristã.", 
+    featured: true 
+  },
+  { 
+    title: "Missão Integral", 
+    author: "René Padilla", 
+    category: "cristaos", 
+    subcategory: "missoes", 
+    price: 1600, 
+    pages: 318, 
+    year: 2022, 
+    rating: 4.7, 
+    downloads: 6120, 
+    cover: { palette: "emerald", ornament: "leaf" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "A missão da igreja para o mundo contemporâneo.", 
+    featured: true 
+  },
 ];
 
 const PRICE_TIERS: number[] = [500, 1000, 1500, 2000];
@@ -525,8 +778,6 @@ for (const s of seedList) {
 // ---------------------------------------------------------------------------
 // Deterministic procedural generator
 
-
-
 function normalizePrice(p: number): number {
   let best = PRICE_TIERS[0];
   let bestDelta = Infinity;
@@ -539,7 +790,6 @@ function normalizePrice(p: number): number {
   }
   return best;
 }
-// ---------------------------------------------------------------------------
 
 function hash32(str: string): number {
   let h = 2166136261 >>> 0;
@@ -567,10 +817,6 @@ function pick<T>(arr: T[], r: number) {
 const ROMAN = ["", " II", " III", " IV", " V", " VI", " VII", " VIII"];
 const EDITION_SUFFIX = ["", " — Edição Revista", " — Nova Edição", " — Edição Ampliada", " — Guia Prático", " — Estudo Aprofundado"];
 
-/**
- * Build a book from (category, subcategory, index) where index is 0-based
- * within the subcategory. Curated items sit at indices [0..curated.length-1].
- */
 export function generateBook(catSlug: string, subSlug: string, index: number): Book | null {
   const cat = getCategory(catSlug);
   const sub = cat?.subcategories.find((s) => s.slug === subSlug);
@@ -587,8 +833,6 @@ export function generateBook(catSlug: string, subSlug: string, index: number): B
   const title = template.replace("{topic}", topic) + ROMAN[Math.floor(r() * 7)] + (r() > 0.85 ? pick(EDITION_SUFFIX, r()) : "");
   const author = pick(sub.authors, r());
 
-  // Price: one of 500/1000/1500/2000 Kz. Higher relevance (lower index) leans
-  // toward the premium tiers, but every book stays within the four allowed values.
   const relevanceBias = Math.max(0, 1 - index / sub.count);
   const tierIdx = Math.min(
     PRICE_TIERS.length - 1,
@@ -621,16 +865,11 @@ export function generateBook(catSlug: string, subSlug: string, index: number): B
   return { id, title, author, category: catSlug, subcategory: subSlug, price, pages, year, rating, downloads, cover, synopsis };
 }
 
-// ---------------------------------------------------------------------------
-// Public helpers
-// ---------------------------------------------------------------------------
-
 export const getCategory = (slug: string) => categories.find((c) => c.slug === slug);
 
 export const getSubcategory = (catSlug: string, subSlug: string) =>
   getCategory(catSlug)?.subcategories.find((s) => s.slug === subSlug);
 
-/** Featured picks used on the landing page — the curated seed list. */
 export const featuredBooks: Book[] = Object.values(CURATED)
   .flat()
   .filter((b) => b.featured);
@@ -652,7 +891,6 @@ export function listBooksBySubcategory(
   return { items, total: sub.count };
 }
 
-/** Iterate over all subcategories of a category in relevance order. */
 export function listBooksByCategory(
   catSlug: string,
   offset = 0,
@@ -663,8 +901,6 @@ export function listBooksByCategory(
   const items: Book[] = [];
   let skipped = 0;
   let taken = 0;
-  // Round-robin across subcategories so top items from each surface first
-  // — this gives a natural "relevance" order on the category landing.
   const cursors = new Array(cat.subcategories.length).fill(0);
   outer: while (taken < limit + offset) {
     let progressed = false;
@@ -689,7 +925,6 @@ export function listBooksByCategory(
 }
 
 export function getBook(id: string): Book | undefined {
-  // Curated ids: "<cat>-<sub>-cNNN"
   const m = /^([a-z-]+)-([a-z-]+)-(c\d+|\d+)$/.exec(id);
   if (!m) return undefined;
   const [, catSlug, subSlug, idxRaw] = m;
@@ -700,12 +935,10 @@ export function getBook(id: string): Book | undefined {
   return generateBook(catSlug, subSlug, Number(idxRaw)) ?? undefined;
 }
 
-/** Lightweight search across curated + a bounded scan of generated titles. */
 export function searchBooks(query: string, max = 40): Book[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
   const results: Book[] = [];
-  // 1. Curated first
   for (const b of Object.values(CURATED).flat()) {
     if (
       b.title.toLowerCase().includes(q) ||
@@ -716,7 +949,6 @@ export function searchBooks(query: string, max = 40): Book[] {
       if (results.length >= max) return results;
     }
   }
-  // 2. Scan a bounded slice of each subcategory
   for (const cat of categories) {
     for (const sub of cat.subcategories) {
       const scan = Math.min(sub.count, 200);
@@ -743,10 +975,6 @@ export const formatPrice = (kz: number) =>
 
 export const formatNumber = (n: number) => new Intl.NumberFormat("pt-PT").format(n);
 
-// ---------------------------------------------------------------------------
-// WhatsApp checkout
-// ---------------------------------------------------------------------------
-
 export const WHATSAPP_NUMBER = "244951201628";
 
 export function whatsappCheckoutUrl(book: Book): string {
@@ -760,18 +988,11 @@ export function whatsappCheckoutUrl(book: Book): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
-
 export const WHATSAPP_DISPLAY = "+244 951 201 628";
 
 export const WHATSAPP_REQUEST_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
   "Olá! Gostaria de pedir um livro em PDF no Amigo do Saber.\n\nTítulo/autor procurado: ",
 )}`;
-
-// ---------------------------------------------------------------------------
-// DB adapter — turn a row from public.books into a Book shape used by
-// BookCard/BookCover. Cover palette/ornament are derived deterministically
-// from the row id so the visuals are stable without extra storage.
-// ---------------------------------------------------------------------------
 
 const _palettes: Palette[] = ["gold", "burgundy", "emerald", "sapphire", "ivory"];
 const _ornAcad: Ornament[] = ["book", "quill", "star", "crown", "leaf"];
@@ -811,7 +1032,7 @@ export function dbBookToDisplay(row: {
       palette: _palettes[h % _palettes.length],
       ornament: orn[(h >>> 3) % orn.length],
     },
+    coverUrl: row.cover_url || undefined,
     synopsis: row.description,
   };
 }
-

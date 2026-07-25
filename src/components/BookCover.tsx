@@ -28,6 +28,23 @@ export function BookCover({
   book: Book;
   className?: string;
 }) {
+  if (book.coverUrl) {
+    return (
+      <div
+        className={`relative aspect-[2/3] w-full overflow-hidden rounded-sm shadow-book bg-muted ${className}`}
+      >
+        <img
+          src={book.coverUrl}
+          alt={book.title}
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
+        {/* Spine highlight overlay even on real covers for consistency */}
+        <div className="absolute inset-y-0 left-0 w-1 bg-black/20" />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`relative aspect-[2/3] w-full overflow-hidden rounded-sm shadow-book ${paletteStyles[book.cover.palette]} ${className}`}
