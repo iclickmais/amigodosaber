@@ -1784,6 +1784,7 @@ export const preparatorioTracks: Track[] = [
       { slug: "civil", name: "Engenharia Civil", description: "Estruturas, construção.", modules: stdEngenharias() },
       { slug: "informatica", name: "Engenharia Informática", description: "Software e sistemas.", modules: stdEngenharias() },
       { slug: "electrotecnica", name: "Engenharia Electrotécnica", description: "Energia e electrónica.", modules: stdEngenharias() },
+      { slug: "electronica-industrial", name: "Electrónica Industrial", description: "Electrónica aplicada à indústria e automação.", modules: stdEngenharias() },
       { slug: "mecanica", name: "Engenharia Mecânica", description: "Máquinas e produção.", modules: stdEngenharias() },
       { slug: "quimica", name: "Engenharia Química", description: "Processos industriais.", modules: stdEngenharias() },
       { slug: "petroleos", name: "Engenharia de Petróleos", description: "Upstream e refinação.", modules: stdEngenharias() },
