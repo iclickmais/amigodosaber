@@ -130,3 +130,44 @@ export const adminDeleteBook = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ---------------------------------------------------------------------------
+// Capas reais — upload de fotografias dos livros (bucket privado + rota pública)
+// ---------------------------------------------------------------------------
+
+export const adminUploadBookCover = createServerFn({ method: "POST" })
+  .inputValidator(
+    (input: {
+      adminPhone: string;
+      filename: string;
+      contentType: string;
+      dataBase64: string;
+    }) => input,
+  )
+  .handler(async ({ data }): Promise<{ url: string }> => {
+    if (data.adminPhone !== ADMIN_PHONE) throw new Error("Não autorizado.");
+    if (!data.dataBase64) throw new Error("Ficheiro vazio.");
+    const bytes = Uint8Array.from(atob(data.dataBase64), (c) => c.charCodeAt(0));
+    if (bytes.byteLength > 6 * 1024 * 1024) throw new Error("Foto demasiado grande (máx. 6 MB).");
+    const ext = (data.filename.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const key = `${crypto.randomUUID()}.${ext || "jpg"}`;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.storage
+      .from("book-covers")
+      .upload(key, bytes, { contentType: data.contentType || "image/jpeg", upsert: false });
+    if (error) throw new Error(error.message);
+    return { url: `/api/public/book-cover/${key}` };
+  });
+
+export const adminSetBookCover = createServerFn({ method: "POST" })
+  .inputValidator((input: { adminPhone: string; id: string; cover_url: string }) => input)
+  .handler(async ({ data }): Promise<{ ok: true }> => {
+    if (data.adminPhone !== ADMIN_PHONE) throw new Error("Não autorizado.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("books")
+      .update({ cover_url: data.cover_url.trim() || null })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

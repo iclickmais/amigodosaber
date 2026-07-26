@@ -18,11 +18,13 @@ import {
   adminListBooks,
   adminCreateBook,
   adminDeleteBook,
+  adminUploadBookCover,
+  adminSetBookCover,
   type BookRow,
 } from "@/lib/books.functions";
 import { categories as libraryCategories } from "@/lib/library-data";
 import { formatKz } from "@/lib/payment-info";
-import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2 } from "lucide-react";
+import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus } from "lucide-react";
 
 const ADMIN_KEY = "angopdf.admin";
 
@@ -619,6 +621,35 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadCover = useCallback(
+    async (file: File, onDone: (url: string) => void) => {
+      setUploading(true);
+      setError(null);
+      try {
+        const buf = new Uint8Array(await file.arrayBuffer());
+        let bin = "";
+        for (let i = 0; i < buf.length; i += 8192) {
+          bin += String.fromCharCode(...buf.subarray(i, i + 8192));
+        }
+        const { url } = await adminUploadBookCover({
+          data: {
+            adminPhone,
+            filename: file.name,
+            contentType: file.type || "image/jpeg",
+            dataBase64: btoa(bin),
+          },
+        });
+        onDone(url);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Erro ao enviar a foto.");
+      } finally {
+        setUploading(false);
+      }
+    },
+    [adminPhone],
+  );
   const [form, setForm] = useState({
     title: "",
     author: "",
@@ -753,12 +784,48 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
             value={form.relevance}
             onChange={(e) => setForm({ ...form, relevance: Number(e.target.value) })}
           />
-          <input
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm sm:col-span-2"
-            placeholder="URL da capa (opcional)"
-            value={form.cover_url}
-            onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
-          />
+          <div className="sm:col-span-2 space-y-2 rounded-lg border border-border bg-background p-3">
+            <p className="text-xs text-muted-foreground">
+              Foto real da capa do livro (tira a foto ou escolhe da galeria)
+            </p>
+            <div className="flex items-center gap-3">
+              {form.cover_url ? (
+                <img
+                  src={form.cover_url}
+                  alt="Capa do livro"
+                  className="h-24 w-16 rounded object-cover"
+                />
+              ) : (
+                <div className="flex h-24 w-16 items-center justify-center rounded border border-dashed border-border text-muted-foreground">
+                  <ImagePlus className="h-5 w-5" />
+                </div>
+              )}
+              <div className="flex-1 space-y-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void uploadCover(f, (url) => setForm((p) => ({ ...p, cover_url: url })));
+                    e.target.value = "";
+                  }}
+                  className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-gold/15 file:px-3 file:py-1.5 file:text-xs file:text-gold"
+                />
+                {uploading && (
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" /> A enviar foto…
+                  </p>
+                )}
+                <input
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs"
+                  placeholder="…ou colar link de uma foto real"
+                  value={form.cover_url}
+                  onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
           <textarea
             className="rounded-lg border border-border bg-background px-3 py-2 text-sm sm:col-span-2"
             placeholder="Descrição / sinopse"
@@ -797,10 +864,45 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
                 key={b.id}
                 className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-4"
               >
-                <div className="min-w-0">
-                  <div className="font-medium">{b.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {b.author || "—"} · {b.category_slug}/{b.subcategory_slug} · {formatKz(b.price_kz)}
+                <div className="flex min-w-0 gap-3">
+                  {b.cover_url ? (
+                    <img
+                      src={b.cover_url}
+                      alt={b.title}
+                      className="h-20 w-14 shrink-0 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-20 w-14 shrink-0 items-center justify-center rounded border border-dashed border-border text-muted-foreground">
+                      <ImagePlus className="h-4 w-4" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="font-medium">{b.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {b.author || "—"} · {b.category_slug}/{b.subcategory_slug} · {formatKz(b.price_kz)}
+                    </div>
+                    <label className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1 text-[11px] text-gold">
+                      <ImagePlus className="h-3 w-3" />
+                      {b.cover_url ? "Trocar foto real" : "Adicionar foto real"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploading}
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) {
+                            void uploadCover(f, async (url) => {
+                              await adminSetBookCover({ data: { adminPhone, id: b.id, cover_url: url } });
+                              setBooks((prev) =>
+                                prev.map((x) => (x.id === b.id ? { ...x, cover_url: url } : x)),
+                              );
+                            });
+                          }
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
                   </div>
                 </div>
                 <button
