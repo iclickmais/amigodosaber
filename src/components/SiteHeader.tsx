@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Search, X, GraduationCap } from "lucide-react";
+import { Search, Menu, X, GraduationCap, MessageSquare } from "lucide-react";
 import { categories } from "@/lib/library-data";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { useStudent } from "@/hooks/use-student";
@@ -67,6 +67,15 @@ export function SiteHeader() {
             <GraduationCap className="h-3.5 w-3.5" />
             {isAdmin ? "Admin" : student ? student.surname : "Entrar"}
           </Link>
+          {student && (
+            <Link
+              to="/chat"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+              title="Sala de Bate-papo"
+            >
+              <MessageSquare className="h-4 w-4" />
+            </Link>
+          )}
           <button
             aria-label={searchOpen ? "Fechar busca" : "Pesquisar"}
             onClick={() => setSearchOpen((v) => !v)}
@@ -134,6 +143,16 @@ export function SiteHeader() {
             >
               Entrar
             </Link>
+            {student && (
+              <Link
+                to="/chat"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-3 text-base text-muted-foreground transition-colors hover:bg-gold/5 hover:text-gold"
+              >
+                <MessageSquare className="h-5 w-5" />
+                Sala de Bate-papo
+              </Link>
+            )}
           </nav>
         </div>
       )}

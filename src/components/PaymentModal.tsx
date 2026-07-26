@@ -36,10 +36,18 @@ export function PaymentModal({
   useEffect(() => {
     if (!open) return;
     setStep("paywall");
-    requestPayment({
-      data: { studentId: student.id, kind, trackSlug, sectorSlug },
-    }).catch(() => {});
-  }, [open, student.id, kind, trackSlug, sectorSlug]);
+  }, [open]);
+
+  const handleInitiatePayment = async () => {
+    try {
+      await requestPayment({
+        data: { studentId: student.id, kind, trackSlug, sectorSlug },
+      });
+      setStep("details");
+    } catch (error) {
+      console.error("Erro ao iniciar pagamento:", error);
+    }
+  };
 
   if (!open) return null;
 
@@ -145,7 +153,7 @@ export function PaymentModal({
 
             {/* CTA */}
             <button
-              onClick={() => setStep("details")}
+              onClick={handleInitiatePayment}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold py-4 text-sm font-bold text-[#0f0d0b] transition-all hover:shadow-[0_8px_20px_-8px_rgba(212,175,55,0.5)] active:scale-[0.98]"
             >
               Continuar com o pagamento
