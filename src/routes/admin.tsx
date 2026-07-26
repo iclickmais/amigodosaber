@@ -621,6 +621,35 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadCover = useCallback(
+    async (file: File, onDone: (url: string) => void) => {
+      setUploading(true);
+      setError(null);
+      try {
+        const buf = new Uint8Array(await file.arrayBuffer());
+        let bin = "";
+        for (let i = 0; i < buf.length; i += 8192) {
+          bin += String.fromCharCode(...buf.subarray(i, i + 8192));
+        }
+        const { url } = await adminUploadBookCover({
+          data: {
+            adminPhone,
+            filename: file.name,
+            contentType: file.type || "image/jpeg",
+            dataBase64: btoa(bin),
+          },
+        });
+        onDone(url);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Erro ao enviar a foto.");
+      } finally {
+        setUploading(false);
+      }
+    },
+    [adminPhone],
+  );
   const [form, setForm] = useState({
     title: "",
     author: "",
