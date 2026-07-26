@@ -31,9 +31,9 @@ export const Route = createFileRoute("/entrar")({
 });
 
 function safeNext(next: string | undefined): string {
-  if (!next) return "/painel";
-  if (!next.startsWith("/") || next.startsWith("//")) return "/painel";
-  if (next.startsWith("/entrar")) return "/painel";
+  if (!next) return "/";
+  if (!next.startsWith("/") || next.startsWith("//")) return "/";
+  if (next.startsWith("/entrar")) return "/";
   return next;
 }
 
