@@ -755,12 +755,48 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
             value={form.relevance}
             onChange={(e) => setForm({ ...form, relevance: Number(e.target.value) })}
           />
-          <input
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm sm:col-span-2"
-            placeholder="URL da capa (opcional)"
-            value={form.cover_url}
-            onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
-          />
+          <div className="sm:col-span-2 space-y-2 rounded-lg border border-border bg-background p-3">
+            <p className="text-xs text-muted-foreground">
+              Foto real da capa do livro (tira a foto ou escolhe da galeria)
+            </p>
+            <div className="flex items-center gap-3">
+              {form.cover_url ? (
+                <img
+                  src={form.cover_url}
+                  alt="Capa do livro"
+                  className="h-24 w-16 rounded object-cover"
+                />
+              ) : (
+                <div className="flex h-24 w-16 items-center justify-center rounded border border-dashed border-border text-muted-foreground">
+                  <ImagePlus className="h-5 w-5" />
+                </div>
+              )}
+              <div className="flex-1 space-y-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void uploadCover(f, (url) => setForm((p) => ({ ...p, cover_url: url })));
+                    e.target.value = "";
+                  }}
+                  className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-gold/15 file:px-3 file:py-1.5 file:text-xs file:text-gold"
+                />
+                {uploading && (
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" /> A enviar foto…
+                  </p>
+                )}
+                <input
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs"
+                  placeholder="…ou colar link de uma foto real"
+                  value={form.cover_url}
+                  onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
           <textarea
             className="rounded-lg border border-border bg-background px-3 py-2 text-sm sm:col-span-2"
             placeholder="Descrição / sinopse"
