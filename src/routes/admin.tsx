@@ -864,10 +864,45 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
                 key={b.id}
                 className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-4"
               >
-                <div className="min-w-0">
-                  <div className="font-medium">{b.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {b.author || "—"} · {b.category_slug}/{b.subcategory_slug} · {formatKz(b.price_kz)}
+                <div className="flex min-w-0 gap-3">
+                  {b.cover_url ? (
+                    <img
+                      src={b.cover_url}
+                      alt={b.title}
+                      className="h-20 w-14 shrink-0 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-20 w-14 shrink-0 items-center justify-center rounded border border-dashed border-border text-muted-foreground">
+                      <ImagePlus className="h-4 w-4" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="font-medium">{b.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {b.author || "—"} · {b.category_slug}/{b.subcategory_slug} · {formatKz(b.price_kz)}
+                    </div>
+                    <label className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1 text-[11px] text-gold">
+                      <ImagePlus className="h-3 w-3" />
+                      {b.cover_url ? "Trocar foto real" : "Adicionar foto real"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploading}
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) {
+                            void uploadCover(f, async (url) => {
+                              await adminSetBookCover({ data: { adminPhone, id: b.id, cover_url: url } });
+                              setBooks((prev) =>
+                                prev.map((x) => (x.id === b.id ? { ...x, cover_url: url } : x)),
+                              );
+                            });
+                          }
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
                   </div>
                 </div>
                 <button
