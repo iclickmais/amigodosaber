@@ -24,6 +24,7 @@ import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as PreparatorioFaculdadeCursoRouteImport } from './routes/preparatorio.$faculdade_.$curso'
 import { Route as ConcursoMinisterioSectorRouteImport } from './routes/concurso.$ministerio_.$sector'
 import { Route as SimuladoKindTrackSectorRouteImport } from './routes/simulado.$kind.$track.$sector'
+import { Route as ApiPublicBookCoverFileRouteImport } from './routes/api/public/book-cover.$file'
 import { Route as AulaKindTrackSectorModuleLessonRouteImport } from './routes/aula.$kind.$track.$sector.$module.$lesson'
 
 const RevisaoRoute = RevisaoRouteImport.update({
@@ -103,6 +104,11 @@ const SimuladoKindTrackSectorRoute = SimuladoKindTrackSectorRouteImport.update({
   path: '/simulado/$kind/$track/$sector',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBookCoverFileRoute = ApiPublicBookCoverFileRouteImport.update({
+  id: '/api/public/book-cover/$file',
+  path: '/api/public/book-cover/$file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AulaKindTrackSectorModuleLessonRoute =
   AulaKindTrackSectorModuleLessonRouteImport.update({
     id: '/aula/$kind/$track/$sector/$module/$lesson',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/preparatorio/': typeof PreparatorioIndexRoute
   '/concurso/$ministerio/$sector': typeof ConcursoMinisterioSectorRoute
   '/preparatorio/$faculdade/$curso': typeof PreparatorioFaculdadeCursoRoute
+  '/api/public/book-cover/$file': typeof ApiPublicBookCoverFileRoute
   '/simulado/$kind/$track/$sector': typeof SimuladoKindTrackSectorRoute
   '/aula/$kind/$track/$sector/$module/$lesson': typeof AulaKindTrackSectorModuleLessonRoute
 }
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/preparatorio': typeof PreparatorioIndexRoute
   '/concurso/$ministerio/$sector': typeof ConcursoMinisterioSectorRoute
   '/preparatorio/$faculdade/$curso': typeof PreparatorioFaculdadeCursoRoute
+  '/api/public/book-cover/$file': typeof ApiPublicBookCoverFileRoute
   '/simulado/$kind/$track/$sector': typeof SimuladoKindTrackSectorRoute
   '/aula/$kind/$track/$sector/$module/$lesson': typeof AulaKindTrackSectorModuleLessonRoute
 }
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/preparatorio/': typeof PreparatorioIndexRoute
   '/concurso/$ministerio_/$sector': typeof ConcursoMinisterioSectorRoute
   '/preparatorio/$faculdade_/$curso': typeof PreparatorioFaculdadeCursoRoute
+  '/api/public/book-cover/$file': typeof ApiPublicBookCoverFileRoute
   '/simulado/$kind/$track/$sector': typeof SimuladoKindTrackSectorRoute
   '/aula/$kind/$track/$sector/$module/$lesson': typeof AulaKindTrackSectorModuleLessonRoute
 }
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/preparatorio/'
     | '/concurso/$ministerio/$sector'
     | '/preparatorio/$faculdade/$curso'
+    | '/api/public/book-cover/$file'
     | '/simulado/$kind/$track/$sector'
     | '/aula/$kind/$track/$sector/$module/$lesson'
   fileRoutesByTo: FileRoutesByTo
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/preparatorio'
     | '/concurso/$ministerio/$sector'
     | '/preparatorio/$faculdade/$curso'
+    | '/api/public/book-cover/$file'
     | '/simulado/$kind/$track/$sector'
     | '/aula/$kind/$track/$sector/$module/$lesson'
   id:
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/preparatorio/'
     | '/concurso/$ministerio_/$sector'
     | '/preparatorio/$faculdade_/$curso'
+    | '/api/public/book-cover/$file'
     | '/simulado/$kind/$track/$sector'
     | '/aula/$kind/$track/$sector/$module/$lesson'
   fileRoutesById: FileRoutesById
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   PreparatorioIndexRoute: typeof PreparatorioIndexRoute
   ConcursoMinisterioSectorRoute: typeof ConcursoMinisterioSectorRoute
   PreparatorioFaculdadeCursoRoute: typeof PreparatorioFaculdadeCursoRoute
+  ApiPublicBookCoverFileRoute: typeof ApiPublicBookCoverFileRoute
   SimuladoKindTrackSectorRoute: typeof SimuladoKindTrackSectorRoute
   AulaKindTrackSectorModuleLessonRoute: typeof AulaKindTrackSectorModuleLessonRoute
 }
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimuladoKindTrackSectorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/book-cover/$file': {
+      id: '/api/public/book-cover/$file'
+      path: '/api/public/book-cover/$file'
+      fullPath: '/api/public/book-cover/$file'
+      preLoaderRoute: typeof ApiPublicBookCoverFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aula/$kind/$track/$sector/$module/$lesson': {
       id: '/aula/$kind/$track/$sector/$module/$lesson'
       path: '/aula/$kind/$track/$sector/$module/$lesson'
@@ -373,6 +393,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreparatorioIndexRoute: PreparatorioIndexRoute,
   ConcursoMinisterioSectorRoute: ConcursoMinisterioSectorRoute,
   PreparatorioFaculdadeCursoRoute: PreparatorioFaculdadeCursoRoute,
+  ApiPublicBookCoverFileRoute: ApiPublicBookCoverFileRoute,
   SimuladoKindTrackSectorRoute: SimuladoKindTrackSectorRoute,
   AulaKindTrackSectorModuleLessonRoute: AulaKindTrackSectorModuleLessonRoute,
 }
