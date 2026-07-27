@@ -24,7 +24,9 @@ import {
 } from "@/lib/books.functions";
 import { categories as libraryCategories } from "@/lib/library-data";
 import { formatKz } from "@/lib/payment-info";
-import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus } from "lucide-react";
+import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus, GraduationCap } from "lucide-react";
+import { pregenStatus, pregenBatch, type PregenTrackStatus } from "@/lib/pregen.functions";
+import { concursoTracks, preparatorioTracks } from "@/lib/study-tracks";
 
 const ADMIN_KEY = "angopdf.admin";
 
@@ -75,7 +77,7 @@ function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Overview | null>(null);
-  const [tab, setTab] = useState<"pending" | "recent" | "students" | "edicts" | "books">("pending");
+  const [tab, setTab] = useState<"pending" | "recent" | "students" | "edicts" | "books" | "courses">("pending");
 
   const load = useCallback(async (phone: string) => {
     setLoading(true);
@@ -207,6 +209,7 @@ function AdminPage() {
                   ["students", `Alunos (${data?.students.length ?? 0})`],
                   ["edicts", "Editais"],
                   ["books", "Livros"],
+                  ["courses", "Cursos (IA)"],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -288,6 +291,7 @@ function AdminPage() {
 
             {adminPhone && tab === "edicts" && <EdictsPanel adminPhone={adminPhone} />}
             {adminPhone && tab === "books" && <BooksPanel adminPhone={adminPhone} />}
+            {adminPhone && tab === "courses" && <CoursesPanel adminPhone={adminPhone} />}
           </>
         )}
       </section>
