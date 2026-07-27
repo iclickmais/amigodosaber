@@ -62,8 +62,9 @@ export const runNotificationFunnelJob = createServerFn({ method: "POST" })
       // Step 2: Check for abandoned payments (24 hours threshold)
       console.log("[Notification Scheduler] Checking for abandoned payments...");
       const abandonedResult = await checkAndQueueAbandonedPaymentNotifications({
-        abandonmentThresholdHours: 24,
+        data: { abandonmentThresholdHours: 24 },
       });
+
 
       if (abandonedResult.success) {
         results.abandonedQueued = abandonedResult.notificationsQueued;
