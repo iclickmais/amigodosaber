@@ -37,8 +37,9 @@ export const runNotificationFunnelJob = createServerFn({ method: "POST" })
       // Step 1: Check for inactivity (3 days threshold)
       console.log("[Notification Scheduler] Checking for inactivity...");
       const inactivityResult = await checkAndQueueInactivityNotifications({
-        inactivityThresholdDays: 3,
+        data: { inactivityThresholdDays: 3 },
       });
+
 
       if (inactivityResult.success) {
         results.inactivityQueued = inactivityResult.notificationsQueued;
