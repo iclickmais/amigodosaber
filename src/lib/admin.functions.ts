@@ -46,8 +46,7 @@ export const adminOverview = createServerFn({ method: "POST" })
       supabaseAdmin
         .from("students")
         .select("id, phone, surname, created_at")
-        .order("created_at", { ascending: false })
-        .limit(100),
+        .order("created_at", { ascending: false }),
     ]);
 
     // Join student info onto payment requests
