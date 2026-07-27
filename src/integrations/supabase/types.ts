@@ -14,99 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      chat_messages: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          student_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          student_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          student_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_messages_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      notifications: {
-        Row: {
-          created_at: string
-          id: string
-          is_read: boolean
-          message: string
-          student_id: string
-          title: string
-          type: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_read?: boolean
-          message: string
-          student_id: string
-          title: string
-          type: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_read?: boolean
-          message?: string
-          student_id?: string
-          title?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      student_presence: {
-        Row: {
-          is_online: boolean
-          last_seen_at: string
-          student_id: string
-        }
-        Insert: {
-          is_online?: boolean
-          last_seen_at?: string
-          student_id: string
-        }
-        Update: {
-          is_online?: boolean
-          last_seen_at?: string
-          student_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "student_presence_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: true
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       access_grants: {
         Row: {
           created_at: string
@@ -588,25 +495,7 @@ export type Database = {
       }
     }
     Views: {
-      chat_messages_with_profiles: {
-        Row: {
-          author_id: string | null
-          author_name: string | null
-          author_online: boolean | null
-          content: string | null
-          created_at: string | null
-          id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_messages_student_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       [_ in never]: never
