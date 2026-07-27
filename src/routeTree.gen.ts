@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as ChatRouteImport } from './routes/chat'
 import { Route as EditaisRouteImport } from './routes/editais'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PainelRouteImport } from './routes/painel'
@@ -37,11 +36,6 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditaisRoute = EditaisRouteImport.update({
@@ -131,7 +125,6 @@ const AulaKindTrackSectorModuleLessonRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/chat': typeof ChatRoute
   '/editais': typeof EditaisRoute
   '/entrar': typeof EntrarRoute
   '/painel': typeof PainelRoute
@@ -152,7 +145,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/chat': typeof ChatRoute
   '/editais': typeof EditaisRoute
   '/entrar': typeof EntrarRoute
   '/painel': typeof PainelRoute
@@ -174,7 +166,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/chat': typeof ChatRoute
   '/editais': typeof EditaisRoute
   '/entrar': typeof EntrarRoute
   '/painel': typeof PainelRoute
@@ -197,7 +188,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/chat'
     | '/editais'
     | '/entrar'
     | '/painel'
@@ -218,7 +208,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
-    | '/chat'
     | '/editais'
     | '/entrar'
     | '/painel'
@@ -239,7 +228,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
-    | '/chat'
     | '/editais'
     | '/entrar'
     | '/painel'
@@ -261,7 +249,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  ChatRoute: typeof ChatRoute
   EditaisRoute: typeof EditaisRoute
   EntrarRoute: typeof EntrarRoute
   PainelRoute: typeof PainelRoute
@@ -294,13 +281,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editais': {
@@ -421,7 +401,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  ChatRoute: ChatRoute,
   EditaisRoute: EditaisRoute,
   EntrarRoute: EntrarRoute,
   PainelRoute: PainelRoute,
