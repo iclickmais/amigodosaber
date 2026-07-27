@@ -163,30 +163,13 @@ export const notificationSchedulerHealthCheck = createServerFn({ method: "GET" }
     }
   });
 
-/**
- * Configuration for Manus Scheduled Tasks
- * 
- * To set up the notification scheduler, use manus-config:
- * 
- * $ manus-config schedule
- * 
- * Then add a new scheduled task with these settings:
- * 
- * Task Name: "Notification Funnel Job"
- * Endpoint: POST /api/runNotificationFunnelJob
- * Schedule: "0 */6 * * *" (every 6 hours)
- * Retry on failure: true
- * Retry attempts: 3
- * 
- * Alternative cron expressions:
- * - Every 4 hours: "0 */4 * * *"
- * - Every 12 hours: "0 */12 * * *"
- * - Every day at 9 AM: "0 9 * * *"
- * - Every day at 9 AM and 6 PM: "0 9,18 * * *"
- * 
- * For more information on cron syntax, see:
- * https://crontab.guru/
- */
+// Configuration for scheduled tasks.
+// Endpoint: POST /api/runNotificationFunnelJob
+// Suggested schedule: every 6 hours. Retry on failure: true, 3 attempts.
+// Other options: every 4 hours, every 12 hours, daily at 09:00,
+// or twice a day at 09:00 and 18:00.
+// Cron syntax reference: https://crontab.guru/
+
 
 export const NOTIFICATION_SCHEDULER_CONFIG = {
   name: "Notification Funnel Job",
