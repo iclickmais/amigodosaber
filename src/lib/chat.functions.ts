@@ -47,18 +47,26 @@ export const getChatMessages = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: messages, error } = await supabaseAdmin
-      .from("chat_messages_with_profiles")
-      .select("*")
+      .from("chat_messages")
+      .select("id, content, created_at, student_id, students(surname)")
       .order("created_at", { ascending: false })
-      .limit(data.limit)
-      .offset(data.offset);
+      .range(data.offset, data.offset + data.limit - 1);
 
     if (error) {
       console.error("Failed to fetch chat messages:", error);
       throw new Error(error.message);
     }
 
-    return messages.reverse(); // Return in chronological order
+    return (messages ?? [])
+      .map((m) => ({
+        id: m.id,
+        content: m.content,
+        created_at: m.created_at,
+        author_id: m.student_id,
+        author_name: (m.students as { surname: string } | null)?.surname ?? "Aluno",
+      }))
+      .reverse(); // Return in chronological order
+
   });
 
 /**

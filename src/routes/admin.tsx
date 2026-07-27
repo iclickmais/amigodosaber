@@ -24,7 +24,9 @@ import {
 } from "@/lib/books.functions";
 import { categories as libraryCategories } from "@/lib/library-data";
 import { formatKz } from "@/lib/payment-info";
-import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus } from "lucide-react";
+import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus, GraduationCap } from "lucide-react";
+import { pregenStatus, pregenBatch, type PregenTrackStatus } from "@/lib/pregen.functions";
+import { concursoTracks, preparatorioTracks } from "@/lib/study-tracks";
 
 const ADMIN_KEY = "angopdf.admin";
 
@@ -75,7 +77,7 @@ function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Overview | null>(null);
-  const [tab, setTab] = useState<"pending" | "recent" | "students" | "edicts" | "books">("pending");
+  const [tab, setTab] = useState<"pending" | "recent" | "students" | "edicts" | "books" | "courses">("pending");
 
   const load = useCallback(async (phone: string) => {
     setLoading(true);
@@ -207,6 +209,7 @@ function AdminPage() {
                   ["students", `Alunos (${data?.students.length ?? 0})`],
                   ["edicts", "Editais"],
                   ["books", "Livros"],
+                  ["courses", "Cursos (IA)"],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -288,6 +291,7 @@ function AdminPage() {
 
             {adminPhone && tab === "edicts" && <EdictsPanel adminPhone={adminPhone} />}
             {adminPhone && tab === "books" && <BooksPanel adminPhone={adminPhone} />}
+            {adminPhone && tab === "courses" && <CoursesPanel adminPhone={adminPhone} />}
           </>
         )}
       </section>
@@ -921,3 +925,167 @@ function BooksPanel({ adminPhone }: { adminPhone: string }) {
   );
 }
 
+
+// ---------------------------------------------------------------------------
+// Cursos (IA) — pré-geração em massa das aulas, para nada ser gerado em tempo real
+// ---------------------------------------------------------------------------
+
+function CoursesPanel({ adminPhone }: { adminPhone: string }) {
+  const [kind, setKind] = useState<"concurso" | "preparatorio">("concurso");
+  const [rows, setRows] = useState<PregenTrackStatus[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [log, setLog] = useState<string[]>([]);
+  const [err, setErr] = useState<string | null>(null);
+  const stop = useState<{ v: boolean }>({ v: false })[0];
+
+  const refresh = useCallback(
+    async (k: "concurso" | "preparatorio") => {
+      setErr(null);
+      try {
+        const res = await pregenStatus({ data: { adminPhone, kind: k } });
+        setRows(res);
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Falha a carregar estado");
+      }
+    },
+    [adminPhone],
+  );
+
+  useEffect(() => {
+    void refresh(kind);
+  }, [refresh, kind]);
+
+  async function generate(trackSlug: string) {
+    stop.v = false;
+    setBusy(trackSlug);
+    setErr(null);
+    setLog([]);
+    try {
+      for (;;) {
+        if (stop.v) {
+          setLog((l) => [...l, "Parado pelo administrador."]);
+          break;
+        }
+        const res = await pregenBatch({ data: { adminPhone, kind, trackSlug, limit: 4 } });
+        setLog((l) => [
+          ...l.slice(-6),
+          `+${res.generated} aulas · faltam ${Math.max(res.remaining, 0)} de ${res.total}`,
+          ...res.errors.slice(0, 2),
+        ]);
+        await refresh(kind);
+        if (res.done) break;
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Falha na geração");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const allTracks = kind === "concurso" ? concursoTracks : preparatorioTracks;
+  const priority = ["minint", "minsa", "mined"];
+  const ordered = rows
+    ? [...rows].sort(
+        (a, b) =>
+          (priority.indexOf(a.trackSlug) + 1 || 99) - (priority.indexOf(b.trackSlug) + 1 || 99),
+      )
+    : null;
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-gold/30 bg-gold/5 p-4 text-xs text-muted-foreground">
+        <p className="mb-1 flex items-center gap-2 text-sm text-gold">
+          <GraduationCap className="h-4 w-4" /> Pré-geração de cursos
+        </p>
+        Gera aqui todas as aulas de uma vez. Depois de geradas ficam gravadas na base de dados e os
+        alunos abrem-nas de imediato — nada é gerado em tempo real. Mantém esta página aberta
+        durante a geração; podes retomar mais tarde sem repetir o que já foi feito.
+      </div>
+
+      <div className="flex gap-2">
+        {(
+          [
+            ["concurso", "Concurso público"],
+            ["preparatorio", "Preparatório"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setKind(id)}
+            disabled={!!busy}
+            className={`rounded-full border px-4 py-2 text-xs ${
+              kind === id
+                ? "border-gold bg-gold/10 text-gold"
+                : "border-border text-muted-foreground hover:border-gold hover:text-gold"
+            } disabled:opacity-50`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {err && (
+        <p className="rounded-lg border border-burgundy/40 bg-burgundy/10 px-3 py-2 text-xs text-burgundy">
+          {err}
+        </p>
+      )}
+
+      {!ordered && <p className="text-sm text-muted-foreground">A carregar…</p>}
+
+      <div className="space-y-3">
+        {(ordered ?? []).map((r) => {
+          const pct = r.total ? Math.round((Math.min(r.generated, r.total) / r.total) * 100) : 0;
+          const complete = r.generated >= r.total;
+          return (
+            <div key={r.trackSlug} className="rounded-2xl border border-border bg-card p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{r.trackName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {Math.min(r.generated, r.total)} de {r.total} aulas geradas
+                  </p>
+                </div>
+                {complete ? (
+                  <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs text-gold">
+                    Completo
+                  </span>
+                ) : busy === r.trackSlug ? (
+                  <button
+                    onClick={() => {
+                      stop.v = true;
+                    }}
+                    className="flex items-center gap-2 rounded-full border border-burgundy/40 px-3 py-1.5 text-xs text-burgundy"
+                  >
+                    <Loader2 className="h-3 w-3 animate-spin" /> Parar
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => generate(r.trackSlug)}
+                    disabled={!!busy}
+                    className="rounded-full bg-gold px-4 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                  >
+                    Gerar aulas
+                  </button>
+                )}
+              </div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          );
+        })}
+        {ordered && ordered.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            Sem áreas ({allTracks.length} configuradas).
+          </p>
+        )}
+      </div>
+
+      {log.length > 0 && (
+        <pre className="max-h-48 overflow-auto rounded-2xl border border-border bg-muted/20 p-3 text-[11px] text-muted-foreground">
+          {log.join("\n")}
+        </pre>
+      )}
+    </div>
+  );
+}
