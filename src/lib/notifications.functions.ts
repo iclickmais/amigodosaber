@@ -58,15 +58,17 @@ export const trackLessonCompletion = createServerFn({ method: "POST" })
     if (data.lessonIndex === 0) {
       notificationType = NotificationType.FIRST_LESSON_COMPLETED;
       title = "Parabéns! 🎉";
-      body = "Completou a sua primeira aula no Amigo do Saber! Continue a aprender e a crescer.";
-    } else if (data.lessonIndex === 1) {
+      body = "Completou a sua primeira aula do módulo gratuito no Amigo do Saber! Continue a explorar as aulas livres deste módulo e depois subscreva para aceder a todo o conteúdo.";
+    } else if (data.lessonIndex === 4) {
+      // Mid-module reminder
       notificationType = NotificationType.SECOND_LESSON_COMPLETED;
-      title = "Excelente Progresso! 📚";
-      body = "Faltam apenas algumas aulas para desbloquear todo o potencial do Amigo do Saber. Explore os nossos planos de assinatura.";
-    } else if (data.lessonIndex === 2) {
+      title = "Ótimo Progresso! 📚";
+      body = "Está a completar o módulo gratuito. Subscreva já para desbloquear os restantes módulos e todo o conteúdo do Amigo do Saber.";
+    } else if (data.lessonIndex === 14) {
+      // Last free lesson - upsell
       notificationType = NotificationType.THIRD_LESSON_COMPLETED;
-      title = "Fim das Aulas Gratuitas 🔓";
-      body = "Chegou ao fim das suas aulas gratuitas! Para continuar a sua jornada de conhecimento, assine já o Amigo do Saber.";
+      title = "Fim do Módulo Gratuito 🔓";
+      body = "Completou todas as aulas gratuitas deste módulo! Subscreva o Amigo do Saber para aceder a todos os módulos deste sector e mais.";
     }
 
     if (!notificationType) {
@@ -109,7 +111,7 @@ export const checkAndQueueInactivityNotifications = createServerFn({ method: "PO
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Find students who:
-    // 1. Have completed 3 free lessons (lesson_index >= 2)
+    // 1. Have completed lessons in the free first module
     // 2. Have NOT subscribed (no active access_grant)
     // 3. Have NOT received an inactivity reminder in the last 24 hours
     // 4. Have been inactive for X days
@@ -117,7 +119,7 @@ export const checkAndQueueInactivityNotifications = createServerFn({ method: "PO
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() - data.inactivityThresholdDays);
 
-    // Get all students who completed 3 lessons
+    // Get all students who completed at least 1 free lesson
     const { data: completedStudents } = await supabaseAdmin
       .from("progress")
       .select("student_id")
@@ -134,9 +136,9 @@ export const checkAndQueueInactivityNotifications = createServerFn({ method: "PO
       studentLessonCounts.set(record.student_id, count);
     });
 
-    // Filter students with 3+ completed lessons
+    // Filter students with at least 1 completed lesson
     const candidateStudents = Array.from(studentLessonCounts.entries())
-      .filter(([_, count]) => count >= 3)
+      .filter(([_, count]) => count >= 1)
       .map(([studentId, _]) => studentId);
 
     if (candidateStudents.length === 0) {

@@ -14,13 +14,10 @@
 // After line 366 (after markMasteries call), add:
 
 /*
-    // Trigger notification if this is one of the first 3 free lessons
+    // Trigger notification if this is a free lesson (first module)
     const { trackLessonCompletion } = await import("@/lib/notifications.functions");
     
-    // Find the lesson index within the sector
-    const { getLesson, getSector } = await import("@/lib/study-tracks");
-    
-    // We need to get the lesson info from the quiz
+    // Find the lesson info from the quiz
     const { data: quizData } = await supabaseAdmin
       .from("quizzes")
       .select("lessons(track_kind, track_slug, sector_slug, module_slug, lesson_slug)")
@@ -36,11 +33,13 @@
       );
       
       if (sector) {
-        const allLessons = sector.sector.modules.flatMap(m => m.lessons);
-        const lessonIndex = allLessons.findIndex(l => l.slug === lesson.lesson_slug);
+        // Check if this lesson is in the first module (free for all)
+        const firstModuleSlug = sector.sector.modules.length > 0 ? sector.sector.modules[0].slug : null;
+        const isFirstModule = firstModuleSlug !== null && lesson.module_slug === firstModuleSlug;
         
-        // Only trigger notification for first 3 free lessons
-        if (lessonIndex >= 0 && lessonIndex < 3) {
+        if (isFirstModule) {
+          const allLessons = sector.sector.modules[0].lessons;
+          const lessonIndex = allLessons.findIndex(l => l.slug === lesson.lesson_slug);
           await trackLessonCompletion({
             studentId: data.studentId,
             lessonIndex,
