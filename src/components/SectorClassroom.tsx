@@ -237,6 +237,7 @@ export function SectorClassroom({
                       const isFirstModule = midx === 0;
                       const isFree = isFirstModule;
                       const locked = !hasAccess && !isFree;
+                      const globalIndex = modules.slice(0, midx).reduce((acc, curr) => acc + curr.lessons.length, 0) + lidx;
 
                       return (
                         <li key={lesson.slug}>
