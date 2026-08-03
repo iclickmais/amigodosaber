@@ -64,6 +64,29 @@ function AulaPage() {
   const [servedFromCache, setServedFromCache] = useState(false);
   const [toast, setToast] = useState<{ reward: string; message: string; type: "xp" | "level-up" | "streak" | "badge" } | null>(null);
   const [lessonXpAdded, setLessonXpAdded] = useState(false);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  const totalLessons = sector.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const isFreeLesson =
+    sector.modules[0]?.slug === mod.slug && sector.modules[0]?.lessons[0]?.slug === lesson.slug;
+  const amount = priceFor(kind);
+
+  useEffect(() => {
+    if (!hydrated || !student) return;
+    let cancelled = false;
+    getAccessStatus({
+      data: { studentId: student.id, kind, trackSlug: track.slug, sectorSlug: sector.slug },
+    })
+      .then((s) => {
+        if (!cancelled) setHasAccess(s.hasAccess);
+      })
+      .catch(() => {
+        if (!cancelled) setHasAccess(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, student, kind, track.slug, sector.slug]);
 
   const cacheKey = offlineKey({
     kind,
