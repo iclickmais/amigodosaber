@@ -22,6 +22,18 @@ export function formatKz(n: number): string {
   return new Intl.NumberFormat("pt-PT").format(n) + " Kz";
 }
 
+export function buildWelcomeWhatsAppLink(params: {
+  studentName: string;
+  studentPhone: string;
+}): string {
+  const msg =
+    `Olá! Sou *${params.studentName}* (${params.studentPhone}).\n\n` +
+    `Acabei de me registar no *Amigo do Saber* 🎓\n` +
+    `Quero desbloquear todo o conteúdo (aulas completas, quizzes, simulados e plano de estudo).\n\n` +
+    `Podem indicar-me como fazer o pagamento?`;
+  return `https://wa.me/${PAYMENT_INFO.whatsappRaw}?text=${encodeURIComponent(msg)}`;
+}
+
 export function buildWhatsAppLink(params: {
   studentName: string;
   studentPhone: string;
