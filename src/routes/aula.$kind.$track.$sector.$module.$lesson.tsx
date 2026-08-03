@@ -66,7 +66,10 @@ function AulaPage() {
   const [lessonXpAdded, setLessonXpAdded] = useState(false);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
-  const totalLessons = sector.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const totalLessons = sector.modules.reduce(
+    (acc: number, m: { lessons: unknown[] }) => acc + m.lessons.length,
+    0,
+  );
   const isFreeLesson =
     sector.modules[0]?.slug === mod.slug && sector.modules[0]?.lessons[0]?.slug === lesson.slug;
   const amount = priceFor(kind);
