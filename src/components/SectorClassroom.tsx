@@ -233,9 +233,8 @@ export function SectorClassroom({
                 <div className="border-t border-border/60 bg-black/10 px-4 py-4 sm:px-6">
                   <ul className="space-y-3">
                     {mod.lessons.map((lesson, lidx) => {
-                      // First module of any sector is FREE for all users
-                      const isFirstModule = midx === 0;
-                      const isFree = isFirstModule;
+                      // Apenas a 1ª aula do sector é gratuita
+                      const isFree = midx === 0 && lidx === 0;
                       const locked = !hasAccess && !isFree;
                       const globalIndex = modules.slice(0, midx).reduce((acc, curr) => acc + curr.lessons.length, 0) + lidx;
 
