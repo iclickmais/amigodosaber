@@ -76,7 +76,7 @@ function EntrarPage() {
           // Se não for admin válido, cai no destino normal
         }
       }
-      navigate({ to: nextPath });
+      setWelcome({ name: result.surname ?? surname, phone: result.phone ?? phone });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao registar");
     } finally {
