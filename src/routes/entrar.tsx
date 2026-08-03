@@ -5,7 +5,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { registerStudent } from "@/lib/study.functions";
 import { adminLogin } from "@/lib/admin.functions";
 import { useStudent } from "@/hooks/use-student";
-import { GraduationCap } from "lucide-react";
+import { buildWelcomeWhatsAppLink } from "@/lib/payment-info";
+import { GraduationCap, MessageCircle } from "lucide-react";
 
 const ADMIN_PHONE_DIGITS = "921346544";
 const ADMIN_KEY = "angopdf.admin";
