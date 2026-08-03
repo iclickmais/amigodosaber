@@ -108,14 +108,18 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
     );
     if (!found) throw new Error("Aula não encontrada na taxonomia");
 
-    // Gate: aluno precisa de acesso pago activo ao sector (excepto as aulas do 1º módulo)
+    // Gate: aluno precisa de acesso pago activo ao sector (excepto a 1ª aula do sector)
     const sector = findSector(data.kind as TrackKind, data.trackSlug, data.sectorSlug);
     if (!sector) throw new Error("Sector não encontrado");
 
-    // Rule: First module of any sector is FREE for all users
-    // Check if this lesson belongs to the first module of the sector
-    const firstModuleSlug = sector.sector.modules.length > 0 ? sector.sector.modules[0].slug : null;
-    const isFreeLesson = firstModuleSlug !== null && data.moduleSlug === firstModuleSlug;
+    // Regra: apenas a PRIMEIRA aula do sector (1º módulo, 1ª aula) é gratuita.
+    const firstModule = sector.sector.modules[0];
+    const firstLessonSlug = firstModule?.lessons[0]?.slug ?? null;
+    const isFreeLesson =
+      !!firstModule &&
+      data.moduleSlug === firstModule.slug &&
+      firstLessonSlug !== null &&
+      data.lessonSlug === firstLessonSlug;
 
     if (!isFreeLesson) {
       const { checkAccess } = await import("@/lib/access.functions");
