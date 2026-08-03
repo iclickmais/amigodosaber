@@ -9,6 +9,8 @@ import { LessonMarkdown } from "@/components/LessonMarkdown";
 import { QuizRunner } from "@/components/QuizRunner";
 import { useStudent } from "@/hooks/use-student";
 import { PaymentModal } from "@/components/PaymentModal";
+import { getAccessStatus } from "@/lib/access.functions";
+import { priceFor, formatKz } from "@/lib/payment-info";
 import { MotivationBanner } from "@/components/MotivationBanner";
 import { OfflineLessonToggle } from "@/components/OfflineLessonToggle";
 import { GamificationToast } from "@/components/GamificationToast";
