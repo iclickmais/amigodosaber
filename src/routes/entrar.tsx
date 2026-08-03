@@ -5,7 +5,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { registerStudent } from "@/lib/study.functions";
 import { adminLogin } from "@/lib/admin.functions";
 import { useStudent } from "@/hooks/use-student";
-import { GraduationCap } from "lucide-react";
+import { buildWelcomeWhatsAppLink } from "@/lib/payment-info";
+import { GraduationCap, MessageCircle } from "lucide-react";
 
 const ADMIN_PHONE_DIGITS = "921346544";
 const ADMIN_KEY = "angopdf.admin";
@@ -45,11 +46,12 @@ function EntrarPage() {
   const [surname, setSurname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [welcome, setWelcome] = useState<{ name: string; phone: string } | null>(null);
 
   const nextPath = safeNext(search.next);
 
   // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
-  if (hydrated && student) {
+  if (hydrated && student && !welcome) {
     const isAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
     navigate({ to: isAdmin ? "/admin" : nextPath });
@@ -74,7 +76,7 @@ function EntrarPage() {
           // Se não for admin válido, cai no destino normal
         }
       }
-      navigate({ to: nextPath });
+      setWelcome({ name: result.surname ?? surname, phone: result.phone ?? phone });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao registar");
     } finally {
@@ -103,7 +105,37 @@ function EntrarPage() {
             se inscrever num concurso ou preparatório, e para guardar o seu progresso.
           </p>
 
-          {student ? (
+          {welcome ? (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-gold/25 bg-gold/[0.06] p-4">
+                <h2 className="font-serif text-lg text-foreground">
+                  Bem-vindo, {welcome.name}! 🎓
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  O seu registo está feito. Fale connosco no WhatsApp para desbloquear todo o
+                  conteúdo — aulas completas, quizzes, simulados e plano de estudo.
+                </p>
+              </div>
+              <a
+                href={buildWelcomeWhatsAppLink({
+                  studentName: welcome.name,
+                  studentPhone: welcome.phone,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-bold text-black transition-opacity hover:opacity-90"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Falar no WhatsApp e desbloquear
+              </a>
+              <button
+                onClick={() => navigate({ to: nextPath })}
+                className="w-full rounded-full border border-border px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Continuar para a aula grátis
+              </button>
+            </div>
+          ) : student ? (
             <p className="text-sm text-muted-foreground">A redireccionar para o seu painel…</p>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
