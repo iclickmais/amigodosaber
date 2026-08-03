@@ -46,11 +46,12 @@ function EntrarPage() {
   const [surname, setSurname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [welcome, setWelcome] = useState<{ name: string; phone: string } | null>(null);
 
   const nextPath = safeNext(search.next);
 
   // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
-  if (hydrated && student) {
+  if (hydrated && student && !welcome) {
     const isAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
     navigate({ to: isAdmin ? "/admin" : nextPath });
