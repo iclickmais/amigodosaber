@@ -105,6 +105,8 @@ export function SectorClassroom({
 
   const amount = priceFor(kind);
   const todayIso = new Date().toISOString().slice(0, 10);
+  const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const lockedCount = Math.max(totalLessons - 1, 0);
 
   function onLessonClick(e: React.MouseEvent, isLocked: boolean) {
     if (!student) {
@@ -233,9 +235,8 @@ export function SectorClassroom({
                 <div className="border-t border-border/60 bg-black/10 px-4 py-4 sm:px-6">
                   <ul className="space-y-3">
                     {mod.lessons.map((lesson, lidx) => {
-                      // First module of any sector is FREE for all users
-                      const isFirstModule = midx === 0;
-                      const isFree = isFirstModule;
+                      // Apenas a 1ª aula do sector é gratuita
+                      const isFree = midx === 0 && lidx === 0;
                       const locked = !hasAccess && !isFree;
                       const globalIndex = modules.slice(0, midx).reduce((acc, curr) => acc + curr.lessons.length, 0) + lidx;
 
@@ -301,6 +302,54 @@ export function SectorClassroom({
           );
         })}
       </div>
+
+      {/* Funil — o que fica por desbloquear */}
+      {hydrated && student && hasAccess === false && (
+        <div className="mt-8 rounded-2xl border border-gold/25 bg-gradient-to-br from-gold/[0.07] to-transparent p-5 sm:p-6">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-gold/70">Continua a tua preparação</p>
+          <h3 className="mt-1 font-serif text-xl text-white sm:text-2xl">
+            {lockedCount} aulas ainda fechadas em {sectorName}
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Já viste a aula grátis. Por <span className="text-gold font-semibold">{formatKz(amount)}</span> (menos de{" "}
+            {formatKz(Math.round(amount / 90))}/dia) abres <span className="text-foreground">as {totalLessons} aulas</span>,
+            todos os quizzes, os simulados cronometrados e o plano de estudo — durante 3 meses.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setShowPay(true)}
+              className="rounded-full bg-gold px-6 py-3 text-sm font-bold text-primary-foreground transition-all hover:opacity-90 hover:shadow-glow active:scale-95"
+            >
+              Desbloquear tudo — {formatKz(amount)}
+            </button>
+            <span className="text-xs text-muted-foreground">
+              Pagamento por transferência + confirmação por WhatsApp
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Barra fixa de conversão */}
+      {hydrated && student && hasAccess === false && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-gold/25 bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-xs font-semibold text-foreground">
+                {lockedCount} aulas fechadas · {formatKz(amount)} / 3 meses
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">Desbloqueio imediato após confirmação</p>
+            </div>
+            <button
+              onClick={() => setShowPay(true)}
+              className="shrink-0 rounded-full bg-gold px-5 py-2.5 text-xs font-bold text-primary-foreground hover:opacity-90 active:scale-95"
+            >
+              Desbloquear
+            </button>
+          </div>
+        </div>
+      )}
+
+
 
       {/* Extras — plano, simulado e editais (só faz sentido com sessão) */}
       {hydrated && student && (

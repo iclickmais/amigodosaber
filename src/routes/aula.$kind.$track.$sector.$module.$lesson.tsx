@@ -9,6 +9,8 @@ import { LessonMarkdown } from "@/components/LessonMarkdown";
 import { QuizRunner } from "@/components/QuizRunner";
 import { useStudent } from "@/hooks/use-student";
 import { PaymentModal } from "@/components/PaymentModal";
+import { getAccessStatus } from "@/lib/access.functions";
+import { priceFor, formatKz } from "@/lib/payment-info";
 import { MotivationBanner } from "@/components/MotivationBanner";
 import { OfflineLessonToggle } from "@/components/OfflineLessonToggle";
 import { GamificationToast } from "@/components/GamificationToast";
@@ -62,6 +64,32 @@ function AulaPage() {
   const [servedFromCache, setServedFromCache] = useState(false);
   const [toast, setToast] = useState<{ reward: string; message: string; type: "xp" | "level-up" | "streak" | "badge" } | null>(null);
   const [lessonXpAdded, setLessonXpAdded] = useState(false);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  const totalLessons = sector.modules.reduce(
+    (acc: number, m: { lessons: unknown[] }) => acc + m.lessons.length,
+    0,
+  );
+  const isFreeLesson =
+    sector.modules[0]?.slug === mod.slug && sector.modules[0]?.lessons[0]?.slug === lesson.slug;
+  const amount = priceFor(kind);
+
+  useEffect(() => {
+    if (!hydrated || !student) return;
+    let cancelled = false;
+    getAccessStatus({
+      data: { studentId: student.id, kind, trackSlug: track.slug, sectorSlug: sector.slug },
+    })
+      .then((s) => {
+        if (!cancelled) setHasAccess(s.hasAccess);
+      })
+      .catch(() => {
+        if (!cancelled) setHasAccess(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, student, kind, track.slug, sector.slug]);
 
   const cacheKey = offlineKey({
     kind,
@@ -305,6 +333,37 @@ function AulaPage() {
               </button>
             </div>
 
+            {isFreeLesson && hasAccess === false && (
+              <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.10] via-gold/[0.03] to-transparent p-6">
+                <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-gold/5 blur-3xl" />
+                <div className="relative">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gold/70">Fim da aula gratuita</p>
+                  <h2 className="mt-1 font-serif text-2xl text-white">
+                    Faltam {Math.max(totalLessons - 1, 0)} aulas de {sector.name}
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Quem estuda o programa completo entra melhor preparado. Por{" "}
+                    <span className="font-semibold text-gold">{formatKz(amount)}</span> desbloqueias todas as aulas,
+                    quizzes, simulados cronometrados, revisão inteligente e plano de estudo — 3 meses.
+                  </p>
+                  <ul className="mt-4 grid gap-2 text-xs text-foreground sm:grid-cols-2">
+                    <li>✓ Todas as {totalLessons} aulas do sector</li>
+                    <li>✓ Quiz de 10 perguntas por aula</li>
+                    <li>✓ Simulados cronometrados</li>
+                    <li>✓ Plano de estudo até à data da prova</li>
+                  </ul>
+                  <button
+                    onClick={() => setShowPayModal(true)}
+                    className="mt-5 w-full rounded-full bg-gold px-6 py-3 text-sm font-bold text-primary-foreground transition-all hover:opacity-90 hover:shadow-glow active:scale-95 sm:w-auto"
+                  >
+                    Desbloquear tudo — {formatKz(amount)}
+                  </button>
+                  <p className="mt-2 text-[11px] text-muted-foreground">
+                    Transferência + comprovativo por WhatsApp. Acesso libertado após confirmação.
+                  </p>
+                </div>
+              </div>
+            )}
           </>
         )}
 
