@@ -105,6 +105,8 @@ export function SectorClassroom({
 
   const amount = priceFor(kind);
   const todayIso = new Date().toISOString().slice(0, 10);
+  const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const lockedCount = Math.max(totalLessons - 1, 0);
 
   function onLessonClick(e: React.MouseEvent, isLocked: boolean) {
     if (!student) {
