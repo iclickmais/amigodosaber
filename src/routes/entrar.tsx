@@ -119,39 +119,10 @@ function EntrarPage() {
             se inscrever num concurso ou preparatório, e para guardar o seu progresso.
           </p>
 
-          {welcome ? (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-gold/25 bg-gold/[0.06] p-4">
-                <h2 className="font-serif text-lg text-foreground">
-                  Bem-vindo, {welcome.name}! 🎓
-                </h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  O seu registo está feito. Fale connosco no WhatsApp para desbloquear todo o
-                  conteúdo — aulas completas, quizzes, simulados e plano de estudo.
-                </p>
-              </div>
-              <a
-                href={buildWelcomeWhatsAppLink({
-                  studentName: welcome.name,
-                  studentPhone: welcome.phone,
-                })}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-bold text-black transition-opacity hover:opacity-90"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Falar no WhatsApp e desbloquear
-              </a>
-              <button
-                onClick={() => navigate({ to: nextPath })}
-                className="w-full rounded-full border border-border px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Continuar para a aula grátis
-              </button>
-            </div>
-          ) : student ? (
-            <p className="text-sm text-muted-foreground">A redireccionar para o seu painel…</p>
+          {student ? (
+            <p className="text-sm text-muted-foreground">A entrar…</p>
           ) : (
+
             <form onSubmit={onSubmit} className="space-y-4">
               <label className="block">
                 <span className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
