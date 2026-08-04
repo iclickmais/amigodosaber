@@ -45,16 +45,30 @@ function EntrarPage() {
   const [surname, setSurname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [welcome, setWelcome] = useState<{ name: string; phone: string } | null>(null);
 
   const nextPath = safeNext(search.next);
 
   // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
-  if (hydrated && student && !welcome) {
-    const isAdmin =
+  useEffect(() => {
+    if (!hydrated || !student) return;
+    const alreadyAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
-    navigate({ to: isAdmin ? "/admin" : nextPath });
-  }
+    if (alreadyAdmin) {
+      navigate({ to: "/admin", replace: true });
+      return;
+    }
+    // Número de admin já registado neste dispositivo: revalida e entra no painel.
+    if (isAdminPhone(student.phone)) {
+      adminLogin({ data: { adminPhone: student.phone } })
+        .then(({ phone: adminPhone }) => {
+          window.localStorage.setItem(ADMIN_KEY, adminPhone);
+          navigate({ to: "/admin", replace: true });
+        })
+        .catch(() => navigate({ to: nextPath, replace: true }));
+      return;
+    }
+    navigate({ to: nextPath, replace: true });
+  }, [hydrated, student, nextPath, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,19 +83,20 @@ function EntrarPage() {
             data: { adminPhone: phone },
           });
           window.localStorage.setItem(ADMIN_KEY, adminPhone);
-          navigate({ to: "/admin" });
+          navigate({ to: "/admin", replace: true });
           return;
         } catch {
           // Se não for admin válido, cai no destino normal
         }
       }
-      setWelcome({ name: result.surname ?? surname, phone: result.phone ?? phone });
+      // Sem ecrã bloqueante: segue já para a aula/destino pretendido.
+      navigate({ to: nextPath, replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao registar");
-    } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <div className="min-h-screen">
