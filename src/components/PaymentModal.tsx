@@ -151,18 +151,34 @@ export function PaymentModal({
               </div>
             </div>
 
-            {/* CTA */}
+            {/* CTA — duas opções */}
             <button
               onClick={handleInitiatePayment}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold py-4 text-sm font-bold text-[#0f0d0b] transition-all hover:shadow-[0_8px_20px_-8px_rgba(212,175,55,0.5)] active:scale-[0.98]"
             >
-              Continuar com o pagamento
+              Fazer pagamento
               <ChevronRight className="h-4 w-4" />
             </button>
 
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                requestPayment({
+                  data: { studentId: student.id, kind, trackSlug, sectorSlug },
+                }).catch(() => {});
+              }}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-600/10 py-4 text-sm font-bold text-emerald-400 transition-all hover:bg-emerald-600/20 active:scale-[0.98]"
+            >
+              <MessageCircle className="h-5 w-5" />
+              Falar no WhatsApp
+            </a>
+
             <p className="mt-3 text-center text-[10px] text-muted-foreground/50">
-              Pagamento seguro via transferência bancária
+              Pagamento por transferência bancária ou apoio directo por WhatsApp
             </p>
+
           </div>
         )}
 
