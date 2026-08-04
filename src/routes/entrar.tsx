@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { registerStudent } from "@/lib/study.functions";
 import { adminLogin } from "@/lib/admin.functions";
 import { useStudent } from "@/hooks/use-student";
-import { buildWelcomeWhatsAppLink } from "@/lib/payment-info";
-import { GraduationCap, MessageCircle } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 const ADMIN_PHONE_DIGITS = "921346544";
 const ADMIN_KEY = "angopdf.admin";
@@ -46,16 +45,30 @@ function EntrarPage() {
   const [surname, setSurname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [welcome, setWelcome] = useState<{ name: string; phone: string } | null>(null);
 
   const nextPath = safeNext(search.next);
 
   // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
-  if (hydrated && student && !welcome) {
-    const isAdmin =
+  useEffect(() => {
+    if (!hydrated || !student) return;
+    const alreadyAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
-    navigate({ to: isAdmin ? "/admin" : nextPath });
-  }
+    if (alreadyAdmin) {
+      navigate({ to: "/admin", replace: true });
+      return;
+    }
+    // Número de admin já registado neste dispositivo: revalida e entra no painel.
+    if (isAdminPhone(student.phone)) {
+      adminLogin({ data: { adminPhone: student.phone } })
+        .then(({ phone: adminPhone }) => {
+          window.localStorage.setItem(ADMIN_KEY, adminPhone);
+          navigate({ to: "/admin", replace: true });
+        })
+        .catch(() => navigate({ to: nextPath, replace: true }));
+      return;
+    }
+    navigate({ to: nextPath, replace: true });
+  }, [hydrated, student, nextPath, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,19 +83,20 @@ function EntrarPage() {
             data: { adminPhone: phone },
           });
           window.localStorage.setItem(ADMIN_KEY, adminPhone);
-          navigate({ to: "/admin" });
+          navigate({ to: "/admin", replace: true });
           return;
         } catch {
           // Se não for admin válido, cai no destino normal
         }
       }
-      setWelcome({ name: result.surname ?? surname, phone: result.phone ?? phone });
+      // Sem ecrã bloqueante: segue já para a aula/destino pretendido.
+      navigate({ to: nextPath, replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao registar");
-    } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <div className="min-h-screen">
@@ -105,39 +119,10 @@ function EntrarPage() {
             se inscrever num concurso ou preparatório, e para guardar o seu progresso.
           </p>
 
-          {welcome ? (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-gold/25 bg-gold/[0.06] p-4">
-                <h2 className="font-serif text-lg text-foreground">
-                  Bem-vindo, {welcome.name}! 🎓
-                </h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  O seu registo está feito. Fale connosco no WhatsApp para desbloquear todo o
-                  conteúdo — aulas completas, quizzes, simulados e plano de estudo.
-                </p>
-              </div>
-              <a
-                href={buildWelcomeWhatsAppLink({
-                  studentName: welcome.name,
-                  studentPhone: welcome.phone,
-                })}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-bold text-black transition-opacity hover:opacity-90"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Falar no WhatsApp e desbloquear
-              </a>
-              <button
-                onClick={() => navigate({ to: nextPath })}
-                className="w-full rounded-full border border-border px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Continuar para a aula grátis
-              </button>
-            </div>
-          ) : student ? (
-            <p className="text-sm text-muted-foreground">A redireccionar para o seu painel…</p>
+          {student ? (
+            <p className="text-sm text-muted-foreground">A entrar…</p>
           ) : (
+
             <form onSubmit={onSubmit} className="space-y-4">
               <label className="block">
                 <span className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
