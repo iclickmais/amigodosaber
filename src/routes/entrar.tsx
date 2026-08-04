@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { registerStudent } from "@/lib/study.functions";
 import { adminLogin } from "@/lib/admin.functions";
 import { useStudent } from "@/hooks/use-student";
-import { buildWelcomeWhatsAppLink } from "@/lib/payment-info";
-import { GraduationCap, MessageCircle } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 const ADMIN_PHONE_DIGITS = "921346544";
 const ADMIN_KEY = "angopdf.admin";
