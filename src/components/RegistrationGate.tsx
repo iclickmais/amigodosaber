@@ -3,7 +3,7 @@ import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useStudent } from "@/hooks/use-student";
 
 // Rotas públicas que não exigem registo prévio.
-const PUBLIC_PATHS = ["/entrar"];
+const PUBLIC_PATHS = ["/entrar", "/admin"];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
