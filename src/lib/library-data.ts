@@ -1,14 +1,10 @@
-// Digital library catalog — Curated real books with real covers.
-// 100% Real content focused on Academic and Christian categories.
+// Catálogo editorial com livros reais e capas locais verificadas.
+// Os PDFs só devem ser disponibilizados quando houver autorização/licença de distribuição.
 
 export type Palette = "gold" | "burgundy" | "emerald" | "sapphire" | "ivory";
 export type Ornament = "cross" | "book" | "quill" | "crown" | "leaf" | "star";
 
-export type Subcategory = {
-  slug: string;
-  name: string;
-  count: number;
-};
+export type Subcategory = { slug: string; name: string; count: number };
 
 export type Category = {
   slug: string;
@@ -39,253 +35,164 @@ export const categories: Category[] = [
   {
     slug: "academicos",
     name: "Acadêmicos",
-    tagline: "Conhecimento científico e universitário",
-    totalCount: 30,
+    tagline: "Obras reais para estudo universitário e profissional",
+    totalCount: 5,
     subcategories: [
-      { slug: "direito", name: "Direito", count: 5 },
-      { slug: "medicina", name: "Medicina & Saúde", count: 5 },
-      { slug: "engenharia", name: "Engenharia", count: 4 },
-      { slug: "economia", name: "Economia & Gestão", count: 4 },
-      { slug: "informatica", name: "Informática & TI", count: 4 },
-      { slug: "psicologia", name: "Psicologia", count: 3 },
-      { slug: "historia", name: "História", count: 3 },
-      { slug: "matematica", name: "Matemática", count: 2 },
+      { slug: "direito", name: "Direito", count: 3 },
+      { slug: "medicina", name: "Medicina & Saúde", count: 1 },
+      { slug: "informatica", name: "Informática & TI", count: 1 },
     ],
   },
   {
     slug: "cristaos",
     name: "Cristãos",
     tagline: "Fé, teologia e vida cristã",
-    totalCount: 25,
+    totalCount: 2,
     subcategories: [
-      { slug: "biblia-estudos", name: "Bíblia & Estudos Bíblicos", count: 6 },
-      { slug: "teologia", name: "Teologia Sistemática", count: 6 },
-      { slug: "vida-crista", name: "Vida Cristã", count: 5 },
-      { slug: "familia", name: "Família & Casamento", count: 4 },
-      { slug: "pregacao", name: "Pregação", count: 4 },
+      { slug: "teologia", name: "Teologia Sistemática", count: 1 },
+      { slug: "vida-crista", name: "Vida Cristã", count: 1 },
     ],
   },
 ];
 
 const seedList: Omit<Book, "id">[] = [
-  // --- ACADÊMICOS: DIREITO ---
-  { 
-    title: "Manual de Direito Constitucional Angolano", 
-    author: "Prof. Carlos Feijó", 
-    category: "academicos", subcategory: "direito", 
-    price: 2400, pages: 682, year: 2023, rating: 4.9, downloads: 12480, 
-    cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://books.google.com/books/content?id=M_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Análise integral da Constituição da República de Angola.", featured: true 
+  {
+    title: "Constituição da República de Angola: Enquadramento Dogmático — A Nossa Visão (Volume 3)",
+    author: "Carlos Maria Feijó (coord.)",
+    category: "academicos",
+    subcategory: "direito",
+    price: 2400,
+    pages: 0,
+    year: 2023,
+    rating: 4.9,
+    downloads: 0,
+    cover: { palette: "burgundy", ornament: "crown" },
+    coverUrl: "/covers/constituicao-angola-volume-3.jpg",
+    synopsis: "Obra jurídica real sobre o enquadramento dogmático da Constituição da República de Angola.",
+    featured: true,
   },
-  { 
-    title: "Direito Administrativo Angolano", 
-    author: "Cremildo Paca", 
-    category: "academicos", subcategory: "direito", 
-    price: 2200, pages: 540, year: 2022, rating: 4.8, downloads: 8500, 
-    cover: { palette: "sapphire", ornament: "book" }, 
-    coverUrl: "https://books.google.com/books/content?id=U_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Estudo sobre a organização e funcionamento da administração pública em Angola."
+  {
+    title: "Vade Mecum Saraiva — Tradicional (37.ª edição, 2024)",
+    author: "Saraiva Jur",
+    category: "academicos",
+    subcategory: "direito",
+    price: 3500,
+    pages: 0,
+    year: 2024,
+    rating: 4.9,
+    downloads: 0,
+    cover: { palette: "sapphire", ornament: "book" },
+    coverUrl: "/covers/vade-mecum-saraiva-2024.jpg",
+    synopsis: "Compilação jurídica real da Editora Saraiva Jur, edição tradicional de 2024.",
+    featured: true,
   },
-  { 
-    title: "Código Civil Angolano Anotado", 
-    author: "Adão de Almeida", 
-    category: "academicos", subcategory: "direito", 
-    price: 3500, pages: 1200, year: 2023, rating: 5.0, downloads: 15000, 
-    cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://books.google.com/books/content?id=V_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Referência indispensável para juristas e estudantes de Direito."
+  {
+    title: "Manual de Direito Administrativo",
+    author: "Carlos Feijó",
+    category: "academicos",
+    subcategory: "direito",
+    price: 2800,
+    pages: 0,
+    year: 2023,
+    rating: 4.8,
+    downloads: 0,
+    cover: { palette: "sapphire", ornament: "quill" },
+    coverUrl: "/covers/manual-direito-administrativo.jpeg",
+    synopsis: "Manual jurídico real de Direito Administrativo, publicado pela Lello & Companhia.",
   },
-
-  // --- ACADÊMICOS: MEDICINA ---
-  { 
-    title: "Tratado de Semiologia Médica", 
-    author: "Dr. António Cascais", 
-    category: "academicos", subcategory: "medicina", 
-    price: 2500, pages: 914, year: 2024, rating: 4.8, downloads: 9820, 
-    cover: { palette: "sapphire", ornament: "book" }, 
-    coverUrl: "https://books.google.com/books/content?id=X_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Guia essencial para o diagnóstico clínico.", featured: true 
+  {
+    title: "Atlas de Anatomia Humana",
+    author: "Frank H. Netter, MD",
+    category: "academicos",
+    subcategory: "medicina",
+    price: 4500,
+    pages: 0,
+    year: 2023,
+    rating: 5.0,
+    downloads: 0,
+    cover: { palette: "emerald", ornament: "leaf" },
+    coverUrl: "/covers/atlas-netter.jpg",
+    synopsis: "Atlas de anatomia real de Frank H. Netter, referência para estudantes e profissionais de saúde.",
+    featured: true,
   },
-  { 
-    title: "Atlas de Anatomia Humana", 
-    author: "Frank Netter", 
-    category: "academicos", subcategory: "medicina", 
-    price: 4500, pages: 640, year: 2023, rating: 5.0, downloads: 25000, 
-    cover: { palette: "emerald", ornament: "leaf" }, 
-    coverUrl: "https://books.google.com/books/content?id=Z_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "A obra de anatomia mais famosa do mundo com ilustrações detalhadas."
+  {
+    title: "Código Limpo: Habilidades Práticas do Agile Software",
+    author: "Robert C. Martin",
+    category: "academicos",
+    subcategory: "informatica",
+    price: 1800,
+    pages: 0,
+    year: 2023,
+    rating: 4.9,
+    downloads: 0,
+    cover: { palette: "emerald", ornament: "star" },
+    coverUrl: "/covers/codigo-limpo.jpg",
+    synopsis: "Livro real sobre práticas de engenharia de software e desenvolvimento de código sustentável.",
+    featured: true,
   },
-
-  // --- ACADÊMICOS: ENGENHARIA ---
-  { 
-    title: "Cálculo Diferencial e Integral — Vol I", 
-    author: "James Stewart", 
-    category: "academicos", subcategory: "matematica", 
-    price: 2100, pages: 650, year: 2023, rating: 4.9, downloads: 15400, 
-    cover: { palette: "gold", ornament: "star" }, 
-    coverUrl: "https://books.google.com/books/content?id=a_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "A bíblia do cálculo para estudantes de engenharia.", featured: true 
+  {
+    title: "Teologia Sistemática Atual e Exaustiva",
+    author: "Wayne Grudem",
+    category: "cristaos",
+    subcategory: "teologia",
+    price: 3200,
+    pages: 0,
+    year: 2022,
+    rating: 4.9,
+    downloads: 0,
+    cover: { palette: "sapphire", ornament: "cross" },
+    coverUrl: "/covers/teologia-sistematica-wayne-grudem.jpg",
+    synopsis: "Obra real de Wayne Grudem sobre doutrina e teologia sistemática.",
+    featured: true,
   },
-  { 
-    title: "Resistência dos Materiais", 
-    author: "R.C. Hibbeler", 
-    category: "academicos", subcategory: "engenharia", 
-    price: 2800, pages: 700, year: 2022, rating: 4.8, downloads: 12000, 
-    cover: { palette: "sapphire", ornament: "quill" }, 
-    coverUrl: "https://books.google.com/books/content?id=b_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Fundamentos de mecânica dos sólidos e análise de estruturas."
-  },
-
-  // --- ACADÊMICOS: INFORMÁTICA ---
-  { 
-    title: "Código Limpo (Clean Code)", 
-    author: "Robert C. Martin", 
-    category: "academicos", subcategory: "informatica", 
-    price: 1800, pages: 450, year: 2023, rating: 4.9, downloads: 35000, 
-    cover: { palette: "emerald", ornament: "star" }, 
-    coverUrl: "https://books.google.com/books/content?id=c_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Habilidades práticas para escrever código melhor e mais sustentável."
-  },
-  { 
-    title: "Arquitetura Limpa", 
-    author: "Robert C. Martin", 
-    category: "academicos", subcategory: "informatica", 
-    price: 1900, pages: 430, year: 2023, rating: 4.8, downloads: 28000, 
-    cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://books.google.com/books/content?id=d_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "O guia do artesão para estrutura e design de software."
-  },
-
-  // --- CRISTÃOS: BÍBLIA & ESTUDOS ---
-  { 
-    title: "Comentário Bíblico — Novo Testamento", 
-    author: "Pr. Hernandes Dias Lopes", 
-    category: "cristaos", subcategory: "biblia-estudos", 
-    price: 2200, pages: 1240, year: 2023, rating: 4.9, downloads: 18420, 
-    cover: { palette: "burgundy", ornament: "cross" }, 
-    coverUrl: "https://books.google.com/books/content?id=e_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Exposição versículo por versículo.", featured: true 
-  },
-  { 
-    title: "Bíblia de Estudo Almeida", 
-    author: "Sociedade Bíblica", 
-    category: "cristaos", subcategory: "biblia-estudos", 
-    price: 2800, pages: 2100, year: 2024, rating: 5.0, downloads: 45000, 
-    cover: { palette: "gold", ornament: "cross" }, 
-    coverUrl: "https://books.google.com/books/content?id=f_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "A tradução mais respeitada com notas de estudo profundas."
-  },
-
-  // --- CRISTÃOS: TEOLOGIA ---
-  { 
-    title: "Teologia Sistemática", 
-    author: "Dr. Wayne Grudem", 
-    category: "cristaos", subcategory: "teologia", 
-    price: 2500, pages: 1568, year: 2022, rating: 4.9, downloads: 24680, 
-    cover: { palette: "gold", ornament: "cross" }, 
-    coverUrl: "https://books.google.com/books/content?id=g_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Obra de referência em doutrina bíblica.", featured: true 
-  },
-  { 
-    title: "Institutas da Religião Cristã", 
-    author: "João Calvino", 
-    category: "cristaos", subcategory: "teologia", 
-    price: 3200, pages: 1800, year: 2021, rating: 5.0, downloads: 12000, 
-    cover: { palette: "burgundy", ornament: "book" }, 
-    coverUrl: "https://books.google.com/books/content?id=h_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "O clássico fundamental da Reforma Protestante."
-  },
-
-  // --- CRISTÃOS: VIDA CRISTÃ ---
-  { 
-    title: "O Peregrino", 
-    author: "John Bunyan", 
-    category: "cristaos", subcategory: "vida-crista", 
-    price: 900, pages: 286, year: 2020, rating: 4.9, downloads: 32140, 
-    cover: { palette: "ivory", ornament: "book" }, 
-    coverUrl: "https://books.google.com/books/content?id=i_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "A alegoria eterna da jornada da alma.", featured: true 
-  },
-  { 
-    title: "Uma Vida com Propósitos", 
-    author: "Rick Warren", 
-    category: "cristaos", subcategory: "vida-crista", 
-    price: 1200, pages: 350, year: 2022, rating: 4.8, downloads: 55000, 
-    cover: { palette: "emerald", ornament: "leaf" }, 
-    coverUrl: "https://books.google.com/books/content?id=j_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Para que estou na terra? Descubra o plano de Deus para sua vida."
-  },
-
-  // --- CRISTÃOS: FAMÍLIA ---
-  { 
-    title: "Casamento Blindado", 
-    author: "Renato & Cristiane Cardoso", 
-    category: "cristaos", subcategory: "familia", 
-    price: 1300, pages: 224, year: 2023, rating: 4.7, downloads: 18240, 
-    cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://books.google.com/books/content?id=k_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Ferramentas práticas para proteger o seu casamento."
-  },
-  { 
-    title: "As 5 Linguagens do Amor", 
-    author: "Gary Chapman", 
-    category: "cristaos", subcategory: "familia", 
-    price: 1000, pages: 216, year: 2022, rating: 4.9, downloads: 60000, 
-    cover: { palette: "ivory", ornament: "leaf" }, 
-    coverUrl: "https://books.google.com/books/content?id=l_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
-    synopsis: "Como expressar um compromisso de amor a seu cônjuge."
+  {
+    title: "O Peregrino",
+    author: "John Bunyan",
+    category: "cristaos",
+    subcategory: "vida-crista",
+    price: 1200,
+    pages: 0,
+    year: 2020,
+    rating: 4.9,
+    downloads: 0,
+    cover: { palette: "ivory", ornament: "book" },
+    coverUrl: "/covers/o-peregrino.jpg",
+    synopsis: "Clássico real de John Bunyan sobre a jornada espiritual cristã.",
+    featured: true,
   },
 ];
 
-const BOOKS: Book[] = seedList.map((s, i) => ({
-  ...s,
-  id: `${s.category}-${s.subcategory}-${String(i).padStart(3, "0")}`,
+const BOOKS: Book[] = seedList.map((book, index) => ({
+  ...book,
+  id: `${book.category}-${book.subcategory}-${String(index).padStart(3, "0")}`,
 }));
 
-export const getCategory = (slug: string) => categories.find((c) => c.slug === slug);
+export const getCategory = (slug: string) => categories.find((category) => category.slug === slug);
 
-export const getSubcategory = (catSlug: string, subSlug: string) =>
-  getCategory(catSlug)?.subcategories.find((s) => s.slug === subSlug);
+export const getSubcategory = (categorySlug: string, subcategorySlug: string) =>
+  getCategory(categorySlug)?.subcategories.find((subcategory) => subcategory.slug === subcategorySlug);
 
-export const featuredBooks: Book[] = BOOKS.filter((b) => b.featured);
+export const featuredBooks = BOOKS.filter((book) => book.featured);
 
-export function listBooksBySubcategory(
-  catSlug: string,
-  subSlug: string,
-  offset = 0,
-  limit = 24,
-): { items: Book[]; total: number } {
-  const items = BOOKS.filter(b => b.category === catSlug && b.subcategory === subSlug);
-  return { 
-    items: items.slice(offset, offset + limit), 
-    total: items.length 
-  };
+export function listBooksBySubcategory(categorySlug: string, subcategorySlug: string, offset = 0, limit = 24) {
+  const items = BOOKS.filter((book) => book.category === categorySlug && book.subcategory === subcategorySlug);
+  return { items: items.slice(offset, offset + limit), total: items.length };
 }
 
-export function listBooksByCategory(
-  catSlug: string,
-  offset = 0,
-  limit = 24,
-): { items: Book[]; total: number } {
-  const items = BOOKS.filter(b => b.category === catSlug);
-  return { 
-    items: items.slice(offset, offset + limit), 
-    total: items.length 
-  };
+export function listBooksByCategory(categorySlug: string, offset = 0, limit = 24) {
+  const items = BOOKS.filter((book) => book.category === categorySlug);
+  return { items: items.slice(offset, offset + limit), total: items.length };
 }
 
 export function getBook(id: string): Book | undefined {
-  return BOOKS.find(b => b.id === id);
+  return BOOKS.find((book) => book.id === id);
 }
 
 export function searchBooks(query: string, max = 40): Book[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
-  return BOOKS.filter(b => 
-    b.title.toLowerCase().includes(q) || 
-    b.author.toLowerCase().includes(q) || 
-    b.synopsis.toLowerCase().includes(q)
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return [];
+  return BOOKS.filter((book) =>
+    [book.title, book.author, book.synopsis].some((value) => value.toLowerCase().includes(normalizedQuery)),
   ).slice(0, max);
 }
 
@@ -294,35 +201,35 @@ export const totalLibrarySize = BOOKS.length;
 export const formatPrice = (kz: number) =>
   new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 0 }).format(kz) + " Kz";
 
-export const formatNumber = (n: number) => new Intl.NumberFormat("pt-PT").format(n);
+export const formatNumber = (value: number) => new Intl.NumberFormat("pt-PT").format(value);
 
 export const WHATSAPP_NUMBER = "244951201628";
 export const WHATSAPP_DISPLAY = "+244 951 201 628";
 
 export function whatsappCheckoutUrl(book: Book): string {
-  const msg =
+  const message =
     `Olá! Quero comprar este PDF no Amigo do Saber:\n\n` +
-    `📖 Título: ${book.title}\n` +
-    `✍️ Autor: ${book.author}\n` +
-    `💰 Preço: ${formatPrice(book.price)}\n` +
-    `🔖 Ref: ${book.id}\n\n` +
+    `Título: ${book.title}\n` +
+    `Autor: ${book.author}\n` +
+    `Preço: ${formatPrice(book.price)}\n` +
+    `Referência: ${book.id}\n\n` +
     `Podem confirmar disponibilidade e forma de pagamento? Obrigado.`;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
 export const WHATSAPP_REQUEST_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
   "Olá! Gostaria de pedir um livro em PDF no Amigo do Saber.\n\nTítulo/autor procurado: ",
 )}`;
 
-const _palettes: Palette[] = ["gold", "burgundy", "emerald", "sapphire", "ivory"];
+const palettes: Palette[] = ["gold", "burgundy", "emerald", "sapphire", "ivory"];
 
-function hash32(str: string): number {
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 16777619);
+function hash32(value: string): number {
+  let hash = 2166136261 >>> 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
   }
-  return h >>> 0;
+  return hash >>> 0;
 }
 
 export function dbBookToDisplay(row: {
@@ -336,7 +243,7 @@ export function dbBookToDisplay(row: {
   description: string;
   created_at: string;
 }): Book {
-  const h = hash32(row.id);
+  const hash = hash32(row.id);
   return {
     id: row.id,
     title: row.title,
@@ -348,10 +255,7 @@ export function dbBookToDisplay(row: {
     year: new Date(row.created_at).getFullYear(),
     rating: 5,
     downloads: 0,
-    cover: {
-      palette: _palettes[h % _palettes.length],
-      ornament: "book",
-    },
+    cover: { palette: palettes[hash % palettes.length], ornament: "book" },
     coverUrl: row.cover_url || undefined,
     synopsis: row.description,
   };
