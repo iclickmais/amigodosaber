@@ -146,8 +146,7 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-
-    // Cache lookup
+    // Cache lookup only - NO AI GENERATION in real-time
     const { data: cached } = await supabaseAdmin
       .from("lessons")
       .select("id, title, content_md")
@@ -157,67 +156,15 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
       .eq("module_slug", data.moduleSlug)
       .eq("lesson_slug", data.lessonSlug)
       .maybeSingle();
+    
     if (cached) return cached as unknown as LessonRow;
 
-    const kindLabel = data.kind === "concurso" ? "concurso público em Angola" : "exame de acesso à universidade em Angola";
-    const prompt = `És um professor angolano experiente. Escreve uma aula completa em português europeu para um aluno que se prepara para ${kindLabel}.
-
-Área: ${found.track.name}
-Sector/Curso: ${found.sector.name}
-Módulo: ${found.module.title}
-Aula: ${found.lesson.title}
-
-Estrutura obrigatória (usa Markdown com títulos ## e ###, listas, negrito, tabelas quando útil):
-
-## Introdução
-2 parágrafos que enquadram o tema e explicam porque é importante para este concurso/curso.
-
-## Conceitos fundamentais
-Explica 4 a 6 conceitos-chave. Cada conceito com:
-- Definição clara
-- Exemplo concreto (usa contexto angolano sempre que possível)
-- Nota prática
-
-## Aprofundamento
-Desenvolve os conceitos com detalhe técnico, incluindo fórmulas, casos, artigos de lei ou dados relevantes.
-
-## Exemplos resolvidos
-Apresenta 3 exemplos ou problemas totalmente resolvidos, mostrando o raciocínio passo-a-passo.
-
-## Erros comuns a evitar
-Lista 4-6 armadilhas típicas em provas.
-
-## Resumo
-5 pontos-chave que o aluno deve memorizar.
-
-## Glossário
-6 a 10 termos técnicos com definição curta.
-
-Escreve como se estivesses numa sala de aula: tom respeitoso, explicativo, sem infantilizar. Sê rigoroso e completo — mínimo 900 palavras.`;
-
-    const content = await callLovableAI({
-      model: "google/gemini-3.6-flash",
-      messages: [
-        { role: "system", content: "És um professor angolano rigoroso e didáctico. Escreves aulas completas em português europeu (norma angolana)." },
-        { role: "user", content: prompt },
-      ],
-    });
-
-    const { data: inserted, error } = await supabaseAdmin
-      .from("lessons")
-      .insert({
-        track_kind: data.kind,
-        track_slug: data.trackSlug,
-        sector_slug: data.sectorSlug,
-        module_slug: data.moduleSlug,
-        lesson_slug: data.lessonSlug,
-        title: found.lesson.title,
-        content_md: content,
-      })
-      .select("id, title, content_md")
-      .single();
-    if (error || !inserted) throw new Error(error?.message ?? "Falha ao gravar aula");
-    return inserted as unknown as LessonRow;
+    // Fallback if not in DB
+    return {
+      id: "placeholder",
+      title: found.lesson.title,
+      content_md: "## Conteúdo em Preparação\nEsta aula está a ser preparada pela nossa equipa pedagógica e estará disponível em breve. Obrigado pela paciência."
+    };
   });
 
 // ————— Quiz: cache-first, senão gera —————
