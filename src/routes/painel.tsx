@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 import { getGameStats } from "@/lib/gamification";
 import { getLeaderboard, issueCertificate, type LeaderboardRow } from "@/lib/gamification.functions";
+import { AffiliateCard } from "@/components/AffiliateCard";
+import { StudyCoachCard } from "@/components/StudyCoachCard";
+import { PushNotificationCard } from "@/components/PushNotificationCard";
 
 export const Route = createFileRoute("/painel")({
   head: () => ({
@@ -252,6 +255,10 @@ function PanelPage() {
             <p className="mt-2 font-serif text-3xl">{data?.attempts.length ?? 0}</p>
           </div>
         </div>
+
+        <AffiliateCard studentId={student.id} />
+        <StudyCoachCard studentId={student.id} plans={plans} />
+        <PushNotificationCard studentId={student.id} />
 
         {/* Ranking semanal */}
         {leaderboard.length > 0 && (

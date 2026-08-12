@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Search, Menu, X, GraduationCap, Baby } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { categories } from "@/lib/library-data";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { useStudent } from "@/hooks/use-student";
@@ -72,6 +73,8 @@ export function SiteHeader() {
             <GraduationCap className="h-3.5 w-3.5" />
             {isAdmin ? "Admin" : student ? student.surname : "Entrar"}
           </Link>
+
+          <ThemeToggle />
 
           <button
             aria-label={searchOpen ? "Fechar busca" : "Pesquisar"}

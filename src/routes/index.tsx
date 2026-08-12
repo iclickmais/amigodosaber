@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck } from "lucide-react";
+import { ArrowUpRight, GraduationCap, Cross, Landmark, BookOpenCheck, Baby } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import cardAcademicos from "@/assets/card-academicos.jpg";
 import cardCristaos from "@/assets/card-cristaos.jpg";
@@ -86,6 +86,18 @@ const cards: CardDef[] = [
     icon: BookOpenCheck,
     accent: "parchment",
   },
+  {
+    to: "/categoria/$slug",
+    params: { slug: "infantil" },
+    eyebrow: "Infantil",
+    title: "Amigo Kids",
+    italic: "aprender",
+    description:
+      "Cadernos de caligrafia, livros de colorir, desenho e alfabetização — PDFs imprimíveis para crianças.",
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/DAVoNTLVGXYbobEF.jpg",
+    icon: Baby,
+    accent: "emerald",
+  },
 ];
 
 const accentRing: Record<CardDef["accent"], string> = {
@@ -128,8 +140,8 @@ function HomePage() {
             </p>
           </div>
 
-          {/* Cards — 4 visíveis sem scroll */}
-          <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {/* Cards — 5 visíveis */}
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
             {cards.map((c) => {
               const Icon = c.icon;
               const linkProps = c.params

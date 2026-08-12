@@ -35,7 +35,7 @@ export interface NotificationPayload {
   status: NotificationStatus;
   sent_at: string | null;
   created_at: string;
-  channel?: "in_app" | "whatsapp";
+  channel?: "in_app" | "whatsapp" | "push";
   delivery_url?: string | null;
   metadata?: Record<string, unknown>;
 }
@@ -63,16 +63,14 @@ export const trackLessonCompletion = createServerFn({ method: "POST" })
       notificationType = NotificationType.FIRST_LESSON_COMPLETED;
       title = "Parabéns! 🎉";
       body = "Completou a sua primeira aula do módulo gratuito no Amigo do Saber! Continue a explorar as aulas livres deste módulo e depois subscreva para aceder a todo o conteúdo.";
-    } else if (data.lessonIndex === 4) {
-      // Mid-module reminder
+    } else if (data.lessonIndex === 1) {
       notificationType = NotificationType.SECOND_LESSON_COMPLETED;
-      title = "Ótimo Progresso! 📚";
-      body = "Está a completar o módulo gratuito. Subscreva já para desbloquear os restantes módulos e todo o conteúdo do Amigo do Saber.";
-    } else if (data.lessonIndex === 14) {
-      // Last free lesson - upsell
+      title = "Ótimo progresso!";
+      body = "Já concluíste duas aulas gratuitas. Mantém o ritmo e prepara-te para desbloquear todo o percurso.";
+    } else if (data.lessonIndex === 2) {
       notificationType = NotificationType.THIRD_LESSON_COMPLETED;
-      title = "Fim do Módulo Gratuito 🔓";
-      body = "Completou todas as aulas gratuitas deste módulo! Subscreva o Amigo do Saber para aceder a todos os módulos deste sector e mais.";
+      title = "Primeiro marco concluído";
+      body = "Concluíste as três aulas gratuitas. Desbloqueia o percurso completo para continuar sem interrupções.";
     }
 
     if (!notificationType) {
@@ -126,24 +124,25 @@ export const checkAndQueueInactivityNotifications = createServerFn({ method: "PO
     // Get all students who completed at least 1 free lesson
     const { data: completedStudents } = await supabaseAdmin
       .from("progress")
-      .select("student_id")
+      .select("student_id, completed_at")
       .order("completed_at", { ascending: false });
 
     if (!completedStudents || completedStudents.length === 0) {
       return { success: true, notificationsQueued: 0 };
     }
 
-    // Group by student_id and count completed lessons
-    const studentLessonCounts = new Map<string, number>();
+    // Group by student and keep the most recent completed lesson.
+    const latestActivity = new Map<string, number>();
     completedStudents.forEach((record: any) => {
-      const count = (studentLessonCounts.get(record.student_id) ?? 0) + 1;
-      studentLessonCounts.set(record.student_id, count);
+      const timestamp = new Date(record.completed_at).getTime();
+      const previous = latestActivity.get(record.student_id) ?? 0;
+      if (timestamp > previous) latestActivity.set(record.student_id, timestamp);
     });
 
-    // Filter students with at least 1 completed lesson
-    const candidateStudents = Array.from(studentLessonCounts.entries())
-      .filter(([_, count]) => count >= 1)
-      .map(([studentId, _]) => studentId);
+    // Only students inactive for the configured threshold receive a reminder.
+    const candidateStudents = Array.from(latestActivity.entries())
+      .filter(([, timestamp]) => timestamp < thresholdDate.getTime())
+      .map(([studentId]) => studentId);
 
     if (candidateStudents.length === 0) {
       return { success: true, notificationsQueued: 0 };
@@ -193,12 +192,13 @@ export const checkAndQueueInactivityNotifications = createServerFn({ method: "PO
     const notifications = finalCandidates.map((studentId) => ({
       student_id: studentId,
       notification_type: NotificationType.INACTIVITY_REMINDER,
-      title: "Sentimos a sua falta! 👋",
-      body: "Não deixe o seu progresso parar. O Amigo do Saber tem muito mais para oferecer. Assine hoje e continue a aprender!",
+      title: "O teu streak está à tua espera",
+      body: "Já passaram dois dias desde a tua última aula. Faz uma sessão curta hoje e mantém o teu progresso vivo.",
       status: NotificationStatus.PENDING,
+      metadata: { url: "/painel", reason: "two_day_inactivity" },
     }));
 
-    const { error } = await supabaseAdmin
+    const { error } = await (supabaseAdmin as any)
       .from("notifications")
       .insert(notifications);
 
@@ -298,7 +298,7 @@ export const sendPendingNotifications = createServerFn({ method: "POST" })
     // Get all pending notifications
     const { data: pendingNotifications } = await supabaseAdmin
       .from("notifications")
-      .select("id, student_id, title, body")
+      .select("id, student_id, title, body, channel, metadata")
       .eq("status", NotificationStatus.PENDING)
       .limit(100);
 
@@ -313,6 +313,21 @@ export const sendPendingNotifications = createServerFn({ method: "POST" })
       .filter((n: any) => !n.channel || n.channel === "in_app")
       .map((n: any) => n.id);
 
+    let pushSent = 0;
+    for (const notification of pendingNotifications as any[]) {
+      try {
+        const { sendPushNotification } = await import("@/lib/push.functions");
+        const result = await sendPushNotification(supabaseAdmin, notification.student_id, {
+          title: notification.title,
+          body: notification.body,
+          url: notification.metadata?.url ?? "/painel",
+        });
+        pushSent += result.sent;
+      } catch (error) {
+        console.warn("Push indisponível; a notificação permanece no painel:", error);
+      }
+    }
+
     if (inAppIds.length) {
       const { error } = await supabaseAdmin
         .from("notifications")
@@ -324,10 +339,11 @@ export const sendPendingNotifications = createServerFn({ method: "POST" })
       }
     }
 
-    const whatsappPending = pendingNotifications.length - inAppIds.length;
+    const whatsappPending = pendingNotifications.filter((n: any) => n.channel === "whatsapp").length;
     return {
       success: true,
       notificationsSent: inAppIds.length,
+      pushSent,
       whatsappPending,
       message: whatsappPending > 0
         ? `${whatsappPending} notificação(ões) aguardam envio por um provedor WhatsApp configurado.`

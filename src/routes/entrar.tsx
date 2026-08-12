@@ -5,7 +5,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { registerStudent } from "@/lib/study.functions";
 import { adminLogin } from "@/lib/admin.functions";
 import { useStudent } from "@/hooks/use-student";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Users } from "lucide-react";
+import { recordReferralClick } from "@/lib/affiliate.functions";
 
 const ADMIN_PHONE_DIGITS = "921346544";
 const ADMIN_KEY = "angopdf.admin";
@@ -17,7 +18,8 @@ function isAdminPhone(raw: string): boolean {
 
 export const Route = createFileRoute("/entrar")({
   validateSearch: (s: Record<string, unknown>) => ({
-    next: typeof s.next === "string" ? s.next : undefined,
+      next: typeof s.next === "string" ? s.next : undefined,
+    ref: typeof s.ref === "string" ? s.ref : undefined,
   }),
   head: () => ({
     meta: [
@@ -50,6 +52,9 @@ function EntrarPage() {
 
   // Já entrou uma vez? Vai directo para o destino pretendido — sem repetir apelido/número.
   useEffect(() => {
+    if (search.ref) {
+      void recordReferralClick({ data: { referralCode: search.ref } }).catch(() => {});
+    }
     if (!hydrated || !student) return;
     const alreadyAdmin =
       typeof window !== "undefined" && window.localStorage.getItem(ADMIN_KEY);
@@ -75,7 +80,9 @@ function EntrarPage() {
     setLoading(true);
     setError(null);
     try {
-      const result = await registerStudent({ data: { phone, surname } });
+      const result = await registerStudent({
+        data: { phone, surname, referralCode: search.ref },
+      });
       save(result);
       if (isAdminPhone(phone)) {
         try {
@@ -105,7 +112,7 @@ function EntrarPage() {
         <div className="rounded-3xl border border-gold/30 bg-card p-8">
           <div className="mb-6 flex items-center gap-3">
             <span className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold">
-              <GraduationCap className="h-6 w-6" />
+              {search.ref ? <Users className="h-6 w-6" /> : <GraduationCap className="h-6 w-6" />}
             </span>
             <div>
               <h1 className="font-serif text-2xl">Registo</h1>
@@ -118,6 +125,11 @@ function EntrarPage() {
             Usamos o seu apelido e telefone para o contactar via WhatsApp quando pedir um livro,
             se inscrever num concurso ou preparatório, e para guardar o seu progresso.
           </p>
+          {search.ref && (
+            <p className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
+              Foste convidado por um aluno Amigo do Saber. O convite foi registado.
+            </p>
+          )}
 
           {student ? (
             <p className="text-sm text-muted-foreground">A entrar…</p>

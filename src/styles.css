@@ -93,6 +93,7 @@
   }
   html {
     color-scheme: dark;
+    background: var(--color-background);
   }
   body {
     background-color: var(--color-background);
@@ -102,6 +103,36 @@
       radial-gradient(ellipse at top, oklch(0.22 0.03 55 / 0.6), transparent 60%),
       radial-gradient(ellipse at bottom, oklch(0.16 0.02 25 / 0.4), transparent 70%);
     background-attachment: fixed;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+  html.light {
+    color-scheme: light;
+    --background: oklch(0.975 0.012 82);
+    --foreground: oklch(0.22 0.02 55);
+    --card: oklch(0.995 0.006 82);
+    --card-foreground: oklch(0.22 0.02 55);
+    --popover: oklch(0.995 0.006 82);
+    --popover-foreground: oklch(0.22 0.02 55);
+    --primary: oklch(0.58 0.14 78);
+    --primary-foreground: oklch(0.99 0.005 82);
+    --secondary: oklch(0.93 0.025 78);
+    --secondary-foreground: oklch(0.25 0.03 55);
+    --muted: oklch(0.93 0.018 78);
+    --muted-foreground: oklch(0.47 0.03 65);
+    --accent: oklch(0.42 0.13 25);
+    --accent-foreground: oklch(0.99 0.005 82);
+    --border: oklch(0.84 0.03 78);
+    --input: oklch(0.9 0.02 78);
+    --ring: oklch(0.58 0.14 78);
+    --gold: oklch(0.55 0.14 78);
+    --gold-soft: oklch(0.62 0.11 78);
+    --burgundy: oklch(0.42 0.13 22);
+    --parchment: oklch(0.3 0.03 82);
+  }
+  html.light body {
+    background-image:
+      radial-gradient(ellipse at top, oklch(0.99 0.02 82 / 0.9), transparent 60%),
+      radial-gradient(ellipse at bottom, oklch(0.92 0.035 78 / 0.45), transparent 70%);
   }
   h1, h2, h3, h4, .font-serif {
     font-family: var(--font-serif);

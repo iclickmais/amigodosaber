@@ -14,6 +14,7 @@ import { priceFor, formatKz } from "@/lib/payment-info";
 import { MotivationBanner } from "@/components/MotivationBanner";
 import { OfflineLessonToggle } from "@/components/OfflineLessonToggle";
 import { GamificationToast } from "@/components/GamificationToast";
+import { LessonMediaPlayer } from "@/components/LessonMediaPlayer";
 import { updateStreak, addLessonXp, getMotivationalMessage } from "@/lib/gamification";
 import {
   offlineKey,
@@ -313,6 +314,7 @@ function AulaPage() {
         )}
         {content && (
           <>
+            {student && <LessonMediaPlayer studentId={student.id} kind={kind} trackSlug={track.slug} sectorSlug={sector.slug} moduleSlug={mod.slug} lessonSlug={lesson.slug} />}
             <LessonMarkdown source={content.content_md} />
             <div className="mt-12 rounded-2xl border border-gold/30 bg-gold/5 p-6 text-center">
               <Sparkles className="mx-auto h-6 w-6 text-gold" />

@@ -16,6 +16,7 @@ const RegisterSchema = z.object({
     .max(20, "Número inválido")
     .regex(/^[+\d\s-]+$/, "Use apenas dígitos e +"),
   surname: z.string().trim().min(2, "Apelido muito curto").max(60, "Apelido demasiado longo"),
+  referralCode: z.string().trim().min(3).max(32).optional(),
 });
 
 function normalizePhone(raw: string): string {
@@ -42,7 +43,7 @@ export const registerStudent = createServerFn({ method: "POST" })
         .maybeSingle();
 
       if (existing) {
-        // Update surname if changed
+        // Update surname if changed; a repeated login never creates a second referral.
         if (existing.surname !== surname) {
           await supabaseAdmin.from("students").update({ surname }).eq("id", existing.id);
         }
@@ -55,6 +56,10 @@ export const registerStudent = createServerFn({ method: "POST" })
         .select("id, phone, surname")
         .single();
       if (error || !created) throw new Error(error?.message ?? "Falha ao registar");
+      if (data.referralCode) {
+        const { recordAffiliateRegistration } = await import("@/lib/affiliate.functions");
+        await recordAffiliateRegistration(supabaseAdmin, created.id, data.referralCode);
+      }
       return { id: created.id, phone: created.phone, surname: created.surname };
     } catch (err) {
       console.warn("Supabase not connected, using local session fallback:", err);
@@ -131,14 +136,17 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
     const sector = findSector(data.kind as TrackKind, data.trackSlug, data.sectorSlug);
     if (!sector) throw new Error("Sector não encontrado");
 
-    // Regra: apenas a PRIMEIRA aula do sector (1º módulo, 1ª aula) é gratuita.
-    const firstModule = sector.sector.modules[0];
-    const firstLessonSlug = firstModule?.lessons[0]?.slug ?? null;
-    const isFreeLesson =
-      !!firstModule &&
-      data.moduleSlug === firstModule.slug &&
-      firstLessonSlug !== null &&
-      data.lessonSlug === firstLessonSlug;
+    // Regra: as primeiras 3 aulas do sector são gratuitas antes do paywall.
+    const allSectorLessons: { moduleSlug: string; lessonSlug: string }[] = [];
+    for (const m of sector.sector.modules) {
+      for (const l of m.lessons) {
+        allSectorLessons.push({ moduleSlug: m.slug, lessonSlug: l.slug });
+      }
+    }
+    const freeLessons = allSectorLessons.slice(0, 3);
+    const isFreeLesson = freeLessons.some(
+      (fl) => fl.moduleSlug === data.moduleSlug && fl.lessonSlug === data.lessonSlug
+    );
 
     if (!isFreeLesson) {
       const { checkAccess } = await import("@/lib/access.functions");
@@ -328,7 +336,7 @@ export const submitAttempt = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: quiz, error: qErr } = await supabaseAdmin
       .from("quizzes")
-      .select("id, lesson_id, questions")
+      .select("id, lesson_id, questions, lessons(track_kind, track_slug, sector_slug, module_slug, lesson_slug)")
       .eq("id", data.quizId)
       .single();
     if (qErr || !quiz) throw new Error("Quiz não encontrado");
@@ -380,14 +388,31 @@ export const submitAttempt = createServerFn({ method: "POST" })
       correctIndices: correctIdx,
     });
 
-    // Mark lesson as completed if score >= 60%
+    // Mark lesson as completed if score >= 60% and trigger the three-lesson funnel once.
     if (score / total >= 0.6) {
+      const { data: existingProgress } = await supabaseAdmin
+        .from("progress")
+        .select("lesson_id")
+        .eq("student_id", data.studentId)
+        .eq("lesson_id", quiz.lesson_id)
+        .maybeSingle();
       await supabaseAdmin
         .from("progress")
         .upsert(
           { student_id: data.studentId, lesson_id: quiz.lesson_id },
           { onConflict: "student_id,lesson_id" },
         );
+
+      const lesson = (quiz as any).lessons;
+      if (!existingProgress && lesson) {
+        const sector = findSector(lesson.track_kind as TrackKind, lesson.track_slug, lesson.sector_slug);
+        const firstModule = sector?.sector.modules[0];
+        const lessonIndex = firstModule?.lessons.findIndex((item) => item.slug === lesson.lesson_slug) ?? -1;
+        if (lessonIndex >= 0 && lessonIndex < 3) {
+          const { trackLessonCompletion } = await import("@/lib/notifications.functions");
+          await trackLessonCompletion({ data: { studentId: data.studentId, lessonIndex, sectorSlug: lesson.sector_slug } });
+        }
+      }
     }
 
     return { score, total, detail };
