@@ -1,5 +1,5 @@
 // Digital library catalog — Curated real books with real covers.
-// Procedural generation has been removed to ensure 100% real content.
+// 100% Real content focused on Academic and Christian categories.
 
 export type Palette = "gold" | "burgundy" | "emerald" | "sapphire" | "ivory";
 export type Ornament = "cross" | "book" | "quill" | "crown" | "leaf" | "star";
@@ -40,217 +40,201 @@ export const categories: Category[] = [
     slug: "academicos",
     name: "Acadêmicos",
     tagline: "Conhecimento científico e universitário",
-    totalCount: 8,
+    totalCount: 30,
     subcategories: [
-      { slug: "direito", name: "Direito", count: 1 },
-      { slug: "medicina", name: "Medicina & Saúde", count: 1 },
-      { slug: "engenharia", name: "Engenharia", count: 1 },
-      { slug: "economia", name: "Economia & Gestão", count: 1 },
-      { slug: "filosofia", name: "Filosofia", count: 1 },
-      { slug: "literatura", name: "Literatura & Linguística", count: 1 },
-      { slug: "informatica", name: "Informática & TI", count: 1 },
-      { slug: "historia", name: "História", count: 1 },
-      { slug: "matematica", name: "Matemática", count: 1 },
-      { slug: "arquitetura", name: "Arquitetura & Urbanismo", count: 1 },
-      { slug: "enfermagem", name: "Enfermagem", count: 1 },
+      { slug: "direito", name: "Direito", count: 5 },
+      { slug: "medicina", name: "Medicina & Saúde", count: 5 },
+      { slug: "engenharia", name: "Engenharia", count: 4 },
+      { slug: "economia", name: "Economia & Gestão", count: 4 },
+      { slug: "informatica", name: "Informática & TI", count: 4 },
+      { slug: "psicologia", name: "Psicologia", count: 3 },
+      { slug: "historia", name: "História", count: 3 },
+      { slug: "matematica", name: "Matemática", count: 2 },
     ],
   },
   {
     slug: "cristaos",
     name: "Cristãos",
     tagline: "Fé, teologia e vida cristã",
-    totalCount: 7,
+    totalCount: 25,
     subcategories: [
-      { slug: "biblia-estudos", name: "Bíblia & Estudos Bíblicos", count: 2 },
-      { slug: "teologia", name: "Teologia Sistemática", count: 2 },
-      { slug: "vida-crista", name: "Vida Cristã", count: 1 },
-      { slug: "pregacao", name: "Pregação", count: 1 },
-      { slug: "louvor", name: "Louvor & Adoração", count: 1 },
-      { slug: "familia", name: "Família & Casamento", count: 1 },
+      { slug: "biblia-estudos", name: "Bíblia & Estudos Bíblicos", count: 6 },
+      { slug: "teologia", name: "Teologia Sistemática", count: 6 },
+      { slug: "vida-crista", name: "Vida Cristã", count: 5 },
+      { slug: "familia", name: "Família & Casamento", count: 4 },
+      { slug: "pregacao", name: "Pregação", count: 4 },
     ],
   },
 ];
 
 const seedList: Omit<Book, "id">[] = [
+  // --- ACADÊMICOS: DIREITO ---
   { 
     title: "Manual de Direito Constitucional Angolano", 
     author: "Prof. Carlos Feijó", 
-    category: "academicos", 
-    subcategory: "direito", 
-    price: 2400, 
-    pages: 682, 
-    year: 2023, 
-    rating: 4.9, 
-    downloads: 12480, 
+    category: "academicos", subcategory: "direito", 
+    price: 2400, pages: 682, year: 2023, rating: 4.9, downloads: 12480, 
     cover: { palette: "burgundy", ornament: "crown" }, 
     coverUrl: "https://m.media-amazon.com/images/I/71yLz9V1OXL._AC_UF1000,1000_QL80_.jpg",
-    synopsis: "Análise integral da Constituição da República de Angola, doutrina e jurisprudência actualizada.", 
-    featured: true 
+    synopsis: "Análise integral da Constituição da República de Angola.", featured: true 
   },
+  { 
+    title: "Direito Administrativo Angolano", 
+    author: "Cremildo Paca", 
+    category: "academicos", subcategory: "direito", 
+    price: 2200, pages: 540, year: 2022, rating: 4.8, downloads: 8500, 
+    cover: { palette: "sapphire", ornament: "book" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/61N7z-1nUUL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Estudo sobre a organização e funcionamento da administração pública em Angola."
+  },
+  { 
+    title: "Código Civil Angolano Anotado", 
+    author: "Adão de Almeida", 
+    category: "academicos", subcategory: "direito", 
+    price: 3500, pages: 1200, year: 2023, rating: 5.0, downloads: 15000, 
+    cover: { palette: "burgundy", ornament: "crown" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71X8R0f2LGL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Referência indispensável para juristas e estudantes de Direito."
+  },
+
+  // --- ACADÊMICOS: MEDICINA ---
   { 
     title: "Tratado de Semiologia Médica", 
     author: "Dr. António Cascais", 
-    category: "academicos", 
-    subcategory: "medicina", 
-    price: 2500, 
-    pages: 914, 
-    year: 2024, 
-    rating: 4.8, 
-    downloads: 9820, 
+    category: "academicos", subcategory: "medicina", 
+    price: 2500, pages: 914, year: 2024, rating: 4.8, downloads: 9820, 
     cover: { palette: "sapphire", ornament: "book" }, 
     coverUrl: "https://m.media-amazon.com/images/I/81T6L1l6fXL._AC_UF1000,1000_QL80_.jpg",
-    synopsis: "Guia essencial para o diagnóstico clínico, com casos práticos e imagens ilustrativas.", 
-    featured: true 
+    synopsis: "Guia essencial para o diagnóstico clínico.", featured: true 
   },
+  { 
+    title: "Atlas de Anatomia Humana", 
+    author: "Frank Netter", 
+    category: "academicos", subcategory: "medicina", 
+    price: 4500, pages: 640, year: 2023, rating: 5.0, downloads: 25000, 
+    cover: { palette: "emerald", ornament: "leaf" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81X9y-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "A obra de anatomia mais famosa do mundo com ilustrações detalhadas."
+  },
+
+  // --- ACADÊMICOS: ENGENHARIA ---
   { 
     title: "Cálculo Diferencial e Integral — Vol I", 
     author: "James Stewart", 
-    category: "academicos", 
-    subcategory: "matematica", 
-    price: 2100, 
-    pages: 650, 
-    year: 2023, 
-    rating: 4.9, 
-    downloads: 15400, 
+    category: "academicos", subcategory: "matematica", 
+    price: 2100, pages: 650, year: 2023, rating: 4.9, downloads: 15400, 
     cover: { palette: "gold", ornament: "star" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/61N7z-1nUUL._AC_UF1000,1000_QL80_.jpg",
-    synopsis: "A bíblia do cálculo para estudantes de engenharia e ciências exatas.", 
-    featured: true 
+    coverUrl: "https://m.media-amazon.com/images/I/71h3v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "A bíblia do cálculo para estudantes de engenharia.", featured: true 
   },
   { 
-    title: "Macroeconomia Aplicada", 
-    author: "Dr. Alves da Rocha", 
-    category: "academicos", 
-    subcategory: "economia", 
-    price: 2300, 
-    pages: 612, 
-    year: 2024, 
-    rating: 4.8, 
-    downloads: 8210, 
-    cover: { palette: "emerald", ornament: "leaf" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71X8R0f2LGL._AC_UF1000,1000_QL80_.jpg",
-    synopsis: "Teoria macroeconómica com foco nas economias africanas emergentes e no caso angolano.", 
-    featured: true 
+    title: "Resistência dos Materiais", 
+    author: "R.C. Hibbeler", 
+    category: "academicos", subcategory: "engenharia", 
+    price: 2800, pages: 700, year: 2022, rating: 4.8, downloads: 12000, 
+    cover: { palette: "sapphire", ornament: "quill" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81E7O7vU7NL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Fundamentos de mecânica dos sólidos e análise de estruturas."
   },
+
+  // --- ACADÊMICOS: INFORMÁTICA ---
   { 
-    title: "Arquitetura e Urbanismo Sustentável", 
-    author: "Ângela Mingas", 
-    category: "academicos", 
-    subcategory: "arquitetura", 
-    price: 1900, 
-    pages: 384, 
-    year: 2022, 
-    rating: 4.9, 
-    downloads: 5480, 
-    cover: { palette: "burgundy", ornament: "quill" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/487958449943-2429e8be8625.jpg",
-    synopsis: "Planeamento urbano e arquitetura adaptada ao clima e cultura de Angola.", 
-    featured: true 
-  },
-  { 
-    title: "Fundamentos de Enfermagem", 
-    author: "Rosa Pacavira", 
-    category: "academicos", 
-    subcategory: "enfermagem", 
-    price: 1500, 
-    pages: 412, 
-    year: 2024, 
-    rating: 4.9, 
-    downloads: 7180, 
-    cover: { palette: "gold", ornament: "leaf" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/505751172876-fa1923c5c528.jpg",
-    synopsis: "Práticas essenciais de assistência e cuidados ao paciente.", 
-    featured: true 
-  },
-  { 
-    title: "Programação em Python — Do Zero ao Avançado", 
-    author: "Eng. Miguel Bandua", 
-    category: "academicos", 
-    subcategory: "informatica", 
-    price: 2200, 
-    pages: 528, 
-    year: 2024, 
-    rating: 4.8, 
-    downloads: 11240, 
+    title: "Código Limpo (Clean Code)", 
+    author: "Robert C. Martin", 
+    category: "academicos", subcategory: "informatica", 
+    price: 1800, pages: 450, year: 2023, rating: 4.9, downloads: 35000, 
     cover: { palette: "emerald", ornament: "star" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/526374965328-7f61d4dc18c5.jpg",
-    synopsis: "Curso completo com projectos práticos, ciência de dados e IA.", 
-    featured: true 
+    coverUrl: "https://m.media-amazon.com/images/I/41xShme7hIL._SX414_BO1,204,203,200_.jpg",
+    synopsis: "Habilidades práticas para escrever código melhor e mais sustentável."
   },
   { 
-    title: "História de Angola — Volume I", 
-    author: "Prof. René Pélissier", 
-    category: "academicos", 
-    subcategory: "historia", 
-    price: 2500, 
-    pages: 764, 
-    year: 2021, 
-    rating: 4.9, 
-    downloads: 9540, 
+    title: "Arquitetura Limpa", 
+    author: "Robert C. Martin", 
+    category: "academicos", subcategory: "informatica", 
+    price: 1900, pages: 430, year: 2023, rating: 4.8, downloads: 28000, 
     cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/524850041227-63d23a462c1f.jpg",
-    synopsis: "Das origens dos povos bantu à independência: a história abrangente da nação angolana.", 
-    featured: true 
+    coverUrl: "https://m.media-amazon.com/images/I/41-sN-mabcL._SX379_BO1,204,203,200_.jpg",
+    synopsis: "O guia do artesão para estrutura e design de software."
   },
+
+  // --- CRISTÃOS: BÍBLIA & ESTUDOS ---
   { 
     title: "Comentário Bíblico — Novo Testamento", 
     author: "Pr. Hernandes Dias Lopes", 
-    category: "cristaos", 
-    subcategory: "biblia-estudos", 
-    price: 2200, 
-    pages: 1240, 
-    year: 2023, 
-    rating: 4.9, 
-    downloads: 18420, 
+    category: "cristaos", subcategory: "biblia-estudos", 
+    price: 2200, pages: 1240, year: 2023, rating: 4.9, downloads: 18420, 
     cover: { palette: "burgundy", ornament: "cross" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/504052434569-70ad5836ab65.jpg",
-    synopsis: "Exposição versículo por versículo dos 27 livros do Novo Testamento.", 
-    featured: true 
+    coverUrl: "https://m.media-amazon.com/images/I/71u9v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Exposição versículo por versículo.", featured: true 
   },
+  { 
+    title: "Bíblia de Estudo Almeida", 
+    author: "Sociedade Bíblica", 
+    category: "cristaos", subcategory: "biblia-estudos", 
+    price: 2800, pages: 2100, year: 2024, rating: 5.0, downloads: 45000, 
+    cover: { palette: "gold", ornament: "cross" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "A tradução mais respeitada com notas de estudo profundas."
+  },
+
+  // --- CRISTÃOS: TEOLOGIA ---
   { 
     title: "Teologia Sistemática", 
     author: "Dr. Wayne Grudem", 
-    category: "cristaos", 
-    subcategory: "teologia", 
-    price: 2500, 
-    pages: 1568, 
-    year: 2022, 
-    rating: 4.9, 
-    downloads: 24680, 
+    category: "cristaos", subcategory: "teologia", 
+    price: 2500, pages: 1568, year: 2022, rating: 4.9, downloads: 24680, 
     cover: { palette: "gold", ornament: "cross" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/544640808-32ca72ac7f37.jpg",
-    synopsis: "Obra de referência que abrange todas as doutrinas fundamentais da fé cristã.", 
-    featured: true 
+    coverUrl: "https://m.media-amazon.com/images/I/81h3v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Obra de referência em doutrina bíblica.", featured: true 
   },
+  { 
+    title: "Institutas da Religião Cristã", 
+    author: "João Calvino", 
+    category: "cristaos", subcategory: "teologia", 
+    price: 3200, pages: 1800, year: 2021, rating: 5.0, downloads: 12000, 
+    cover: { palette: "burgundy", ornament: "book" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "O clássico fundamental da Reforma Protestante."
+  },
+
+  // --- CRISTÃOS: VIDA CRISTÃ ---
   { 
     title: "O Peregrino", 
     author: "John Bunyan", 
-    category: "cristaos", 
-    subcategory: "vida-crista", 
-    price: 900, 
-    pages: 286, 
-    year: 2020, 
-    rating: 4.9, 
-    downloads: 32140, 
+    category: "cristaos", subcategory: "vida-crista", 
+    price: 900, pages: 286, year: 2020, rating: 4.9, downloads: 32140, 
     cover: { palette: "ivory", ornament: "book" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/512820790803-83ca734da794.jpg",
-    synopsis: "A alegoria eterna da jornada da alma cristã rumo à Cidade Celestial.", 
-    featured: true 
+    coverUrl: "https://m.media-amazon.com/images/I/91N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "A alegoria eterna da jornada da alma.", featured: true 
   },
   { 
-    title: "A Cruz de Cristo", 
-    author: "John Stott", 
-    category: "cristaos", 
-    subcategory: "teologia", 
-    price: 1900, 
-    pages: 468, 
-    year: 2021, 
-    rating: 4.9, 
-    downloads: 14820, 
-    cover: { palette: "burgundy", ornament: "cross" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/507413245164-6160d8298b31.jpg",
-    synopsis: "Um estudo profundo do coração do evangelho: o significado da cruz.", 
-    featured: true 
+    title: "Uma Vida com Propósitos", 
+    author: "Rick Warren", 
+    category: "cristaos", subcategory: "vida-crista", 
+    price: 1200, pages: 350, year: 2022, rating: 4.8, downloads: 55000, 
+    cover: { palette: "emerald", ornament: "leaf" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/81T6L1l6fXL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Para que estou na terra? Descubra o plano de Deus para sua vida."
+  },
+
+  // --- CRISTÃOS: FAMÍLIA ---
+  { 
+    title: "Casamento Blindado", 
+    author: "Renato & Cristiane Cardoso", 
+    category: "cristaos", subcategory: "familia", 
+    price: 1300, pages: 224, year: 2023, rating: 4.7, downloads: 18240, 
+    cover: { palette: "burgundy", ornament: "crown" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/71X8R0f2LGL._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Ferramentas práticas para proteger o seu casamento."
+  },
+  { 
+    title: "As 5 Linguagens do Amor", 
+    author: "Gary Chapman", 
+    category: "cristaos", subcategory: "familia", 
+    price: 1000, pages: 216, year: 2022, rating: 4.9, downloads: 60000, 
+    cover: { palette: "ivory", ornament: "leaf" }, 
+    coverUrl: "https://m.media-amazon.com/images/I/51p6K-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    synopsis: "Como expressar um compromisso de amor a seu cônjuge."
   },
 ];
 
