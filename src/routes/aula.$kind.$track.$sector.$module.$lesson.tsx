@@ -275,8 +275,8 @@ function AulaPage() {
         {loadingLesson && (
           <div className="flex flex-col items-center gap-3 py-16 text-muted-foreground">
             <Loader2 className="h-8 w-8 animate-spin text-gold" />
-            <p className="font-serif text-lg">O professor está a preparar a aula…</p>
-            <p className="text-xs">Isto pode demorar até 30 segundos na primeira vez.</p>
+            <p className="font-serif text-lg">A abrir a aula preparada…</p>
+            <p className="text-xs">O conteúdo já está disponível para estudo.</p>
           </div>
         )}
         {needsPayment && !loadingLesson && student && (
@@ -318,7 +318,7 @@ function AulaPage() {
               <Sparkles className="mx-auto h-6 w-6 text-gold" />
               <h2 className="mt-3 font-serif text-2xl">Testar conhecimento</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                10 perguntas geradas a partir desta aula.
+                10 perguntas preparadas para rever esta aula.
               </p>
               <button
                 onClick={startQuiz}
@@ -326,7 +326,7 @@ function AulaPage() {
                 className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
               >
                 {loadingQuiz ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> A preparar…</>
+                  <><Loader2 className="h-4 w-4 animate-spin" /> A abrir quiz…</>
                 ) : (
                   <>Começar quiz</>
                 )}

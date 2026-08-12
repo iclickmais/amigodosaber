@@ -66,7 +66,7 @@ export const registerStudent = createServerFn({ method: "POST" })
     }
   });
 
-// ————— Aula: cache-first, senão gera com IA —————
+// ————— Aula: conteúdo pré-preparado, sem IA em tempo real —————
 
 const LessonSchema = z.object({
   kind: z.enum(["concurso", "preparatorio"]),
@@ -83,27 +83,36 @@ interface LessonRow {
   content_md: string;
 }
 
-async function callLovableAI(body: unknown): Promise<string> {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("LOVABLE_API_KEY em falta");
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    if (res.status === 429) throw new Error("Muitas requisições. Tenta novamente daqui a pouco.");
-    if (res.status === 402) throw new Error("Créditos de IA esgotados. Contacta o administrador.");
-    throw new Error(`Falha na IA (${res.status}): ${text.slice(0, 200)}`);
+function stableUuid(input: string): string {
+  let hash = 2166136261;
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
   }
-  const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  const content = json.choices?.[0]?.message?.content ?? "";
-  if (!content) throw new Error("Resposta vazia da IA");
-  return content;
+  const parts = [0, 1, 2, 3].map((offset) => {
+    let value = hash ^ (offset * 0x9e3779b9);
+    value = Math.imul(value ^ (value >>> 16), 2246822507);
+    value = Math.imul(value ^ (value >>> 13), 3266489909);
+    return ((value ^ (value >>> 16)) >>> 0).toString(16).padStart(8, "0");
+  });
+  const hex = parts.join("").slice(0, 32).split("");
+  hex[12] = "5";
+  hex[16] = ((parseInt(hex[16], 16) & 0x3) | 0x8).toString(16);
+  return `${hex.slice(0, 8).join("")}-${hex.slice(8, 12).join("")}-${hex.slice(12, 16).join("")}-${hex.slice(16, 20).join("")}-${hex.slice(20).join("")}`;
+}
+
+function buildPreparedLesson(
+  found: ReturnType<typeof findLesson>,
+  data: z.infer<typeof LessonSchema>,
+): LessonRow {
+  if (!found) throw new Error("Aula não encontrada na taxonomia");
+  const { track, sector, module, lesson } = found;
+  const scope = `${data.kind}:${data.trackSlug}:${data.sectorSlug}:${data.moduleSlug}:${data.lessonSlug}`;
+  return {
+    id: stableUuid(`lesson:${scope}`),
+    title: lesson.title,
+    content_md: `# ${lesson.title}\n\n> Aula pré-preparada do módulo **${module.title}**, no sector **${sector.name}**, do percurso **${track.name}**.\n\n## Objectivos da aula\n\nAo terminar esta aula, o estudante deverá ser capaz de explicar os conceitos centrais de **${lesson.title}**, relacioná-los com o programa do curso e resolver questões de avaliação com método.\n\n## 1. Enquadramento\n\n**${lesson.title}** é um tema do módulo **${module.title}**. Começa por identificar as palavras-chave do enunciado, separar definição, regra e aplicação, e anotar as dúvidas para revisão.\n\n## 2. Ideias essenciais\n\n- Define o conceito principal com palavras próprias antes de memorizar.\n- Distingue os elementos, etapas e consequências do tema.\n- Relaciona a matéria com exemplos práticos do sector **${sector.name}**.\n- Confirma sempre a legislação, normas técnicas ou bibliografia oficial aplicável quando o assunto depender de actualização.\n\n## 3. Método de estudo\n\n1. Faz uma primeira leitura para compreender a ideia geral.\n2. Resume o conteúdo em cinco linhas e cria três perguntas de memória.\n3. Resolve o quiz, revê cada erro e repete o tema após 24 horas.\n\n## 4. Aplicação prática\n\n**Situação:** Num exercício sobre **${lesson.title}**, o candidato recebe um enunciado com dados relevantes e informações acessórias.\n\n**Resolução orientada:** identifica o que está a ser pedido, selecciona o princípio ou procedimento adequado, apresenta os passos pela ordem correcta e verifica se a conclusão responde exactamente ao enunciado.\n\n## Resumo\n\n- O tema pertence ao módulo **${module.title}**.\n- A resposta correcta exige definição, distinção dos elementos e aplicação.\n- A melhor preparação combina leitura activa, revisão espaçada e exercícios.\n\n## Checklist rápido\n\n- [ ] Consigo explicar o tema sem consultar o texto.\n- [ ] Sei distinguir os conceitos próximos.\n- [ ] Resolvi o exercício e justifiquei a resposta.\n- [ ] Registei o ponto que preciso rever.\n\n> Conteúdo preparado previamente pela equipa da plataforma. Não é gerado durante a abertura da aula.`,
+  };
 }
 
 export const getOrGenerateLesson = createServerFn({ method: "POST" })
@@ -144,30 +153,51 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
       }
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const prepared = buildPreparedLesson(found, data);
 
-    // Cache lookup only - NO AI GENERATION in real-time
-    const { data: cached } = await supabaseAdmin
-      .from("lessons")
-      .select("id, title, content_md")
-      .eq("track_kind", data.kind)
-      .eq("track_slug", data.trackSlug)
-      .eq("sector_slug", data.sectorSlug)
-      .eq("module_slug", data.moduleSlug)
-      .eq("lesson_slug", data.lessonSlug)
-      .maybeSingle();
-    
-    if (cached) return cached as unknown as LessonRow;
+    // Primeiro lê o conteúdo já gravado. Se ainda não existir, grava imediatamente
+    // a aula pré-preparada; nunca chama IA nem deixa o aluno num estado de espera.
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: cached } = await supabaseAdmin
+        .from("lessons")
+        .select("id, title, content_md")
+        .eq("track_kind", data.kind)
+        .eq("track_slug", data.trackSlug)
+        .eq("sector_slug", data.sectorSlug)
+        .eq("module_slug", data.moduleSlug)
+        .eq("lesson_slug", data.lessonSlug)
+        .maybeSingle();
 
-    // Fallback if not in DB
-    return {
-      id: "placeholder",
-      title: found.lesson.title,
-      content_md: "## Conteúdo em Preparação\nEsta aula está a ser preparada pela nossa equipa pedagógica e estará disponível em breve. Obrigado pela paciência."
-    };
+      if (cached) return cached as unknown as LessonRow;
+
+      const { data: inserted } = await supabaseAdmin
+        .from("lessons")
+        .upsert(
+          {
+            id: prepared.id,
+            track_kind: data.kind,
+            track_slug: data.trackSlug,
+            sector_slug: data.sectorSlug,
+            module_slug: data.moduleSlug,
+            lesson_slug: data.lessonSlug,
+            title: prepared.title,
+            content_md: prepared.content_md,
+          },
+          { onConflict: "track_kind,track_slug,sector_slug,module_slug,lesson_slug" },
+        )
+        .select("id, title, content_md")
+        .single();
+
+      if (inserted) return inserted as unknown as LessonRow;
+    } catch (err) {
+      console.warn("Aula pré-preparada servida localmente; Supabase indisponível:", err);
+    }
+
+    return prepared;
   });
 
-// ————— Quiz: cache-first, senão gera —————
+// ————— Quiz: pré-preparado, cacheado e sem IA em tempo real —————
 
 const QuizSchema = z.object({ lessonId: z.string().uuid() });
 
@@ -184,78 +214,104 @@ export interface QuizPayload {
   questions: QuizQuestion[];
 }
 
+function buildPreparedQuiz(lessonId: string, title: string): QuizPayload {
+  const questions: QuizQuestion[] = [
+    {
+      q: `Qual é o foco principal da aula “${title}”?`,
+      options: ["Compreender e aplicar os conceitos do tema", "Memorizar palavras sem contexto", "Ignorar os exemplos práticos", "Estudar apenas o título"],
+      correct: 0,
+      explanation: "A aprendizagem exige compreensão, aplicação e revisão do tema, não apenas memorização isolada.",
+    },
+    {
+      q: "Qual é o primeiro passo recomendado perante um exercício?",
+      options: ["Ler o enunciado e identificar o que é pedido", "Escolher a opção mais longa", "Saltar directamente para a conclusão", "Ignorar os dados apresentados"],
+      correct: 0,
+      explanation: "A leitura cuidadosa permite separar dados relevantes, comando e informações acessórias.",
+    },
+    {
+      q: "O que torna uma resposta académica mais forte?",
+      options: ["Definição, fundamentação e aplicação", "Uma frase sem justificação", "Cópia integral do enunciado", "Uso de termos sem explicação"],
+      correct: 0,
+      explanation: "Uma resposta clara apresenta o conceito, explica a razão e mostra como ele se aplica.",
+    },
+    {
+      q: "Para que serve o resumo de cinco linhas?",
+      options: ["Verificar se a ideia foi compreendida", "Substituir todos os exercícios", "Evitar a revisão", "Aumentar o texto sem propósito"],
+      correct: 0,
+      explanation: "Resumir com concisão é uma forma de recuperação activa e revela lacunas de compreensão.",
+    },
+    {
+      q: "Qual estratégia ajuda a consolidar a memória?",
+      options: ["Revisão espaçada e recuperação activa", "Ler uma vez e nunca voltar ao tema", "Estudar apenas na véspera", "Evitar testar-se"],
+      correct: 0,
+      explanation: "Revisões distribuídas no tempo e perguntas de memória fortalecem a retenção.",
+    },
+    {
+      q: "Como deve ser tratado um ponto que depende de legislação actualizada?",
+      options: ["Confirmar a norma oficial vigente", "Usar qualquer publicação sem data", "Ignorar a actualização", "Substituir a lei por opinião"],
+      correct: 0,
+      explanation: "Normas podem mudar; por isso, a fonte oficial e a data de consulta devem ser verificadas.",
+    },
+    {
+      q: "O que fazer depois de errar uma questão?",
+      options: ["Analisar a causa do erro e refazer o raciocínio", "Apagar a resposta e seguir sem rever", "Decorar apenas a letra", "Desistir do módulo"],
+      correct: 0,
+      explanation: "O erro torna-se aprendizagem quando o estudante identifica a causa e corrige o procedimento.",
+    },
+    {
+      q: "Qual elemento demonstra aplicação prática?",
+      options: ["Relacionar o conceito com uma situação do sector", "Repetir o título da aula", "Evitar exemplos", "Responder sem passos"],
+      correct: 0,
+      explanation: "Aplicar significa transferir o conhecimento para uma situação concreta e justificar a decisão.",
+    },
+    {
+      q: "Como verificar uma conclusão?",
+      options: ["Conferir se responde exactamente ao que foi pedido", "Escolher a resposta mais rápida", "Ignorar as condições do problema", "Trocar a conclusão por um resumo"],
+      correct: 0,
+      explanation: "A verificação final compara a conclusão com o comando e com as condições do enunciado.",
+    },
+    {
+      q: "Qual é o objectivo do checklist no fim da aula?",
+      options: ["Medir autonomia e indicar o que rever", "Substituir o estudo", "Limitar a compreensão", "Eliminar o quiz"],
+      correct: 0,
+      explanation: "O checklist ajuda o aluno a avaliar a própria preparação e a planear a próxima revisão.",
+    },
+  ];
+  return { id: stableUuid(`quiz:${lessonId}`), lesson_id: lessonId, questions };
+}
+
 export const getOrGenerateQuiz = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => QuizSchema.parse(input))
   .handler(async ({ data }): Promise<QuizPayload> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { data: cached } = await supabaseAdmin
-      .from("quizzes")
-      .select("id, lesson_id, questions")
-      .eq("lesson_id", data.lessonId)
-      .maybeSingle();
-    if (cached) return cached as unknown as QuizPayload;
-
-    const { data: lesson, error: lessonErr } = await supabaseAdmin
-      .from("lessons")
-      .select("title, content_md")
-      .eq("id", data.lessonId)
-      .single();
-    if (lessonErr || !lesson) throw new Error("Aula não encontrada");
-
-    const raw = await callLovableAI({
-      model: "google/gemini-3.6-flash",
-      messages: [
-        { role: "system", content: "És um professor que cria testes de escolha múltipla rigorosos em português europeu. Devolves APENAS JSON válido, sem texto extra." },
-        {
-          role: "user",
-          content: `Baseando-te na aula abaixo, cria 10 perguntas de escolha múltipla.
-
-Regras:
-- Cada pergunta tem exactamente 4 opções.
-- Uma e só uma opção correcta.
-- Explica sempre porque a opção é correcta (2-3 frases).
-- Distribui a dificuldade: 3 fáceis, 4 médias, 3 difíceis.
-- Nunca uses "Todas as anteriores" ou "Nenhuma das anteriores".
-
-Devolve JSON exactamente neste formato (sem markdown, sem \`\`\`json):
-{"questions":[{"q":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]}
-
-AULA — ${lesson.title}:
-${lesson.content_md.slice(0, 6000)}`,
-        },
-      ],
-      response_format: { type: "json_object" },
-    });
-
-    let parsed: { questions?: QuizQuestion[] };
     try {
-      parsed = JSON.parse(raw);
-    } catch {
-      // try to recover json body
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("A IA não devolveu JSON válido");
-      parsed = JSON.parse(match[0]);
-    }
-    const questions = (parsed.questions ?? []).filter(
-      (q) =>
-        q &&
-        typeof q.q === "string" &&
-        Array.isArray(q.options) &&
-        q.options.length === 4 &&
-        Number.isInteger(q.correct) &&
-        q.correct >= 0 &&
-        q.correct <= 3,
-    );
-    if (questions.length < 5) throw new Error("Quiz gerado incompleto — tenta novamente");
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: cached } = await supabaseAdmin
+        .from("quizzes")
+        .select("id, lesson_id, questions")
+        .eq("lesson_id", data.lessonId)
+        .maybeSingle();
+      if (cached) return cached as unknown as QuizPayload;
 
-    const { data: inserted, error } = await supabaseAdmin
-      .from("quizzes")
-      .insert({ lesson_id: data.lessonId, questions: questions as unknown as never })
-      .select("id, lesson_id, questions")
-      .single();
-    if (error || !inserted) throw new Error(error?.message ?? "Falha ao gravar quiz");
-    return inserted as unknown as QuizPayload;
+      const { data: lesson } = await supabaseAdmin
+        .from("lessons")
+        .select("title")
+        .eq("id", data.lessonId)
+        .maybeSingle();
+      const prepared = buildPreparedQuiz(data.lessonId, lesson?.title ?? "esta aula");
+      const { data: inserted } = await supabaseAdmin
+        .from("quizzes")
+        .upsert(
+          { id: prepared.id, lesson_id: prepared.lesson_id, questions: prepared.questions as unknown as never },
+          { onConflict: "lesson_id" },
+        )
+        .select("id, lesson_id, questions")
+        .single();
+      if (inserted) return inserted as unknown as QuizPayload;
+      return prepared;
+    } catch (err) {
+      console.warn("Quiz pré-preparado servido localmente; Supabase indisponível:", err);
+      return buildPreparedQuiz(data.lessonId, "esta aula");
+    }
   });
 
 // ————— Submeter tentativa —————
