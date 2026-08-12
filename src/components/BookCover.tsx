@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Book } from "@/lib/library-data";
 
 const paletteStyles: Record<Book["cover"]["palette"], string> = {
@@ -28,7 +29,9 @@ export function BookCover({
   book: Book;
   className?: string;
 }) {
-  if (book.coverUrl) {
+  const [imgError, setImgError] = useState(false);
+
+  if (book.coverUrl && !imgError) {
     return (
       <div
         className={`relative aspect-[2/3] w-full overflow-hidden rounded-sm shadow-book bg-muted ${className}`}
@@ -38,6 +41,7 @@ export function BookCover({
           alt={book.title}
           className="h-full w-full object-cover"
           loading="lazy"
+          onError={() => setImgError(true)}
         />
         {/* Spine highlight overlay even on real covers for consistency */}
         <div className="absolute inset-y-0 left-0 w-1 bg-black/20" />

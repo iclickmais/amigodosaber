@@ -75,7 +75,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "direito", 
     price: 2400, pages: 682, year: 2023, rating: 4.9, downloads: 12480, 
     cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71yLz9V1OXL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=M_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Análise integral da Constituição da República de Angola.", featured: true 
   },
   { 
@@ -84,7 +84,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "direito", 
     price: 2200, pages: 540, year: 2022, rating: 4.8, downloads: 8500, 
     cover: { palette: "sapphire", ornament: "book" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/61N7z-1nUUL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=U_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Estudo sobre a organização e funcionamento da administração pública em Angola."
   },
   { 
@@ -93,7 +93,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "direito", 
     price: 3500, pages: 1200, year: 2023, rating: 5.0, downloads: 15000, 
     cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71X8R0f2LGL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=V_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Referência indispensável para juristas e estudantes de Direito."
   },
 
@@ -104,7 +104,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "medicina", 
     price: 2500, pages: 914, year: 2024, rating: 4.8, downloads: 9820, 
     cover: { palette: "sapphire", ornament: "book" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/81T6L1l6fXL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=X_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Guia essencial para o diagnóstico clínico.", featured: true 
   },
   { 
@@ -113,7 +113,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "medicina", 
     price: 4500, pages: 640, year: 2023, rating: 5.0, downloads: 25000, 
     cover: { palette: "emerald", ornament: "leaf" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/81X9y-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=Z_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "A obra de anatomia mais famosa do mundo com ilustrações detalhadas."
   },
 
@@ -124,7 +124,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "matematica", 
     price: 2100, pages: 650, year: 2023, rating: 4.9, downloads: 15400, 
     cover: { palette: "gold", ornament: "star" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71h3v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=a_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "A bíblia do cálculo para estudantes de engenharia.", featured: true 
   },
   { 
@@ -133,7 +133,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "engenharia", 
     price: 2800, pages: 700, year: 2022, rating: 4.8, downloads: 12000, 
     cover: { palette: "sapphire", ornament: "quill" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/81E7O7vU7NL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=b_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Fundamentos de mecânica dos sólidos e análise de estruturas."
   },
 
@@ -144,7 +144,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "informatica", 
     price: 1800, pages: 450, year: 2023, rating: 4.9, downloads: 35000, 
     cover: { palette: "emerald", ornament: "star" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/41xShme7hIL._SX414_BO1,204,203,200_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=c_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Habilidades práticas para escrever código melhor e mais sustentável."
   },
   { 
@@ -153,7 +153,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "academicos", subcategory: "informatica", 
     price: 1900, pages: 430, year: 2023, rating: 4.8, downloads: 28000, 
     cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/41-sN-mabcL._SX379_BO1,204,203,200_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=d_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "O guia do artesão para estrutura e design de software."
   },
 
@@ -164,7 +164,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "biblia-estudos", 
     price: 2200, pages: 1240, year: 2023, rating: 4.9, downloads: 18420, 
     cover: { palette: "burgundy", ornament: "cross" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71u9v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=e_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Exposição versículo por versículo.", featured: true 
   },
   { 
@@ -173,7 +173,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "biblia-estudos", 
     price: 2800, pages: 2100, year: 2024, rating: 5.0, downloads: 45000, 
     cover: { palette: "gold", ornament: "cross" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/81N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=f_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "A tradução mais respeitada com notas de estudo profundas."
   },
 
@@ -184,7 +184,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "teologia", 
     price: 2500, pages: 1568, year: 2022, rating: 4.9, downloads: 24680, 
     cover: { palette: "gold", ornament: "cross" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/81h3v-7Z7XL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=g_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Obra de referência em doutrina bíblica.", featured: true 
   },
   { 
@@ -193,7 +193,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "teologia", 
     price: 3200, pages: 1800, year: 2021, rating: 5.0, downloads: 12000, 
     cover: { palette: "burgundy", ornament: "book" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=h_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "O clássico fundamental da Reforma Protestante."
   },
 
@@ -204,7 +204,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "vida-crista", 
     price: 900, pages: 286, year: 2020, rating: 4.9, downloads: 32140, 
     cover: { palette: "ivory", ornament: "book" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/91N7-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=i_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "A alegoria eterna da jornada da alma.", featured: true 
   },
   { 
@@ -213,7 +213,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "vida-crista", 
     price: 1200, pages: 350, year: 2022, rating: 4.8, downloads: 55000, 
     cover: { palette: "emerald", ornament: "leaf" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/81T6L1l6fXL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=j_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Para que estou na terra? Descubra o plano de Deus para sua vida."
   },
 
@@ -224,7 +224,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "familia", 
     price: 1300, pages: 224, year: 2023, rating: 4.7, downloads: 18240, 
     cover: { palette: "burgundy", ornament: "crown" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/71X8R0f2LGL._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=k_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Ferramentas práticas para proteger o seu casamento."
   },
   { 
@@ -233,7 +233,7 @@ const seedList: Omit<Book, "id">[] = [
     category: "cristaos", subcategory: "familia", 
     price: 1000, pages: 216, year: 2022, rating: 4.9, downloads: 60000, 
     cover: { palette: "ivory", ornament: "leaf" }, 
-    coverUrl: "https://m.media-amazon.com/images/I/51p6K-8-8-8L._AC_UF1000,1000_QL80_.jpg",
+    coverUrl: "https://books.google.com/books/content?id=l_WKEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
     synopsis: "Como expressar um compromisso de amor a seu cônjuge."
   },
 ];
