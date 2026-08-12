@@ -148,56 +148,62 @@ export const adminApprovePayment = createServerFn({ method: "POST" })
       if (insertError) throw new Error(`Falha ao criar acesso: ${insertError.message}`);
     }
 
-    // Criar as notificações antes de confirmar o pedido. Se esta etapa falhar,
-    // o pagamento não é marcado como aprovado e o administrador vê o erro.
-    if (req.status === "pending") {
-      const { data: student } = await supabaseAdmin
-        .from("students")
-        .select("surname, phone")
-        .eq("id", req.student_id)
-        .single();
-      if (!student) throw new Error("Aluno do pedido não encontrado");
-
-      const whatsappUrl = buildWhatsAppLink({
-        studentName: student.surname,
-        studentPhone: student.phone,
-        kind: req.kind,
-        trackName: req.track_name,
-        sectorName: req.sector_name,
-        amountKz: req.amount_kz,
-      });
-      const notificationRows = [
-        {
-          student_id: req.student_id,
-          notification_type: "payment_approved",
-          title: "Acesso liberado!",
-          body: `O seu acesso a ${req.sector_name} foi aprovado. Já pode entrar na sala de aula e começar a estudar.`,
-          status: "pending",
-          channel: "in_app",
-          metadata: { request_id: req.id, kind: req.kind, track_slug: req.track_slug, sector_slug: req.sector_slug },
-        },
-        {
-          student_id: req.student_id,
-          notification_type: "payment_approved",
-          title: "Confirmação do Amigo do Saber",
-          body: `O seu acesso a ${req.sector_name} foi aprovado. Toque para falar connosco pelo WhatsApp.`,
-          status: "pending",
-          channel: "whatsapp",
-          delivery_url: whatsappUrl,
-          metadata: { request_id: req.id, kind: req.kind, track_slug: req.track_slug, sector_slug: req.sector_slug },
-        },
-      ];
-      const { error: notificationError } = await supabaseAdmin.from("notifications").insert(notificationRows);
-      if (notificationError) throw new Error(`Falha ao criar notificação de aprovação: ${notificationError.message}`);
-    }
-
+    // Confirma primeiro a aprovação do pagamento. Assim, uma falha numa
+    // notificação nunca impede o acesso que o administrador acabou de aprovar.
     const { error: statusError } = await supabaseAdmin
       .from("payment_requests")
       .update({ status: "approved" })
       .eq("id", req.id);
     if (statusError) throw new Error(`Falha ao atualizar status do pedido: ${statusError.message}`);
 
-    return { ok: true, notificationQueued: req.status === "pending" };
+    let notificationQueued = false;
+    if (req.status === "pending") {
+      try {
+        const { data: student } = await supabaseAdmin
+          .from("students")
+          .select("surname, phone")
+          .eq("id", req.student_id)
+          .single();
+        if (!student) throw new Error("Aluno do pedido não encontrado");
+
+        const whatsappUrl = buildWhatsAppLink({
+          studentName: student.surname,
+          studentPhone: student.phone,
+          kind: req.kind,
+          trackName: req.track_name,
+          sectorName: req.sector_name,
+          amountKz: req.amount_kz,
+        });
+        const notificationRows = [
+          {
+            student_id: req.student_id,
+            notification_type: "payment_approved",
+            title: "Acesso liberado!",
+            body: `O seu acesso a ${req.sector_name} foi aprovado. Já pode entrar na sala de aula e começar a estudar.`,
+            status: "pending",
+            channel: "in_app",
+            metadata: { request_id: req.id, kind: req.kind, track_slug: req.track_slug, sector_slug: req.sector_slug },
+          },
+          {
+            student_id: req.student_id,
+            notification_type: "payment_approved",
+            title: "Confirmação do Amigo do Saber",
+            body: `O seu acesso a ${req.sector_name} foi aprovado. Toque para falar connosco pelo WhatsApp.`,
+            status: "pending",
+            channel: "whatsapp",
+            delivery_url: whatsappUrl,
+            metadata: { request_id: req.id, kind: req.kind, track_slug: req.track_slug, sector_slug: req.sector_slug },
+          },
+        ];
+        const { error: notificationError } = await supabaseAdmin.from("notifications").insert(notificationRows);
+        if (notificationError) throw new Error(notificationError.message);
+        notificationQueued = true;
+      } catch (notificationError) {
+        console.warn("Acesso aprovado; notificação não criada:", notificationError);
+      }
+    }
+
+    return { ok: true, notificationQueued };
   });
 
 export const adminRejectPayment = createServerFn({ method: "POST" })
