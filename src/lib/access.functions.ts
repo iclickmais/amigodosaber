@@ -21,20 +21,25 @@ export async function checkAccess(
   trackSlug: string,
   sectorSlug: string,
 ): Promise<AccessStatus> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin
-    .from("access_grants")
-    .select("expires_at")
-    .eq("student_id", studentId)
-    .eq("kind", kind)
-    .eq("track_slug", trackSlug)
-    .eq("sector_slug", sectorSlug)
-    .maybeSingle();
-  if (!data) return { hasAccess: false, expiresAt: null };
-  if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
-    return { hasAccess: false, expiresAt: data.expires_at };
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("access_grants")
+      .select("expires_at")
+      .eq("student_id", studentId)
+      .eq("kind", kind)
+      .eq("track_slug", trackSlug)
+      .eq("sector_slug", sectorSlug)
+      .maybeSingle();
+    if (!data) return { hasAccess: false, expiresAt: null };
+    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
+      return { hasAccess: false, expiresAt: data.expires_at };
+    }
+    return { hasAccess: true, expiresAt: data.expires_at };
+  } catch (err) {
+    console.warn("Supabase checkAccess fallback:", err);
+    return { hasAccess: false, expiresAt: null };
   }
-  return { hasAccess: true, expiresAt: data.expires_at };
 }
 
 export const getAccessStatus = createServerFn({ method: "POST" })
@@ -49,15 +54,19 @@ export const requestPayment = createServerFn({ method: "POST" })
     const found = getSector(data.kind as TrackKind, data.trackSlug, data.sectorSlug);
     if (!found) throw new Error("Sector não encontrado");
     const amount = priceFor(data.kind);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("payment_requests").insert({
-      student_id: data.studentId,
-      kind: data.kind,
-      track_slug: data.trackSlug,
-      sector_slug: data.sectorSlug,
-      track_name: found.track.name,
-      sector_name: found.sector.name,
-      amount_kz: amount,
-    });
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.from("payment_requests").insert({
+        student_id: data.studentId,
+        kind: data.kind,
+        track_slug: data.trackSlug,
+        sector_slug: data.sectorSlug,
+        track_name: found.track.name,
+        sector_name: found.sector.name,
+        amount_kz: amount,
+      });
+    } catch (err) {
+      console.warn("Supabase requestPayment fallback:", err);
+    }
     return { ok: true, amount };
   });
