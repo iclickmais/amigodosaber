@@ -9,7 +9,12 @@ REAL_COVERS = {
     "teologia": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/xrKBRYmLeEvvRsaR.jpg",
     "vida-crista": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/GVOuGUvYfRMCReRS.jpg",
     "familia": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/BnYbX0ssQFRH.jpg",
-    "economia": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/PqcrfpbXKzYINcKX.jpg"
+    "economia": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/PqcrfpbXKzYINcKX.jpg",
+    "caligrafia": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/szpiEFbiTrnjJoqo.jpg",
+    "colorir": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/DAVoNTLVGXYbobEF.jpg",
+    "desenho": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/xxCmHNOowWtYNIdo.jpg",
+    "leitura": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/IpUPvhvXdfhvZKyx.jpg",
+    "alfabetizacao": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/vjOVrHYjtYUOAKUf.jpg"
 }
 
 SPECIFIC_BOOKS = [
@@ -60,6 +65,30 @@ SPECIFIC_BOOKS = [
         "author": "Gary Chapman",
         "subcategory": "familia",
         "coverUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/BnYbX0ssQFRH.jpg"
+    },
+    {
+        "title": "Caderno de Caligrafia Infantil 308 Atividades",
+        "author": "Editora Todolivro",
+        "subcategory": "caligrafia",
+        "coverUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/szpiEFbiTrnjJoqo.jpg"
+    },
+    {
+        "title": "Livro de Colorir Bobbie Goods - Ambientes Diversos",
+        "author": "Bobbie Goods",
+        "subcategory": "colorir",
+        "coverUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/DAVoNTLVGXYbobEF.jpg"
+    },
+    {
+        "title": "Minhas Atividades - Turma da Mônica",
+        "author": "Mauricio de Sousa",
+        "subcategory": "alfabetizacao",
+        "coverUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/xLodMLxdomYoJbRg.jpg"
+    },
+    {
+        "title": "Aprenda a Desenhar Passo a Passo",
+        "author": "Editora Belli Studio",
+        "subcategory": "desenho",
+        "coverUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663847218389/xxCmHNOowWtYNIdo.jpg"
     }
 ]
 
@@ -88,6 +117,19 @@ categories = [
             {"slug": "teologia", "name": "Teologia", "count": 150},
             {"slug": "vida-crista", "name": "Vida Cristã", "count": 100},
             {"slug": "familia", "name": "Família & Relacionamentos", "count": 100},
+        ],
+    },
+    {
+        "slug": "infantil",
+        "name": "Amigo Kids",
+        "tagline": "Aprender e brincar com materiais imprimíveis",
+        "totalCount": 150,
+        "subcategories": [
+            {"slug": "caligrafia", "name": "Caligrafia", "count": 30},
+            {"slug": "colorir", "name": "Colorir", "count": 40},
+            {"slug": "desenho", "name": "Desenho", "count": 30},
+            {"slug": "leitura", "name": "Leitura Infantil", "count": 25},
+            {"slug": "alfabetizacao", "name": "Alfabetização", "count": 25},
         ],
     },
 ]

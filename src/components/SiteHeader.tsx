@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, Menu, X, GraduationCap } from "lucide-react";
+import { Search, Menu, X, GraduationCap, Baby } from "lucide-react";
 import { categories } from "@/lib/library-data";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { useStudent } from "@/hooks/use-student";
@@ -37,9 +37,14 @@ export function SiteHeader() {
               key={cat.slug}
               to="/categoria/$slug"
               params={{ slug: cat.slug }}
-              className="text-muted-foreground transition-colors hover:text-gold"
-              activeProps={{ className: "text-gold" }}
+              className={`flex items-center gap-1.5 transition-colors ${
+                cat.slug === "infantil" 
+                  ? "font-medium text-emerald-600 hover:text-emerald-500" 
+                  : "text-muted-foreground hover:text-gold"
+              }`}
+              activeProps={{ className: cat.slug === "infantil" ? "text-emerald-500" : "text-gold" }}
             >
+              {cat.slug === "infantil" && <Baby className="h-4 w-4" />}
               {cat.name}
             </Link>
           ))}
@@ -106,9 +111,14 @@ export function SiteHeader() {
                 to="/categoria/$slug"
                 params={{ slug: cat.slug }}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-3 text-base text-muted-foreground transition-colors hover:bg-gold/5 hover:text-gold"
-                activeProps={{ className: "text-gold bg-gold/5" }}
+                className={`flex items-center gap-2 rounded-lg px-3 py-3 text-base transition-colors ${
+                  cat.slug === "infantil"
+                    ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 font-medium"
+                    : "text-muted-foreground hover:bg-gold/5 hover:text-gold"
+                }`}
+                activeProps={{ className: cat.slug === "infantil" ? "text-emerald-500 bg-emerald-50" : "text-gold bg-gold/5" }}
               >
+                {cat.slug === "infantil" && <Baby className="h-5 w-5" />}
                 {cat.name}
               </Link>
             ))}
@@ -135,7 +145,6 @@ export function SiteHeader() {
             >
               Entrar
             </Link>
-
           </nav>
         </div>
       )}
