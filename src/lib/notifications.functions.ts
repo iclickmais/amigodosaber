@@ -10,6 +10,7 @@ export enum NotificationType {
   THIRD_LESSON_COMPLETED = "third_lesson_completed",
   INACTIVITY_REMINDER = "inactivity_reminder",
   ABANDONED_PAYMENT = "abandoned_payment",
+  PAYMENT_APPROVED = "payment_approved",
 }
 
 /**
@@ -34,6 +35,9 @@ export interface NotificationPayload {
   status: NotificationStatus;
   sent_at: string | null;
   created_at: string;
+  channel?: "in_app" | "whatsapp";
+  delivery_url?: string | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -302,20 +306,31 @@ export const sendPendingNotifications = createServerFn({ method: "POST" })
       return { success: true, notificationsSent: 0 };
     }
 
-    // In a real implementation, this would call a push notification service
-    // For now, we'll just mark them as sent
-    const notificationIds = pendingNotifications.map((n: any) => n.id);
+    // Notificações in-app são entregues quando ficam disponíveis no painel do aluno.
+    // Não marcamos WhatsApp como enviado sem um provedor/API configurado: nesse caso
+    // o registo permanece pendente e o delivery_url serve como alternativa click-to-chat.
+    const inAppIds = pendingNotifications
+      .filter((n: any) => !n.channel || n.channel === "in_app")
+      .map((n: any) => n.id);
 
-    const { error } = await supabaseAdmin
-      .from("notifications")
-      .update({ status: NotificationStatus.SENT, sent_at: new Date().toISOString() })
-      .in("id", notificationIds);
-
-    if (error) {
-      console.error("Failed to update notification status:", error);
-      return { success: false, message: error.message };
+    if (inAppIds.length) {
+      const { error } = await supabaseAdmin
+        .from("notifications")
+        .update({ status: NotificationStatus.DELIVERED, sent_at: new Date().toISOString() })
+        .in("id", inAppIds);
+      if (error) {
+        console.error("Failed to update in-app notification status:", error);
+        return { success: false, message: error.message };
+      }
     }
 
-    console.log(`Sent ${pendingNotifications.length} notifications`);
-    return { success: true, notificationsSent: pendingNotifications.length };
+    const whatsappPending = pendingNotifications.length - inAppIds.length;
+    return {
+      success: true,
+      notificationsSent: inAppIds.length,
+      whatsappPending,
+      message: whatsappPending > 0
+        ? `${whatsappPending} notificação(ões) aguardam envio por um provedor WhatsApp configurado.`
+        : undefined,
+    };
   });

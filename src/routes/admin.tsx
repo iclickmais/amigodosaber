@@ -24,7 +24,7 @@ import {
 } from "@/lib/books.functions";
 import { categories as libraryCategories } from "@/lib/library-data";
 import { formatKz } from "@/lib/payment-info";
-import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus, GraduationCap } from "lucide-react";
+import { ShieldCheck, Check, X, Phone, User, Clock, Megaphone, Trash2, Plus, Loader2, ImagePlus, GraduationCap, FileCheck, ExternalLink } from "lucide-react";
 import { pregenStatus, pregenBatch, type PregenTrackStatus } from "@/lib/pregen.functions";
 import { concursoTracks, preparatorioTracks } from "@/lib/study-tracks";
 
@@ -52,6 +52,10 @@ interface PaymentRow {
   amount_kz: number;
   status: string;
   created_at: string;
+  proof_name?: string | null;
+  proof_mime?: string | null;
+  proof_uploaded_at?: string | null;
+  proofUrl?: string | null;
   student: { surname: string; phone: string };
 }
 
@@ -339,6 +343,23 @@ function PaymentCard({
             <Clock className="h-3 w-3" />
             {new Date(row.created_at).toLocaleString("pt-PT")}
           </p>
+          {row.proof_uploaded_at ? (
+            <a
+              href={row.proofUrl ?? undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-2 inline-flex items-center gap-1.5 text-xs font-medium ${row.proofUrl ? "text-emerald-400 hover:text-emerald-300" : "cursor-not-allowed text-muted-foreground"}`}
+              aria-disabled={!row.proofUrl}
+            >
+              <FileCheck className="h-3.5 w-3.5" />
+              Comprovativo recebido{row.proof_name ? ` · ${row.proof_name}` : ""}
+              {row.proofUrl && <ExternalLink className="h-3 w-3" />}
+            </a>
+          ) : (
+            <span className="mt-2 inline-flex items-center gap-1.5 text-xs text-amber-300/80">
+              <FileCheck className="h-3.5 w-3.5" /> Sem comprovativo anexado
+            </span>
+          )}
         </div>
         <div className="flex flex-col items-end gap-2">
           <span className="text-base font-medium text-gold">

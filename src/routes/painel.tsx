@@ -10,9 +10,10 @@ import { listEdicts, type EdictRow } from "@/lib/edicts.functions";
 import { countOfflineLessons } from "@/lib/offline-cache";
 import {
   GraduationCap, Trophy, BookOpen, Bell, CheckCircle2, XCircle, Clock, LogOut,
-  Sparkles, Calendar, WifiOff, Timer, Megaphone, Flame, Zap,
+  Sparkles, Calendar, WifiOff, Timer, Megaphone, Flame, Zap, Award, Loader2,
 } from "lucide-react";
 import { getGameStats } from "@/lib/gamification";
+import { getLeaderboard, issueCertificate, type LeaderboardRow } from "@/lib/gamification.functions";
 
 export const Route = createFileRoute("/painel")({
   head: () => ({
@@ -54,6 +55,9 @@ function PanelPage() {
   const [plans, setPlans] = useState<TodayPlan[]>([]);
   const [edicts, setEdicts] = useState<EdictRow[]>([]);
   const [offlineCount, setOfflineCount] = useState(0);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardRow[]>([]);
+  const [certificateLoading, setCertificateLoading] = useState<string | null>(null);
+  const [certificateError, setCertificateError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -75,7 +79,29 @@ function PanelPage() {
       .then((rows) => setEdicts(rows.slice(0, 4)))
       .catch(() => {});
     countOfflineLessons().then(setOfflineCount);
+    getLeaderboard({ data: { limit: 5 } }).then(setLeaderboard).catch(() => {});
   }, [hydrated, student, navigate]);
+
+  async function createCertificate(item: NonNullable<PanelData>["learningLibrary"][number]) {
+    if (!student || item.progressPct < 100) return;
+    setCertificateLoading(item.id);
+    setCertificateError(null);
+    try {
+      const certificate = await issueCertificate({
+        data: {
+          studentId: student.id,
+          kind: item.kind as "concurso" | "preparatorio",
+          trackSlug: item.track_slug,
+          sectorSlug: item.sector_slug,
+        },
+      });
+      navigate({ to: "/certificado/$id", params: { id: certificate.id } });
+    } catch (e) {
+      setCertificateError(e instanceof Error ? e.message : "Não foi possível emitir o certificado.");
+    } finally {
+      setCertificateLoading(null);
+    }
+  }
 
   const newApprovals = useMemo(() => {
     if (!data) return [];
@@ -227,6 +253,28 @@ function PanelPage() {
           </div>
         </div>
 
+        {/* Ranking semanal */}
+        {leaderboard.length > 0 && (
+          <section className="mt-8">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 font-serif text-xl"><Trophy className="h-5 w-5 text-gold" /> Ranking de aprendizagem</h2>
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">XP persistente</span>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-5">
+              {leaderboard.map((row) => (
+                <div key={row.studentId} className={`rounded-2xl border p-3 ${row.studentId === student.id ? "border-gold/50 bg-gold/10" : "border-border bg-card"}`}>
+                  <div className="flex items-center justify-between">
+                    <span className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${row.rank === 1 ? "bg-gold text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{row.rank}</span>
+                    <span className="text-xs font-semibold text-gold">{row.points} XP</span>
+                  </div>
+                  <p className="mt-2 truncate text-sm font-medium">{row.studentId === student.id ? "Tu" : row.surname}</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">{row.lessonsCompleted} aulas · {row.quizzesPassed} quizzes</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Plano diário */}
         {plans.length > 0 && (
           <section className="mt-8">
@@ -309,6 +357,89 @@ function PanelPage() {
 
         {data && (
           <>
+            <Section title="Notificações" icon={<Bell className="h-5 w-5 text-gold" />}>
+              {data.notifications?.length ? (
+                <ul className="space-y-2">
+                  {data.notifications.slice(0, 8).map((notification) => (
+                    <li key={notification.id} className={`rounded-2xl border p-4 ${notification.notification_type === "payment_approved" ? "border-emerald-500/30 bg-emerald-500/[0.05]" : "border-border bg-card"}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium">{notification.title}</p>
+                          <p className="mt-1 text-sm leading-6 text-muted-foreground">{notification.body}</p>
+                          <p className="mt-2 text-[10px] uppercase tracking-wider text-muted-foreground">{new Date(notification.created_at).toLocaleDateString("pt-PT")}</p>
+                        </div>
+                        {notification.delivery_url && (
+                          <a href={notification.delivery_url} target="_blank" rel="noreferrer" className="shrink-0 rounded-full bg-[#25D366] px-3 py-2 text-[10px] font-semibold text-black hover:opacity-90">WhatsApp</a>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyRow>As atualizações sobre os seus pagamentos e progresso aparecerão aqui.</EmptyRow>
+              )}
+            </Section>
+
+            <Section title="Minha biblioteca de aprendizagem" icon={<BookOpen className="h-5 w-5 text-gold" />}>
+              {data.learningLibrary?.length ? (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {data.learningLibrary.map((item) => {
+                    const expired = item.expires_at && new Date(item.expires_at) < new Date();
+                    const destination = item.kind === "concurso"
+                      ? { to: "/concurso/$ministerio/$sector" as const, params: { ministerio: item.track_slug, sector: item.sector_slug } }
+                      : { to: "/preparatorio/$faculdade/$curso" as const, params: { faculdade: item.track_slug, curso: item.sector_slug } };
+                    return (
+                      <div key={item.id} className={`rounded-2xl border p-4 ${expired ? "border-border bg-card/60 opacity-70" : "border-gold/30 bg-gold/[0.04]"}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[10px] uppercase tracking-[0.18em] text-gold">
+                              {item.kind === "concurso" ? "Concurso Público" : "Preparatório"}
+                            </p>
+                            <h3 className="mt-1 truncate font-serif text-lg">{item.sector_name}</h3>
+                            <p className="mt-0.5 truncate text-xs text-muted-foreground">{item.track_name}</p>
+                          </div>
+                          <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] ${expired ? "border-burgundy/40 text-burgundy" : "border-emerald-500/40 text-emerald-400"}`}>
+                            {expired ? "Expirado" : "Activo"}
+                          </span>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">{item.completedLessons} de {item.totalLessons || "—"} aulas</span>
+                          <span className="font-semibold text-gold">{item.progressPct}%</span>
+                        </div>
+                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-border/60">
+                          <div className="h-full rounded-full bg-gradient-to-r from-gold to-amber-300 transition-all" style={{ width: `${item.progressPct}%` }} />
+                        </div>
+                        {!expired && (
+                          <div className="mt-4 flex flex-wrap items-center gap-2">
+                            <Link
+                              {...destination}
+                              className="inline-flex rounded-full bg-gold px-4 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                            >
+                              Continuar a estudar
+                            </Link>
+                            {item.progressPct >= 100 && (
+                              <button
+                                type="button"
+                                onClick={() => createCertificate(item)}
+                                disabled={certificateLoading === item.id}
+                                className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-2 text-xs font-semibold text-gold transition-colors hover:bg-gold/10 disabled:opacity-50"
+                              >
+                                {certificateLoading === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Award className="h-3.5 w-3.5" />}
+                                Certificado
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <EmptyRow>Quando um pagamento for aprovado, o seu curso aparecerá aqui com o progresso e acesso rápido às aulas.</EmptyRow>
+              )}
+              {certificateError && <p className="mt-3 text-xs text-amber-300">{certificateError}</p>}
+            </Section>
+
             <Section title="Meus acessos" icon={<CheckCircle2 className="h-5 w-5 text-gold" />}>
               {data.grants.length === 0 ? (
                 <EmptyRow>Ainda sem acessos aprovados. Envie um pagamento e aguarde a aprovação.</EmptyRow>

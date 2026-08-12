@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { buildWhatsAppLink } from "@/lib/payment-info";
 
 const ADMIN_PHONE = "+244921346544";
 
@@ -62,7 +63,7 @@ export const adminOverview = createServerFn({ method: "POST" })
       (rows ?? []).forEach((r) => studentMap.set(r.id, { surname: r.surname, phone: r.phone }));
     }
 
-    const decorate = (r: {
+    const decorate = async (r: {
       id: string;
       student_id: string;
       kind: string;
@@ -73,14 +74,28 @@ export const adminOverview = createServerFn({ method: "POST" })
       amount_kz: number;
       status: string;
       created_at: string;
-    }) => ({
-      ...r,
-      student: studentMap.get(r.student_id) ?? { surname: "—", phone: "—" },
-    });
+      proof_path?: string | null;
+      proof_name?: string | null;
+      proof_mime?: string | null;
+      proof_uploaded_at?: string | null;
+    }) => {
+      let proofUrl: string | null = null;
+      if (r.proof_path) {
+        const { data: signed } = await supabaseAdmin.storage
+          .from("payment-proofs")
+          .createSignedUrl(r.proof_path, 60 * 60);
+        proofUrl = signed?.signedUrl ?? null;
+      }
+      return {
+        ...r,
+        proofUrl,
+        student: studentMap.get(r.student_id) ?? { surname: "—", phone: "—" },
+      };
+    };
 
     return {
-      pending: (pending ?? []).map(decorate),
-      recent: (approved ?? []).map(decorate),
+      pending: await Promise.all((pending ?? []).map(decorate)),
+      recent: await Promise.all((approved ?? []).map(decorate)),
       students: students ?? [],
     };
   });
@@ -133,14 +148,56 @@ export const adminApprovePayment = createServerFn({ method: "POST" })
       if (insertError) throw new Error(`Falha ao criar acesso: ${insertError.message}`);
     }
 
+    // Criar as notificações antes de confirmar o pedido. Se esta etapa falhar,
+    // o pagamento não é marcado como aprovado e o administrador vê o erro.
+    if (req.status === "pending") {
+      const { data: student } = await supabaseAdmin
+        .from("students")
+        .select("surname, phone")
+        .eq("id", req.student_id)
+        .single();
+      if (!student) throw new Error("Aluno do pedido não encontrado");
+
+      const whatsappUrl = buildWhatsAppLink({
+        studentName: student.surname,
+        studentPhone: student.phone,
+        kind: req.kind,
+        trackName: req.track_name,
+        sectorName: req.sector_name,
+        amountKz: req.amount_kz,
+      });
+      const notificationRows = [
+        {
+          student_id: req.student_id,
+          notification_type: "payment_approved",
+          title: "Acesso liberado!",
+          body: `O seu acesso a ${req.sector_name} foi aprovado. Já pode entrar na sala de aula e começar a estudar.`,
+          status: "pending",
+          channel: "in_app",
+          metadata: { request_id: req.id, kind: req.kind, track_slug: req.track_slug, sector_slug: req.sector_slug },
+        },
+        {
+          student_id: req.student_id,
+          notification_type: "payment_approved",
+          title: "Confirmação do Amigo do Saber",
+          body: `O seu acesso a ${req.sector_name} foi aprovado. Toque para falar connosco pelo WhatsApp.`,
+          status: "pending",
+          channel: "whatsapp",
+          delivery_url: whatsappUrl,
+          metadata: { request_id: req.id, kind: req.kind, track_slug: req.track_slug, sector_slug: req.sector_slug },
+        },
+      ];
+      const { error: notificationError } = await supabaseAdmin.from("notifications").insert(notificationRows);
+      if (notificationError) throw new Error(`Falha ao criar notificação de aprovação: ${notificationError.message}`);
+    }
+
     const { error: statusError } = await supabaseAdmin
       .from("payment_requests")
       .update({ status: "approved" })
       .eq("id", req.id);
-    
     if (statusError) throw new Error(`Falha ao atualizar status do pedido: ${statusError.message}`);
 
-    return { ok: true };
+    return { ok: true, notificationQueued: req.status === "pending" };
   });
 
 export const adminRejectPayment = createServerFn({ method: "POST" })

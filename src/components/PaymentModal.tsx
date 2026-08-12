@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import {
   X, Copy, Check, MessageCircle, Lock, Crown, BookOpen, Target,
-  Rocket, Shield, ChevronRight, CheckCircle2,
+  Rocket, Shield, ChevronRight, CheckCircle2, Upload, FileCheck, AlertCircle,
 } from "lucide-react";
 import { PAYMENT_INFO, priceFor, validityLabel, formatKz, buildWhatsAppLink } from "@/lib/payment-info";
-import { requestPayment } from "@/lib/access.functions";
+import { requestPayment, submitPaymentProof } from "@/lib/access.functions";
 import type { StudentSession } from "@/hooks/use-student";
 
 interface Props {
@@ -30,22 +30,72 @@ export function PaymentModal({
 }: Props) {
   const [copied, setCopied] = useState(false);
   const [step, setStep] = useState<"paywall" | "details">("paywall");
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofSubmitting, setProofSubmitting] = useState(false);
+  const [proofMessage, setProofMessage] = useState<string | null>(null);
   const amount = priceFor(kind);
   const kindLabel = kind === "concurso" ? "Concurso Público" : "Preparatório";
 
   useEffect(() => {
     if (!open) return;
     setStep("paywall");
+    setRequestId(null);
+    setProofFile(null);
+    setProofMessage(null);
   }, [open]);
 
   const handleInitiatePayment = async () => {
     try {
-      await requestPayment({
+      const result = await requestPayment({
         data: { studentId: student.id, kind, trackSlug, sectorSlug },
       });
+      setRequestId(result.requestId);
       setStep("details");
     } catch (error) {
       console.error("Erro ao iniciar pagamento:", error);
+      setProofMessage(error instanceof Error ? error.message : "Não foi possível iniciar o pagamento.");
+    }
+  };
+
+  const handleProofSubmit = async () => {
+    if (!requestId || !proofFile) {
+      setProofMessage("Selecione um comprovativo antes de enviar.");
+      return;
+    }
+    if (proofFile.size > 5 * 1024 * 1024) {
+      setProofMessage("O ficheiro deve ter no máximo 5 MB.");
+      return;
+    }
+    const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"] as const;
+    if (!(allowed as readonly string[]).includes(proofFile.type)) {
+      setProofMessage("Formato não suportado. Use JPG, PNG, WEBP ou PDF.");
+      return;
+    }
+
+    setProofSubmitting(true);
+    setProofMessage(null);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Não foi possível ler o ficheiro."));
+        reader.readAsDataURL(proofFile);
+      });
+      await submitPaymentProof({
+        data: {
+          requestId,
+          studentId: student.id,
+          fileName: proofFile.name,
+          mimeType: proofFile.type as (typeof allowed)[number],
+          base64,
+        },
+      });
+      setProofMessage("Comprovativo recebido. A nossa equipa irá confirmar o pagamento.");
+    } catch (error) {
+      setProofMessage(error instanceof Error ? error.message : "Não foi possível enviar o comprovativo.");
+    } finally {
+      setProofSubmitting(false);
     }
   };
 
@@ -241,7 +291,7 @@ export function PaymentModal({
             <div className="mt-6 space-y-3 rounded-2xl border border-white/5 bg-white/[0.01] p-5">
               {[
                 `Faça a transferência de ${formatKz(amount)} para o IBAN acima.`,
-                "Envie o comprovativo pelo WhatsApp abaixo.",
+                "Envie o comprovativo aqui ou pelo WhatsApp abaixo.",
                 "O acesso é activado após confirmação (até 24h).",
               ].map((s, i) => (
                 <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground/80">
@@ -251,6 +301,52 @@ export function PaymentModal({
                   <p className="pt-0.5">{s}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Upload direto do comprovativo */}
+            <div className="mt-6 rounded-2xl border border-gold/20 bg-gold/[0.04] p-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold/10">
+                  <Upload className="h-4 w-4 text-gold" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">Enviar comprovativo no site</p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    O comprovativo fica associado a este pedido e aparece imediatamente no painel do administrador.
+                  </p>
+                </div>
+              </div>
+              <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-white/15 bg-black/20 px-4 py-3 transition-colors hover:border-gold/50">
+                <FileCheck className="h-5 w-5 shrink-0 text-gold" />
+                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+                  {proofFile ? proofFile.name : "Escolher JPG, PNG, WEBP ou PDF"}
+                </span>
+                <input
+                  type="file"
+                  className="sr-only"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={(event) => {
+                    setProofFile(event.target.files?.[0] ?? null);
+                    setProofMessage(null);
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={handleProofSubmit}
+                disabled={!proofFile || proofSubmitting || !requestId}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-gold/30 bg-gold/10 py-3 text-sm font-bold text-gold transition-colors hover:bg-gold/20 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {proofSubmitting ? "A enviar…" : "Enviar comprovativo"}
+                <Upload className="h-4 w-4" />
+              </button>
+              {proofMessage && (
+                <p className={`mt-3 flex items-start gap-2 text-xs leading-relaxed ${proofMessage.startsWith("Comprovativo") ? "text-emerald-400" : "text-amber-300"}`}>
+                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  {proofMessage}
+                </p>
+              )}
+              <p className="mt-2 text-center text-[10px] text-muted-foreground/60">Máximo de 5 MB.</p>
             </div>
 
             {/* WhatsApp CTA */}
