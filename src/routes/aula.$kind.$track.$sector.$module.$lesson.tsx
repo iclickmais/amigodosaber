@@ -67,12 +67,15 @@ function AulaPage() {
   const [lessonXpAdded, setLessonXpAdded] = useState(false);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
-  const totalLessons = sector.modules.reduce(
-    (acc: number, m: { lessons: unknown[] }) => acc + m.lessons.length,
-    0,
+  const sectorLessons = sector.modules.flatMap((m) =>
+    m.lessons.map((l) => ({ moduleSlug: m.slug, lessonSlug: l.slug })),
   );
-  const isFreeLesson =
-    sector.modules[0]?.slug === mod.slug && sector.modules[0]?.lessons[0]?.slug === lesson.slug;
+  const totalLessons = sectorLessons.length;
+  const freeLessonIndex = sectorLessons.findIndex(
+    (item) => item.moduleSlug === mod.slug && item.lessonSlug === lesson.slug,
+  );
+  const freeLessonNumber = freeLessonIndex >= 0 && freeLessonIndex < 3 ? freeLessonIndex + 1 : null;
+  const isLastFreeLesson = freeLessonNumber === Math.min(3, totalLessons);
   const amount = priceFor(kind);
 
   useEffect(() => {
@@ -305,7 +308,7 @@ function AulaPage() {
             {error}
             {!student && (
               <div className="mt-3">
-                <Link to="/entrar" className="inline-flex rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90">
+                <Link to="/entrar" search={{ next: undefined, ref: undefined }} className="inline-flex rounded-full bg-gold px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90">
                   Entrar / Registar
                 </Link>
               </div>
@@ -335,16 +338,16 @@ function AulaPage() {
               </button>
             </div>
 
-            {isFreeLesson && hasAccess === false && (
+            {isLastFreeLesson && hasAccess === false && (
               <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.10] via-gold/[0.03] to-transparent p-6">
                 <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-gold/5 blur-3xl" />
                 <div className="relative">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-gold/70">Fim da aula gratuita</p>
                   <h2 className="mt-1 font-serif text-2xl text-white">
-                    Faltam {Math.max(totalLessons - 1, 0)} aulas de {sector.name}
+                    Faltam {Math.max(totalLessons - Math.min(3, totalLessons), 0)} aulas de {sector.name}
                   </h2>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Quem estuda o programa completo entra melhor preparado. Por{" "}
+                    Depois das 3 aulas de demonstração, o programa completo ajuda-te a estudar com método. Por {" "}
                     <span className="font-semibold text-gold">{formatKz(amount)}</span> desbloqueias todas as aulas,
                     quizzes, simulados cronometrados, revisão inteligente e plano de estudo — 3 meses.
                   </p>

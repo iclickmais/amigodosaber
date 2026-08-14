@@ -1,5 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { concursoTracks, preparatorioTracks } from "../src/lib/study-tracks.ts";
+import { buildRichLessonContent } from "../src/lib/lesson-builder.ts";
 
 type Kind = "concurso" | "preparatorio";
 
@@ -42,54 +43,15 @@ function sql(value: string): string {
   return `'${value.replaceAll("'", "''")}'`;
 }
 
-function preparedContent(trackName: string, sectorName: string, moduleTitle: string, lessonTitle: string): string {
-  return `# ${lessonTitle}
-
-> Aula pré-preparada do módulo **${moduleTitle}**, no sector **${sectorName}**, do percurso **${trackName}**.
-
-## Objectivos da aula
-
-Ao terminar esta aula, o estudante deverá ser capaz de explicar os conceitos centrais de **${lessonTitle}**, relacioná-los com o programa do curso e resolver questões de avaliação com método.
-
-## 1. Enquadramento
-
-**${lessonTitle}** é um tema do módulo **${moduleTitle}**. Começa por identificar as palavras-chave do enunciado, separar definição, regra e aplicação, e anotar as dúvidas para revisão.
-
-## 2. Ideias essenciais
-
-- Define o conceito principal com palavras próprias antes de memorizar.
-- Distingue os elementos, etapas e consequências do tema.
-- Relaciona a matéria com exemplos práticos do sector **${sectorName}**.
-- Confirma sempre a legislação, normas técnicas ou bibliografia oficial aplicável quando o assunto depender de actualização.
-
-## 3. Método de estudo
-
-1. Faz uma primeira leitura para compreender a ideia geral.
-2. Resume o conteúdo em cinco linhas e cria três perguntas de memória.
-3. Resolve o quiz, revê cada erro e repete o tema após 24 horas.
-
-## 4. Aplicação prática
-
-**Situação:** Num exercício sobre **${lessonTitle}**, o candidato recebe um enunciado com dados relevantes e informações acessórias.
-
-**Resolução orientada:** identifica o que está a ser pedido, selecciona o princípio ou procedimento adequado, apresenta os passos pela ordem correcta e verifica se a conclusão responde exactamente ao enunciado.
-
-## Resumo
-
-- O tema pertence ao módulo **${moduleTitle}**.
-- A resposta correcta exige definição, distinção dos elementos e aplicação.
-- A melhor preparação combina leitura activa, revisão espaçada e exercícios.
-
-## Checklist rápido
-
-- [ ] Consigo explicar o tema sem consultar o texto.
-- [ ] Sei distinguir os conceitos próximos.
-- [ ] Resolvi o exercício e justifiquei a resposta.
-- [ ] Registei o ponto que preciso rever.
-
-> Conteúdo preparado previamente pela equipa da plataforma. Não é gerado durante a abertura da aula.`;
+function preparedContent(
+  trackName: string,
+  sectorName: string,
+  moduleTitle: string,
+  lessonTitle: string,
+  kind: Kind,
+): string {
+  return buildRichLessonContent(trackName, sectorName, moduleTitle, lessonTitle, kind);
 }
-
 function preparedQuestions(lessonTitle: string) {
   return [
     [
@@ -173,7 +135,7 @@ for (const [kind, tracks] of [["concurso", concursoTracks], ["preparatorio", pre
             module_slug: module.slug,
             lesson_slug: lesson.slug,
             title: lesson.title,
-            content_md: preparedContent(track.name, sector.name, module.title, lesson.title),
+            content_md: preparedContent(track.name, sector.name, module.title, lesson.title, kind),
           });
           quizzes.push({
             id: stableUuid(`quiz:${lessonId}`),

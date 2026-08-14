@@ -5,6 +5,7 @@ import {
   getSector as findSector,
   type TrackKind,
 } from "@/lib/study-tracks";
+import { buildRichLessonContent } from "@/lib/lesson-builder";
 
 // ————— Registo simples: telefone + apelido —————
 
@@ -116,7 +117,7 @@ function buildPreparedLesson(
   return {
     id: stableUuid(`lesson:${scope}`),
     title: lesson.title,
-    content_md: `# ${lesson.title}\n\n> Aula pré-preparada do módulo **${module.title}**, no sector **${sector.name}**, do percurso **${track.name}**.\n\n## Objectivos da aula\n\nAo terminar esta aula, o estudante deverá ser capaz de explicar os conceitos centrais de **${lesson.title}**, relacioná-los com o programa do curso e resolver questões de avaliação com método.\n\n## 1. Enquadramento\n\n**${lesson.title}** é um tema do módulo **${module.title}**. Começa por identificar as palavras-chave do enunciado, separar definição, regra e aplicação, e anotar as dúvidas para revisão.\n\n## 2. Ideias essenciais\n\n- Define o conceito principal com palavras próprias antes de memorizar.\n- Distingue os elementos, etapas e consequências do tema.\n- Relaciona a matéria com exemplos práticos do sector **${sector.name}**.\n- Confirma sempre a legislação, normas técnicas ou bibliografia oficial aplicável quando o assunto depender de actualização.\n\n## 3. Método de estudo\n\n1. Faz uma primeira leitura para compreender a ideia geral.\n2. Resume o conteúdo em cinco linhas e cria três perguntas de memória.\n3. Resolve o quiz, revê cada erro e repete o tema após 24 horas.\n\n## 4. Aplicação prática\n\n**Situação:** Num exercício sobre **${lesson.title}**, o candidato recebe um enunciado com dados relevantes e informações acessórias.\n\n**Resolução orientada:** identifica o que está a ser pedido, selecciona o princípio ou procedimento adequado, apresenta os passos pela ordem correcta e verifica se a conclusão responde exactamente ao enunciado.\n\n## Resumo\n\n- O tema pertence ao módulo **${module.title}**.\n- A resposta correcta exige definição, distinção dos elementos e aplicação.\n- A melhor preparação combina leitura activa, revisão espaçada e exercícios.\n\n## Checklist rápido\n\n- [ ] Consigo explicar o tema sem consultar o texto.\n- [ ] Sei distinguir os conceitos próximos.\n- [ ] Resolvi o exercício e justifiquei a resposta.\n- [ ] Registei o ponto que preciso rever.\n\n> Conteúdo preparado previamente pela equipa da plataforma. Não é gerado durante a abertura da aula.`,
+    content_md: buildRichLessonContent(track.name, sector.name, module.title, lesson.title, data.kind),
   };
 }
 
