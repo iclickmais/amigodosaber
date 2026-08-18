@@ -25,14 +25,14 @@ export async function recordAffiliateRegistration(
 ) {
   if (!referralCode) return { recorded: false };
   const code = referralCode.trim().toUpperCase();
-  const { data: affiliate } = await supabaseAdmin
+  const { data: affiliate } = await (supabaseAdmin as any)
     .from("affiliates")
     .select("id, student_id")
     .eq("code", code)
     .maybeSingle();
   if (!affiliate || affiliate.student_id === referredStudentId) return { recorded: false };
 
-  const { data: referral, error } = await supabaseAdmin
+  const { data: referral, error } = await (supabaseAdmin as any)
     .from("affiliate_referrals")
     .insert({
       affiliate_id: affiliate.id,
@@ -46,12 +46,12 @@ export async function recordAffiliateRegistration(
   if (error?.code === "23505") return { recorded: false, duplicate: true };
   if (error) throw new Error(`Falha ao guardar referência: ${error.message}`);
   if (referral) {
-    const { data: current } = await supabaseAdmin
+    const { data: current } = await (supabaseAdmin as any)
       .from("affiliates")
       .select("registered_referrals")
       .eq("id", affiliate.id)
       .single();
-    await supabaseAdmin
+    await (supabaseAdmin as any)
       .from("affiliates")
       .update({ registered_referrals: (current?.registered_referrals ?? 0) + 1 })
       .eq("id", affiliate.id);
@@ -63,14 +63,14 @@ export const ensureAffiliateProfile = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => StudentSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: current } = await supabaseAdmin
+    const { data: current } = await (supabaseAdmin as any)
       .from("affiliates")
       .select("id, code")
       .eq("student_id", data.studentId)
       .maybeSingle();
     if (current) return current;
 
-    const { data: student } = await supabaseAdmin
+    const { data: student } = await (supabaseAdmin as any)
       .from("students")
       .select("surname")
       .eq("id", data.studentId)
@@ -78,7 +78,7 @@ export const ensureAffiliateProfile = createServerFn({ method: "POST" })
     if (!student) throw new Error("Aluno não encontrado");
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const { data: created, error } = await supabaseAdmin
+      const { data: created, error } = await (supabaseAdmin as any)
         .from("affiliates")
         .insert({ student_id: data.studentId, code: makeCode(student.surname) })
         .select("id, code")
@@ -94,14 +94,14 @@ export const getAffiliateDashboard = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const profile = await ensureAffiliateProfile({ data });
-    const { data: affiliate } = await supabaseAdmin
+    const { data: affiliate } = await (supabaseAdmin as any)
       .from("affiliates")
       .select("id, code, clicks, registered_referrals, approved_referrals, reward_balance_kz, created_at")
       .eq("student_id", data.studentId)
       .single();
     if (!affiliate) throw new Error("Perfil de afiliado não encontrado");
 
-    const { data: referrals } = await supabaseAdmin
+    const { data: referrals } = await (supabaseAdmin as any)
       .from("affiliate_referrals")
       .select("id, status, created_at, converted_at, students!affiliate_referrals_referred_student_id_fkey(surname)")
       .eq("affiliate_id", affiliate.id)
@@ -126,13 +126,13 @@ export const recordReferralClick = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => ReferralSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: affiliate } = await supabaseAdmin
+    const { data: affiliate } = await (supabaseAdmin as any)
       .from("affiliates")
       .select("id, clicks")
       .eq("code", data.referralCode.toUpperCase())
       .maybeSingle();
     if (!affiliate) return { recorded: false };
-    const { error } = await supabaseAdmin
+    const { error } = await (supabaseAdmin as any)
       .from("affiliates")
       .update({ clicks: affiliate.clicks + 1 })
       .eq("id", affiliate.id);
