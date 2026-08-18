@@ -1,7 +1,5 @@
 import { MessageCircle } from "lucide-react";
 import { WHATSAPP_DISPLAY, WHATSAPP_REQUEST_URL } from "@/lib/library-data";
-import logoAsset from "@/assets/amigo-do-saber-logo.png.asset.json";
-
 export function SiteFooter() {
   return (
     <footer className="mt-24 border-t border-border/60 bg-background/50">
@@ -10,7 +8,7 @@ export function SiteFooter() {
           <div className="md:col-span-2">
           <div className="flex items-center gap-2">
             <img
-              src={logoAsset.url}
+              src="/favicon.png"
               alt="Amigo do Saber"
               width={32}
               height={32}

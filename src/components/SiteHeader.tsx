@@ -5,8 +5,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { categories } from "@/lib/library-data";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { useStudent } from "@/hooks/use-student";
-import logoAsset from "@/assets/amigo-do-saber-logo.png.asset.json";
-
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -20,7 +18,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:gap-8 sm:px-6 lg:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <img
-            src={logoAsset.url}
+            src="/favicon.png"
             alt="Amigo do Saber"
             width={40}
             height={40}
