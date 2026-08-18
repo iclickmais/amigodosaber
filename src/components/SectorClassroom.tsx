@@ -106,7 +106,7 @@ export function SectorClassroom({
   const amount = priceFor(kind);
   const todayIso = new Date().toISOString().slice(0, 10);
   const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
-  const lockedCount = Math.max(totalLessons - 1, 0);
+  const lockedCount = Math.max(totalLessons - 3, 0);
 
   function onLessonClick(e: React.MouseEvent, isLocked: boolean) {
     if (!student) {
@@ -126,7 +126,7 @@ export function SectorClassroom({
       <div className="mb-6">
         <MotivationBanner kind={kind} trackSlug={trackSlug} />
         <p className="mt-3 text-xs text-muted-foreground">
-          Cada aula tem <span className="text-gold">quiz de 10 perguntas</span> para avaliação. Acesso: <span className="text-gold">3 meses</span>.
+          Cada aula inclui um <span className="text-gold">questionário de 10 perguntas</span> para verificar a aprendizagem. Acesso: <span className="text-gold">3 meses</span>.
         </p>
       </div>
 
@@ -172,7 +172,7 @@ export function SectorClassroom({
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {[
                   { icon: BookOpen, label: "Todas as aulas" },
-                  { icon: Target, label: "Todos os quizzes" },
+                  { icon: Target, label: "Todos os questionários" },
                   { icon: Shield, label: "3 meses de acesso" },
                   { icon: CheckCircle2, label: "Liberdade total" },
                 ].map((b, i) => (
@@ -235,10 +235,10 @@ export function SectorClassroom({
                 <div className="border-t border-border/60 bg-black/10 px-4 py-4 sm:px-6">
                   <ul className="space-y-3">
                     {mod.lessons.map((lesson, lidx) => {
-                      // Apenas a 1ª aula do sector é gratuita
-                      const isFree = midx === 0 && lidx === 0;
-                      const locked = !hasAccess && !isFree;
+                      // Exactamente as três primeiras aulas do sector são gratuitas.
                       const globalIndex = modules.slice(0, midx).reduce((acc, curr) => acc + curr.lessons.length, 0) + lidx;
+                      const isFree = globalIndex < 3;
+                      const locked = !hasAccess && !isFree;
 
                       return (
                         <li key={lesson.slug}>
@@ -311,9 +311,9 @@ export function SectorClassroom({
             {lockedCount} aulas ainda fechadas em {sectorName}
           </h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Já viste a aula grátis. Por <span className="text-gold font-semibold">{formatKz(amount)}</span> (menos de{" "}
+            Já viste as primeiras 3 aulas gratuitas. Por <span className="text-gold font-semibold">{formatKz(amount)}</span> (menos de{" "}
             {formatKz(Math.round(amount / 90))}/dia) abres <span className="text-foreground">as {totalLessons} aulas</span>,
-            todos os quizzes, os simulados cronometrados e o plano de estudo — durante 3 meses.
+            todos os questionários, os simulados cronometrados e o plano de estudo — durante 3 meses.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <button

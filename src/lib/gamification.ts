@@ -108,9 +108,9 @@ export function addLessonXp(lessonSlug: string): { newStats: GameStats; reward: 
   saveStats(stats);
 
   // Determinar recompensa
-  let reward = "+25 XP";
+  let reward = "+25 pontos";
   if (stats.level > newLevel - 1) {
-    reward = `+25 XP · Subiste para o nível ${stats.level}!`;
+    reward = `+25 pontos · Subiste para o nível ${stats.level}!`;
   }
 
   return { newStats: stats, reward };
@@ -133,7 +133,7 @@ export function addQuizXp(score: number, total: number): { newStats: GameStats; 
 
   saveStats(stats);
 
-  let reward = passed ? `+50 XP · Quiz aprovado!` : `+15 XP · Quase lá, tenta de novo!`;
+  let reward = passed ? `+50 pontos · Questionário aprovado!` : `+15 pontos · Quase lá, tenta de novo!`;
   if (newLevel > stats.level) {
     reward += ` · Nível ${stats.level}!`;
   }
@@ -160,21 +160,21 @@ export function getMotivationalMessage(context: "login" | "lesson" | "quiz-pass"
     ],
     "quiz-pass": [
       "Brilhante! Dominaste esta matéria!",
-      "O teu cérebro agradece o esforço. +50 XP!",
-      "Aprovado! Cada quiz é uma vitória.",
+      "O teu cérebro agradece o esforço. +50 pontos!",
+      "Aprovado! Cada questionário é uma vitória.",
       "Isso sim é determinação! Continua assim.",
     ],
     "quiz-fail": [
       "Quase lá! Revisa a matéria e tenta de novo.",
-      "Os erros de hoje são as lições de amanhã. +15 XP!",
+      "Os erros de hoje são as lições de amanhã. +15 pontos!",
       "Não desistas — a repetição é a mãe da aprendizagem.",
-      "Volta a esta aula e tenta o quiz. Vais conseguir!",
+      "Volta a esta aula e responde novamente ao questionário. Vais conseguir!",
     ],
     streak: [
       `🔥 ${streakMsg()}`,
     ],
     "streak-broken": [
-      "A streak foi quebrada, mas cada novo dia é uma nova oportunidade.",
+      "A sequência de estudo foi interrompida, mas cada novo dia é uma nova oportunidade.",
       "Não te preocupes — o importante é não parar. Recomeça hoje!",
     ],
   };
@@ -187,9 +187,9 @@ function streakMsg(): string {
   const stats = loadStats();
   if (stats.streak >= 30) return `${stats.streak} dias consecutivos! És uma máquina!`;
   if (stats.streak >= 14) return `${stats.streak} dias! Incrível dedicação!`;
-  if (stats.streak >= 7) return `${stats.streak} dias de streak! O teu compromisso é admirável.`;
+  if (stats.streak >= 7) return `${stats.streak} dias seguidos! O teu compromisso é admirável.`;
   if (stats.streak >= 3) return `${stats.streak} dias seguidos! Cada dia conta.`;
-  return `${stats.streak} dia(s) de streak. Continua!`;
+  return `${stats.streak} dia(s) seguido(s). Continua!`;
 }
 
 /** Obter todas as estatísticas actuais */

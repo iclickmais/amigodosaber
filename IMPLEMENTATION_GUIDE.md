@@ -18,7 +18,7 @@ Os seguintes arquivos foram criados e devem ser integrados no projeto:
 
 ### 1.1 Executar a Migration
 
-1. Aceda a [Supabase Dashboard](https://app.supabase.com/project/ewwmxuxfrnoknklncwjy/sql)
+1. Aceda a [Supabase Dashboard](https://app.supabase.com/project/lbfxlmkngvwrlafgudck/sql)
 2. Clique em "SQL Editor" no menu lateral
 3. Clique em "New Query"
 4. Copie o conteúdo de `supabase-notifications-migration.sql`

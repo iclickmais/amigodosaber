@@ -17,10 +17,10 @@
 - **SUPABASE_ANON_KEY**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` (referência `lbfxlmkngvwrlafgudck`)
 
 ### Local / Lovable (Corretas)
-- **SUPABASE_URL**: `https://ewwmxuxfrnoknklncwjy.supabase.co`
+- **SUPABASE_URL**: `https://lbfxlmkngvwrlafgudck.supabase.co`
 - **SUPABASE_ANON_KEY**: `sb_publishable_3gn71ZhnbYN8DSzVIDzAYQ_t74gWyZa` (esta parece ser uma publishable key do Lovable, não a anon key padrão do Supabase)
-- **SUPABASE_PROJECT_ID**: `ewwmxuxfrnoknklncwjy`
+- **SUPABASE_PROJECT_ID**: `lbfxlmkngvwrlafgudck`
 
 ## Próximos Passos
-1. Atualizar todas as variáveis `SUPABASE_*` e `NEXT_PUBLIC_SUPABASE_*` no Vercel para apontar para o projeto `ewwmxuxfrnoknklncwjy`.
+1. Atualizar todas as variáveis `SUPABASE_*` e `NEXT_PUBLIC_SUPABASE_*` no Vercel para apontar para o projeto `lbfxlmkngvwrlafgudck`.
 2. Verificar se o logotipo está acessível no Lovable e descarregá-lo.

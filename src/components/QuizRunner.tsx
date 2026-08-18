@@ -65,7 +65,7 @@ export function QuizRunner({ quiz }: Props) {
   return (
     <Fragment>
     <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 lg:p-8">
-      <h2 className="font-serif text-xl sm:text-2xl text-foreground">Quiz — {quiz.questions.length} perguntas</h2>
+      <h2 className="font-serif text-xl sm:text-2xl text-foreground">Questionário — {quiz.questions.length} perguntas</h2>
 
       {submitted && (
         <div className={`mt-6 sm:mt-8 animate-in fade-in slide-in-from-top-4 duration-500 rounded-2xl border p-5 sm:p-8 text-center shadow-2xl ${
@@ -93,7 +93,7 @@ export function QuizRunner({ quiz }: Props) {
             <p className="text-sm text-muted-foreground mx-auto">
               {submitted.score / submitted.total >= 0.6
                 ? "O teu progresso foi registado e estás mais perto do teu objectivo."
-                : "Recomendamos que releias a matéria e faças o quiz novamente."}
+                : "Recomendamos que releias a matéria e respondas novamente ao questionário."}
             </p>
           </div>
           

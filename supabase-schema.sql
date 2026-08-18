@@ -1,7 +1,7 @@
 -- =====================================================
 -- AMIGO DO SABER — Supabase Schema Completo
 -- Execute este script no SQL Editor do Supabase:
---   https://app.supabase.com/project/ewwmxuxfrnoknklncwjy/sql
+--   https://app.supabase.com/project/lbfxlmkngvwrlafgudck/sql
 -- =====================================================
 
 -- 1. STUDENTS (a tabela principal — causa do erro)

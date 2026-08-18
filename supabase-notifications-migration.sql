@@ -1,7 +1,7 @@
 -- =====================================================
 -- NOTIFICATIONS TABLE — Funil de Vendas via Push
 -- Execute este script no SQL Editor do Supabase:
---   https://app.supabase.com/project/ewwmxuxfrnoknklncwjy/sql
+--   https://app.supabase.com/project/lbfxlmkngvwrlafgudck/sql
 -- =====================================================
 
 -- Create notifications table

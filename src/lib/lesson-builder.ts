@@ -199,7 +199,7 @@ ${profile.practice}
 
 ## 8. Recuperação activa
 
-Antes de abrir o quiz, responde sem consultar a aula:
+Antes de responder ao questionário, revê sem consultar a aula:
 
 1. Qual é a definição operacional de **${lessonTitle}**?
 2. Que dados ou palavras-chave determinam a escolha do método?

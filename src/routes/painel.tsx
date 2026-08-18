@@ -180,7 +180,7 @@ function PanelPage() {
 
         {/* Widgets de destaque */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Level & XP */}
+          {/* Nível e pontos */}
           {(() => {
             const stats = getGameStats();
             const xpProgress = stats.xp % 100;
@@ -190,23 +190,23 @@ function PanelPage() {
                   <Zap className="h-5 w-5" />
                   <span className="text-xs uppercase tracking-widest text-muted-foreground">Nível {stats.level}</span>
                 </div>
-                <p className="mt-1 font-serif text-2xl">{stats.xp} XP</p>
+                <p className="mt-1 font-serif text-2xl">{stats.xp} pontos</p>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border/60">
                   <div className="h-full bg-gold transition-all duration-500" style={{ width: `${xpProgress}%` }} />
                 </div>
-                <p className="mt-1 text-[10px] text-muted-foreground">Próximo nível: {100 - xpProgress} XP</p>
+                <p className="mt-1 text-[10px] text-muted-foreground">Próximo nível: {100 - xpProgress} pontos</p>
               </div>
             );
           })()}
 
-          {/* Streak */}
+          {/* Sequência de estudo */}
           {(() => {
             const stats = getGameStats();
             return (
               <div className="rounded-2xl border border-orange-400/30 bg-orange-400/5 p-4 sm:p-5">
                 <div className="flex items-center gap-2 text-orange-400">
                   <Flame className="h-5 w-5" />
-                  <span className="text-xs uppercase tracking-widest text-muted-foreground">Streak</span>
+                  <span className="text-xs uppercase tracking-widest text-muted-foreground">Sequência</span>
                 </div>
                 <p className="mt-1 font-serif text-2xl">{stats.streak}</p>
                 <p className="mt-1 text-[10px] text-muted-foreground">

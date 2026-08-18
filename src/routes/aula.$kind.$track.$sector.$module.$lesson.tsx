@@ -140,13 +140,13 @@ function AulaPage() {
           setLessonXpAdded(true);
           if (lessonResult.newStats.level > Math.floor((lessonResult.newStats.xp - 25) / 100)) {
             setToast({
-              reward: `+25 XP · Nível ${lessonResult.newStats.level}!`,
+              reward: `+25 pontos · Nível ${lessonResult.newStats.level}!`,
               message: getMotivationalMessage("lesson"),
               type: "level-up",
             });
           } else {
             setToast({
-              reward: `+25 XP`,
+              reward: `+25 pontos`,
               message: getMotivationalMessage("lesson"),
               type: "xp",
             });
@@ -213,7 +213,7 @@ function AulaPage() {
       // Guarda o quiz junto da aula no cache offline.
       void updateQuizOffline(cacheKey, q);
       setTimeout(() => {
-        document.getElementById("quiz")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById("questionario")?.scrollIntoView({ behavior: "smooth" });
       }, 50);
     } catch (err) {
       // Se falhou por rede, tenta cache
@@ -221,7 +221,7 @@ function AulaPage() {
       if (cached?.quiz) {
         setQuiz(cached.quiz as QuizPayload);
       } else {
-        setError(err instanceof Error ? err.message : "Falha ao carregar quiz");
+        setError(err instanceof Error ? err.message : "Falha ao carregar o questionário");
       }
     } finally {
       setLoadingQuiz(false);
@@ -331,9 +331,9 @@ function AulaPage() {
                 className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
               >
                 {loadingQuiz ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> A abrir quiz…</>
+                  <><Loader2 className="h-4 w-4 animate-spin" /> A abrir o questionário…</>
                 ) : (
-                  <>Começar quiz</>
+                  <>Começar questionário</>
                 )}
               </button>
             </div>
@@ -373,7 +373,7 @@ function AulaPage() {
         )}
 
         {quiz && (
-          <div id="quiz" className="mt-12">
+          <div id="questionario" className="mt-12">
             <QuizRunner quiz={quiz} />
           </div>
         )}

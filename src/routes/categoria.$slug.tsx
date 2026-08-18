@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { BookOpenCheck, ChevronRight, Download, FileText, Loader2, PencilLine } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BookCard } from "@/components/BookCard";
@@ -12,6 +12,7 @@ import {
   type Subcategory,
   type Book,
 } from "@/lib/library-data";
+import { kidsMaterials } from "@/lib/kids-materials";
 
 const PAGE_SIZE = 24;
 
@@ -94,6 +95,48 @@ function CategoryPage() {
           </div>
         </div>
       </section>
+
+      {cat.slug === "infantil" && (
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+          <div className="rounded-3xl border border-emerald-200/70 bg-emerald-50/70 p-5 sm:p-8">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-emerald-700">
+                  <BookOpenCheck className="h-5 w-5" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em]">Materiais para imprimir</span>
+                </div>
+                <h2 className="mt-2 font-serif text-2xl text-emerald-950 sm:text-3xl">Aprender a ler e a escrever</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-emerald-900/75">
+                  Fichas didácticas em português para praticar o traçado, as vogais, as sílabas e a compreensão de textos. Não são resumos nem jogos: são exercícios práticos para acompanhar o estudo da criança.
+                </p>
+              </div>
+              <PencilLine className="hidden h-12 w-12 text-emerald-700/40 sm:block" />
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {kidsMaterials.map((material) => (
+                <article key={material.href} className="flex min-h-[230px] flex-col rounded-2xl border border-emerald-200 bg-white/80 p-4 shadow-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="rounded-xl bg-emerald-100 p-2 text-emerald-700">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <span className="text-[11px] text-emerald-800/65">{material.pages}</span>
+                  </div>
+                  <h3 className="mt-4 font-serif text-lg text-emerald-950">{material.title}</h3>
+                  <p className="mt-2 flex-1 text-xs leading-5 text-emerald-950/70">{material.description}</p>
+                  <div className="mt-3 border-t border-emerald-100 pt-3 text-[11px] text-emerald-800/70">
+                    <div>{material.level}</div>
+                    <div className="font-medium">Foco: {material.focus}</div>
+                  </div>
+                  <a href={material.href} target="_blank" rel="noreferrer" download className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-800">
+                    <Download className="h-4 w-4" />
+                    Abrir ficha PDF
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <h2 className="font-serif text-xl sm:text-2xl">Navegar por subcategoria</h2>

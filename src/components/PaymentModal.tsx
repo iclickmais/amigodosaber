@@ -170,7 +170,7 @@ export function PaymentModal({
             <div className="mt-6 grid grid-cols-2 gap-3">
               {[
                 { icon: BookOpen, text: "Todas as aulas" },
-                { icon: Target, text: "Todos os quizzes" },
+                { icon: Target, text: "Todos os questionários" },
                 { icon: Rocket, text: "Simulados completos" },
                 { icon: Shield, text: "Suporte via WhatsApp" },
               ].map((b, i) => (

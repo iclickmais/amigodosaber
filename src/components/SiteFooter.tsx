@@ -20,7 +20,7 @@ export function SiteFooter() {
             </span>
           </div>
           <p className="mt-3 max-w-md text-sm text-muted-foreground">
-            Aulas, livros e quizzes para quem quer aprender — do concurso público
+            Aulas, livros e questionários para quem quer aprender — do concurso público
             à universidade, num só lugar.
           </p>
 

@@ -1,7 +1,7 @@
 -- =====================================================
 -- CHAT SYSTEM — Sala de Bate-papo em Tempo Real
 -- Execute este script no SQL Editor do Supabase:
---   https://app.supabase.com/project/ewwmxuxfrnoknklncwjy/sql
+--   https://app.supabase.com/project/lbfxlmkngvwrlafgudck/sql
 -- =====================================================
 
 -- 1. CHAT_MESSAGES

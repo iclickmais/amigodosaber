@@ -103,7 +103,7 @@ function RevisionPage() {
             <p className="mt-2 text-sm text-muted-foreground">
               {totalDue > 0
                 ? `Tens ${totalDue} pergunta(s) noutro dia. Vamos abrir uma aula nova?`
-                : "Boa! Vamos fazer mais quizzes para alimentar a fila?"}
+                : "Boa! Vamos responder a mais questionários para alimentar a fila?"}
             </p>
             <Link
               to="/painel"

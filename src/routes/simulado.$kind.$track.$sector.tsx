@@ -82,7 +82,7 @@ function SimuladoPage() {
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha";
       if (msg.includes("ACCESS_REQUIRED")) setError("Precisa de acesso pago a este sector.");
-      else if (msg.includes("SIMULADO_NEEDS_LESSONS")) setError("Abre e responde aos quizzes de algumas aulas primeiro — precisas de banco de perguntas para o simulado.");
+      else if (msg.includes("SIMULADO_NEEDS_LESSONS")) setError("Abre e responde aos questionários de algumas aulas primeiro — precisas de um banco de perguntas para o simulado.");
       else setError(msg);
       setPhase("idle");
     }
