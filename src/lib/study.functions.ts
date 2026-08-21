@@ -6,6 +6,7 @@ import {
   type TrackKind,
 } from "@/lib/study-tracks";
 import { buildRichLessonContent } from "@/lib/lesson-builder";
+import { buildLessonQuizQuestions } from "@/lib/lesson-quiz-builder";
 
 // ————— Registo simples: telefone + apelido —————
 
@@ -208,7 +209,14 @@ export const getOrGenerateLesson = createServerFn({ method: "POST" })
 
 // ————— Quiz: pré-preparado, cacheado e sem IA em tempo real —————
 
-const QuizSchema = z.object({ lessonId: z.string().uuid() });
+const QuizSchema = z.object({
+  lessonId: z.string().uuid(),
+  lessonTitle: z.string().trim().min(1).optional(),
+  trackKind: z.enum(["concurso", "preparatorio"]).optional(),
+  trackName: z.string().trim().min(1).optional(),
+  sectorName: z.string().trim().min(1).optional(),
+  moduleTitle: z.string().trim().min(1).optional(),
+});
 
 export interface QuizQuestion {
   q: string;
@@ -223,7 +231,28 @@ export interface QuizPayload {
   questions: QuizQuestion[];
 }
 
-function buildPreparedQuiz(lessonId: string, title: string): QuizPayload {
+function buildPreparedQuiz(
+  lessonId: string,
+  title: string,
+  context?: {
+    trackKind?: TrackKind;
+    trackName?: string;
+    sectorName?: string;
+    moduleTitle?: string;
+  },
+): QuizPayload {
+  const specificQuestions = context?.trackKind && context.trackName && context.sectorName && context.moduleTitle
+    ? buildLessonQuizQuestions({
+        lessonTitle: title,
+        moduleTitle: context.moduleTitle,
+        sectorName: context.sectorName,
+        trackName: context.trackName,
+        kind: context.trackKind,
+      })
+    : null;
+  if (specificQuestions) {
+    return { id: stableUuid(`quiz:${lessonId}`), lesson_id: lessonId, questions: specificQuestions };
+  }
   const questions: QuizQuestion[] = [
     {
       q: `Qual é o foco principal da aula “${title}”?`,
@@ -303,10 +332,35 @@ export const getOrGenerateQuiz = createServerFn({ method: "POST" })
 
       const { data: lesson } = await supabaseAdmin
         .from("lessons")
-        .select("title")
+        .select("title, track_kind, track_slug, sector_slug, module_slug, lesson_slug")
         .eq("id", data.lessonId)
         .maybeSingle();
-      const prepared = buildPreparedQuiz(data.lessonId, lesson?.title ?? "esta aula");
+      const localLesson = lesson?.track_kind && lesson.track_slug && lesson.sector_slug && lesson.module_slug && lesson.lesson_slug
+        ? findLesson(
+            lesson.track_kind as TrackKind,
+            lesson.track_slug,
+            lesson.sector_slug,
+            lesson.module_slug,
+            lesson.lesson_slug,
+          )
+        : undefined;
+      const prepared = buildPreparedQuiz(
+        data.lessonId,
+        lesson?.title ?? data.lessonTitle ?? "esta aula",
+        localLesson
+          ? {
+              trackKind: lesson?.track_kind as TrackKind,
+              trackName: localLesson.track.name,
+              sectorName: localLesson.sector.name,
+              moduleTitle: localLesson.module.title,
+            }
+          : {
+              trackKind: data.trackKind,
+              trackName: data.trackName,
+              sectorName: data.sectorName,
+              moduleTitle: data.moduleTitle,
+            },
+      );
       const { data: inserted } = await supabaseAdmin
         .from("quizzes")
         .upsert(
@@ -319,7 +373,12 @@ export const getOrGenerateQuiz = createServerFn({ method: "POST" })
       return prepared;
     } catch (err) {
       console.warn("Quiz pré-preparado servido localmente; Supabase indisponível:", err);
-      return buildPreparedQuiz(data.lessonId, "esta aula");
+      return buildPreparedQuiz(data.lessonId, data.lessonTitle ?? "esta aula", {
+        trackKind: data.trackKind,
+        trackName: data.trackName,
+        sectorName: data.sectorName,
+        moduleTitle: data.moduleTitle,
+      });
     }
   });
 
