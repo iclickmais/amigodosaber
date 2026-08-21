@@ -208,7 +208,16 @@ function AulaPage() {
     setLoadingQuiz(true);
     setError(null);
     try {
-      const q = await getOrGenerateQuiz({ data: { lessonId: content.id } });
+      const q = await getOrGenerateQuiz({
+        data: {
+          lessonId: content.id,
+          lessonTitle: content.title,
+          trackKind: kind,
+          trackName: track.name,
+          sectorName: sector.name,
+          moduleTitle: mod.title,
+        },
+      });
       setQuiz(q);
       // Guarda o quiz junto da aula no cache offline.
       void updateQuizOffline(cacheKey, q);
