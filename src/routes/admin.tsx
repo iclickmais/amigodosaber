@@ -213,7 +213,7 @@ function AdminPage() {
                   ["students", `Alunos (${data?.students.length ?? 0})`],
                   ["edicts", "Editais"],
                   ["books", "Livros"],
-                  ["courses", "Cursos (IA)"],
+                  ["courses", "Cursos e aulas"],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -990,7 +990,7 @@ function CoursesPanel({ adminPhone }: { adminPhone: string }) {
         const res = await pregenBatch({ data: { adminPhone, kind, trackSlug, limit: 4 } });
         setLog((l) => [
           ...l.slice(-6),
-          `+${res.generated} aulas · faltam ${Math.max(res.remaining, 0)} de ${res.total}`,
+          `+${res.generated} aulas completas e quizzes · faltam ${Math.max(res.remaining, 0)} de ${res.total}`,
           ...res.errors.slice(0, 2),
         ]);
         await refresh(kind);
@@ -1015,12 +1015,12 @@ function CoursesPanel({ adminPhone }: { adminPhone: string }) {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-gold/30 bg-gold/5 p-4 text-xs text-muted-foreground">
-        <p className="mb-1 flex items-center gap-2 text-sm text-gold">
-          <GraduationCap className="h-4 w-4" /> Pré-geração de cursos
+          <p className="mb-1 flex items-center gap-2 text-sm text-gold">
+          <GraduationCap className="h-4 w-4" /> Preparação de cursos e aulas
         </p>
-        Gera aqui todas as aulas de uma vez. Depois de geradas ficam gravadas na base de dados e os
-        alunos abrem-nas de imediato — nada é gerado em tempo real. Mantém esta página aberta
-        durante a geração; podes retomar mais tarde sem repetir o que já foi feito.
+        Prepara aqui cada aula completa e o seu quiz. Depois de guardados, ficam disponíveis
+        imediatamente na base de dados para os alunos com plano activo — nada é gerado quando a aula
+        é aberta. Podes retomar mais tarde sem repetir o que já foi concluído.
       </div>
 
       <div className="flex gap-2">
@@ -1063,12 +1063,12 @@ function CoursesPanel({ adminPhone }: { adminPhone: string }) {
                 <div className="flex-1">
                   <p className="text-sm font-medium">{r.trackName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {Math.min(r.generated, r.total)} de {r.total} aulas geradas
+                    {Math.min(r.generated, r.total)} de {r.total} aulas completas com quiz
                   </p>
                 </div>
                 {complete ? (
                   <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs text-gold">
-                    Completo
+                    Tudo preparado
                   </span>
                 ) : busy === r.trackSlug ? (
                   <button
@@ -1085,7 +1085,7 @@ function CoursesPanel({ adminPhone }: { adminPhone: string }) {
                     disabled={!!busy}
                     className="rounded-full bg-gold px-4 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
                   >
-                    Gerar aulas
+                      Preparar aulas e quizzes
                   </button>
                 )}
               </div>

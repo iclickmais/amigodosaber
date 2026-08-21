@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { concursoTracks, preparatorioTracks, type Track, type TrackKind } from "@/lib/study-tracks";
-import { generateLessonMarkdown } from "@/lib/lesson-gen.server";
+import { buildRichLessonContent } from "@/lib/lesson-builder";
+import { buildLessonQuizQuestions } from "@/lib/lesson-quiz-builder";
 
 const ADMIN_PHONE = "+244921346544";
 
@@ -17,6 +18,12 @@ interface LessonRef {
 
 function tracksOf(kind: TrackKind): Track[] {
   return kind === "concurso" ? concursoTracks : preparatorioTracks;
+}
+
+function findModuleTitle(kind: TrackKind, trackSlug: string, sectorSlug: string, moduleSlug: string): string {
+  const track = tracksOf(kind).find((t) => t.slug === trackSlug);
+  const sector = track?.sectors.find((s) => s.slug === sectorSlug);
+  return sector?.modules.find((m) => m.slug === moduleSlug)?.title ?? moduleSlug;
 }
 
 function enumerateLessons(kind: TrackKind, trackSlug: string, sectorSlug?: string): LessonRef[] {
@@ -64,17 +71,28 @@ export const pregenStatus = createServerFn({ method: "POST" })
     for (const slug of slugs) {
       const refs = enumerateLessons(kind, slug);
       if (refs.length === 0) continue;
-      const { count } = await supabaseAdmin
+      const { data: lessonRows, error: lessonError } = await supabaseAdmin
         .from("lessons")
-        .select("id", { count: "exact", head: true })
+        .select("id")
         .eq("track_kind", kind)
         .eq("track_slug", slug);
+      if (lessonError) throw new Error(lessonError.message);
+      const ids = (lessonRows ?? []).map((row) => row.id);
+      let quizCount = 0;
+      for (let offset = 0; offset < ids.length; offset += 400) {
+        const { count, error: countError } = await supabaseAdmin
+          .from("quizzes")
+          .select("lesson_id", { count: "exact", head: true })
+          .in("lesson_id", ids.slice(offset, offset + 400));
+        if (countError) throw new Error(countError.message);
+        quizCount += count ?? 0;
+      }
       out.push({
         kind,
         trackSlug: slug,
         trackName: refs[0].trackName,
         total: refs.length,
-        generated: count ?? 0,
+        generated: Math.min(quizCount, refs.length),
       });
     }
     return out;
@@ -109,18 +127,29 @@ export const pregenBatch = createServerFn({ method: "POST" })
     if (refs.length === 0) throw new Error("Área não encontrada.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: existing } = await supabaseAdmin
+    const { data: existing, error: existingError } = await supabaseAdmin
       .from("lessons")
-      .select("sector_slug, module_slug, lesson_slug")
+      .select("id, sector_slug, module_slug, lesson_slug, title, content_md")
       .eq("track_kind", data.kind)
       .eq("track_slug", data.trackSlug);
+    if (existingError) throw new Error(existingError.message);
 
-    const have = new Set(
-      (existing ?? []).map((r) => `${r.sector_slug}|${r.module_slug}|${r.lesson_slug}`),
+    const lessonByKey = new Map(
+      (existing ?? []).map((r) => [
+        `${r.sector_slug}|${r.module_slug}|${r.lesson_slug}`,
+        r,
+      ]),
     );
-    const missing = refs.filter(
-      (r) => !have.has(`${r.sectorSlug}|${r.moduleSlug}|${r.lessonSlug}`),
-    );
+    const lessonIds = (existing ?? []).map((r) => r.id);
+    const { data: existingQuizzes, error: quizError } = lessonIds.length
+      ? await supabaseAdmin.from("quizzes").select("lesson_id").in("lesson_id", lessonIds)
+      : { data: [], error: null };
+    if (quizError) throw new Error(quizError.message);
+    const quizIds = new Set((existingQuizzes ?? []).map((r) => r.lesson_id));
+    const missing = refs.filter((r) => {
+      const row = lessonByKey.get(`${r.sectorSlug}|${r.moduleSlug}|${r.lessonSlug}`);
+      return !row || !quizIds.has(row.id);
+    });
 
     const batch = missing.slice(0, limit);
     const errors: string[] = [];
@@ -129,23 +158,49 @@ export const pregenBatch = createServerFn({ method: "POST" })
     await Promise.all(
       batch.map(async (ref) => {
         try {
-          const { title, content } = await generateLessonMarkdown({
-            kind: ref.kind,
-            trackSlug: ref.trackSlug,
-            sectorSlug: ref.sectorSlug,
-            moduleSlug: ref.moduleSlug,
-            lessonSlug: ref.lessonSlug,
-          });
-          const { error } = await supabaseAdmin.from("lessons").insert({
-            track_kind: ref.kind,
-            track_slug: ref.trackSlug,
-            sector_slug: ref.sectorSlug,
-            module_slug: ref.moduleSlug,
-            lesson_slug: ref.lessonSlug,
-            title,
-            content_md: content,
-          });
-          if (error) throw new Error(error.message);
+          const key = `${ref.sectorSlug}|${ref.moduleSlug}|${ref.lessonSlug}`;
+          let lesson = lessonByKey.get(key);
+          if (!lesson) {
+            const content = buildRichLessonContent(
+              ref.trackName,
+              ref.sectorName,
+              findModuleTitle(data.kind, data.trackSlug, ref.sectorSlug, ref.moduleSlug),
+              ref.lessonTitle,
+              ref.kind,
+            );
+            const { data: inserted, error } = await supabaseAdmin
+              .from("lessons")
+              .insert({
+                track_kind: ref.kind,
+                track_slug: ref.trackSlug,
+                sector_slug: ref.sectorSlug,
+                module_slug: ref.moduleSlug,
+                lesson_slug: ref.lessonSlug,
+                title: ref.lessonTitle,
+                content_md: content,
+              })
+              .select("id, sector_slug, module_slug, lesson_slug, title, content_md")
+              .single();
+            if (error || !inserted) throw new Error(error?.message ?? "Falha ao guardar a aula");
+            lesson = inserted;
+            lessonByKey.set(key, lesson);
+          }
+
+          const moduleTitle = findModuleTitle(data.kind, data.trackSlug, ref.sectorSlug, ref.moduleSlug);
+          const { error: upsertError } = await supabaseAdmin.from("quizzes").upsert(
+            {
+              lesson_id: lesson.id,
+              questions: buildLessonQuizQuestions({
+                lessonTitle: ref.lessonTitle,
+                moduleTitle,
+                sectorName: ref.sectorName,
+                trackName: ref.trackName,
+                kind: ref.kind,
+              }),
+            },
+            { onConflict: "lesson_id" },
+          );
+          if (upsertError) throw new Error(upsertError.message);
           generated += 1;
         } catch (e) {
           errors.push(`${ref.sectorName} › ${ref.lessonTitle}: ${e instanceof Error ? e.message : "erro"}`);
