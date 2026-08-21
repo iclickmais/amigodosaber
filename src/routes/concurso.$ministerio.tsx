@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/concurso/$ministerio")({
 
 function MinisterioPage() {
   const { track } = Route.useLoaderData();
+  const [logoFailed, setLogoFailed] = useState(false);
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -43,15 +45,16 @@ function MinisterioPage() {
             <span className="text-gold">{track.name}</span>
           </nav>
           <div className="mt-4 flex items-center gap-4">
-            {ministryLogos[track.slug] ? (
+            {ministryLogos[track.slug] && !logoFailed ? (
               <img
                 src={ministryLogos[track.slug]}
                 alt={`Insígnia ${track.name}`}
                 className="h-16 w-auto max-w-[200px] object-contain"
                 loading="lazy"
+                onError={() => setLogoFailed(true)}
               />
             ) : (
-              <div className="text-4xl sm:text-5xl">{track.icon}</div>
+              <div aria-label={`Ícone ${track.name}`} className="text-4xl sm:text-5xl">{track.icon}</div>
             )}
             <div>
               <div className="flex flex-wrap items-center gap-2">
