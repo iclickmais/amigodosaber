@@ -19,6 +19,9 @@ export default defineConfig({
         manifest: false,
         injectManifest: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2}"],
+          // O catálogo real com mais de 10.000 livros gera um bundle superior ao limite padrão do Workbox.
+          // Mantemos a PWA activa e permitimos precache até 16 MiB, acima do maior bundle actual.
+          maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
         },
       }),
     ],
