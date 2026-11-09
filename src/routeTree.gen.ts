@@ -9,51 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RevisaoRouteImport } from './routes/revisao'
-import { Route as PainelRouteImport } from './routes/painel'
-import { Route as NoticiasRouteImport } from './routes/noticias'
-import { Route as EntrarRouteImport } from './routes/entrar'
-import { Route as EditaisRouteImport } from './routes/editais'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PreparatorioIndexRouteImport } from './routes/preparatorio.index'
-import { Route as ConcursoIndexRouteImport } from './routes/concurso.index'
-import { Route as PreparatorioFaculdadeRouteImport } from './routes/preparatorio.$faculdade'
-import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
-import { Route as LivroIdRouteImport } from './routes/livro.$id'
-import { Route as ConcursoMinisterioRouteImport } from './routes/concurso.$ministerio'
-import { Route as CertificadoIdRouteImport } from './routes/certificado.$id'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as EditaisRouteImport } from './routes/editais'
+import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as NoticiasRouteImport } from './routes/noticias'
+import { Route as PainelRouteImport } from './routes/painel'
+import { Route as RevisaoRouteImport } from './routes/revisao'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
-import { Route as PreparatorioFaculdadeCursoRouteImport } from './routes/preparatorio.$faculdade_.$curso'
-import { Route as ConcursoMinisterioSectorRouteImport } from './routes/concurso.$ministerio_.$sector'
+import { Route as CertificadoIdRouteImport } from './routes/certificado.$id'
+import { Route as ConcursoIndexRouteImport } from './routes/concurso.index'
+import { Route as ConcursoMinisterioRouteImport } from './routes/concurso.$ministerio'
+import { Route as LivroIdRouteImport } from './routes/livro.$id'
+import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
+import { Route as PreparatorioIndexRouteImport } from './routes/preparatorio.index'
+import { Route as PreparatorioFaculdadeRouteImport } from './routes/preparatorio.$faculdade'
 import { Route as ApiChatFnRouteImport } from './routes/api/chat.$fn'
-import { Route as SimuladoKindTrackSectorRouteImport } from './routes/simulado.$kind.$track.$sector'
+import { Route as ConcursoMinisterioSectorRouteImport } from './routes/concurso.$ministerio_.$sector'
+import { Route as PreparatorioFaculdadeCursoRouteImport } from './routes/preparatorio.$faculdade_.$curso'
 import { Route as ApiPublicBookCoverFileRouteImport } from './routes/api/public/book-cover.$file'
+import { Route as SimuladoKindTrackSectorRouteImport } from './routes/simulado.$kind.$track.$sector'
 import { Route as AulaKindTrackSectorModuleLessonRouteImport } from './routes/aula.$kind.$track.$sector.$module.$lesson'
 
-const RevisaoRoute = RevisaoRouteImport.update({
-  id: '/revisao',
-  path: '/revisao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PainelRoute = PainelRouteImport.update({
-  id: '/painel',
-  path: '/painel',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NoticiasRoute = NoticiasRouteImport.update({
-  id: '/noticias',
-  path: '/noticias',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EntrarRoute = EntrarRouteImport.update({
-  id: '/entrar',
-  path: '/entrar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EditaisRoute = EditaisRouteImport.update({
-  id: '/editais',
-  path: '/editais',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -61,44 +41,29 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const EditaisRoute = EditaisRouteImport.update({
+  id: '/editais',
+  path: '/editais',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PreparatorioIndexRoute = PreparatorioIndexRouteImport.update({
-  id: '/preparatorio/',
-  path: '/preparatorio/',
+const EntrarRoute = EntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConcursoIndexRoute = ConcursoIndexRouteImport.update({
-  id: '/concurso/',
-  path: '/concurso/',
+const NoticiasRoute = NoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PreparatorioFaculdadeRoute = PreparatorioFaculdadeRouteImport.update({
-  id: '/preparatorio/$faculdade',
-  path: '/preparatorio/$faculdade',
+const PainelRoute = PainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NoticiasSlugRoute = NoticiasSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => NoticiasRoute,
-} as any)
-const LivroIdRoute = LivroIdRouteImport.update({
-  id: '/livro/$id',
-  path: '/livro/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConcursoMinisterioRoute = ConcursoMinisterioRouteImport.update({
-  id: '/concurso/$ministerio',
-  path: '/concurso/$ministerio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CertificadoIdRoute = CertificadoIdRouteImport.update({
-  id: '/certificado/$id',
-  path: '/certificado/$id',
+const RevisaoRoute = RevisaoRouteImport.update({
+  id: '/revisao',
+  path: '/revisao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
@@ -106,31 +71,66 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PreparatorioFaculdadeCursoRoute =
-  PreparatorioFaculdadeCursoRouteImport.update({
-    id: '/preparatorio/$faculdade_/$curso',
-    path: '/preparatorio/$faculdade/$curso',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const CertificadoIdRoute = CertificadoIdRouteImport.update({
+  id: '/certificado/$id',
+  path: '/certificado/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConcursoIndexRoute = ConcursoIndexRouteImport.update({
+  id: '/concurso/',
+  path: '/concurso/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConcursoMinisterioRoute = ConcursoMinisterioRouteImport.update({
+  id: '/concurso/$ministerio',
+  path: '/concurso/$ministerio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LivroIdRoute = LivroIdRouteImport.update({
+  id: '/livro/$id',
+  path: '/livro/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NoticiasSlugRoute = NoticiasSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NoticiasRoute,
+} as any)
+const PreparatorioIndexRoute = PreparatorioIndexRouteImport.update({
+  id: '/preparatorio/',
+  path: '/preparatorio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreparatorioFaculdadeRoute = PreparatorioFaculdadeRouteImport.update({
+  id: '/preparatorio/$faculdade',
+  path: '/preparatorio/$faculdade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatFnRoute = ApiChatFnRouteImport.update({
+  id: '/api/chat/$fn',
+  path: '/api/chat/$fn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConcursoMinisterioSectorRoute =
   ConcursoMinisterioSectorRouteImport.update({
     id: '/concurso/$ministerio_/$sector',
     path: '/concurso/$ministerio/$sector',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiChatFnRoute = ApiChatFnRouteImport.update({
-  id: '/api/chat/$fn',
-  path: '/api/chat/$fn',
+const PreparatorioFaculdadeCursoRoute =
+  PreparatorioFaculdadeCursoRouteImport.update({
+    id: '/preparatorio/$faculdade_/$curso',
+    path: '/preparatorio/$faculdade/$curso',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicBookCoverFileRoute = ApiPublicBookCoverFileRouteImport.update({
+  id: '/api/public/book-cover/$file',
+  path: '/api/public/book-cover/$file',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SimuladoKindTrackSectorRoute = SimuladoKindTrackSectorRouteImport.update({
   id: '/simulado/$kind/$track/$sector',
   path: '/simulado/$kind/$track/$sector',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicBookCoverFileRoute = ApiPublicBookCoverFileRouteImport.update({
-  id: '/api/public/book-cover/$file',
-  path: '/api/public/book-cover/$file',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AulaKindTrackSectorModuleLessonRoute =
@@ -307,39 +307,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/revisao': {
-      id: '/revisao'
-      path: '/revisao'
-      fullPath: '/revisao'
-      preLoaderRoute: typeof RevisaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/painel': {
-      id: '/painel'
-      path: '/painel'
-      fullPath: '/painel'
-      preLoaderRoute: typeof PainelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/noticias': {
-      id: '/noticias'
-      path: '/noticias'
-      fullPath: '/noticias'
-      preLoaderRoute: typeof NoticiasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/entrar': {
-      id: '/entrar'
-      path: '/entrar'
-      fullPath: '/entrar'
-      preLoaderRoute: typeof EntrarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editais': {
-      id: '/editais'
-      path: '/editais'
-      fullPath: '/editais'
-      preLoaderRoute: typeof EditaisRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -349,60 +321,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/editais': {
+      id: '/editais'
+      path: '/editais'
+      fullPath: '/editais'
+      preLoaderRoute: typeof EditaisRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/preparatorio/': {
-      id: '/preparatorio/'
-      path: '/preparatorio'
-      fullPath: '/preparatorio/'
-      preLoaderRoute: typeof PreparatorioIndexRouteImport
+    '/entrar': {
+      id: '/entrar'
+      path: '/entrar'
+      fullPath: '/entrar'
+      preLoaderRoute: typeof EntrarRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/concurso/': {
-      id: '/concurso/'
-      path: '/concurso'
-      fullPath: '/concurso/'
-      preLoaderRoute: typeof ConcursoIndexRouteImport
+    '/noticias': {
+      id: '/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof NoticiasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/preparatorio/$faculdade': {
-      id: '/preparatorio/$faculdade'
-      path: '/preparatorio/$faculdade'
-      fullPath: '/preparatorio/$faculdade'
-      preLoaderRoute: typeof PreparatorioFaculdadeRouteImport
+    '/painel': {
+      id: '/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof PainelRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/noticias/$slug': {
-      id: '/noticias/$slug'
-      path: '/$slug'
-      fullPath: '/noticias/$slug'
-      preLoaderRoute: typeof NoticiasSlugRouteImport
-      parentRoute: typeof NoticiasRoute
-    }
-    '/livro/$id': {
-      id: '/livro/$id'
-      path: '/livro/$id'
-      fullPath: '/livro/$id'
-      preLoaderRoute: typeof LivroIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/concurso/$ministerio': {
-      id: '/concurso/$ministerio'
-      path: '/concurso/$ministerio'
-      fullPath: '/concurso/$ministerio'
-      preLoaderRoute: typeof ConcursoMinisterioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/certificado/$id': {
-      id: '/certificado/$id'
-      path: '/certificado/$id'
-      fullPath: '/certificado/$id'
-      preLoaderRoute: typeof CertificadoIdRouteImport
+    '/revisao': {
+      id: '/revisao'
+      path: '/revisao'
+      fullPath: '/revisao'
+      preLoaderRoute: typeof RevisaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categoria/$slug': {
@@ -412,18 +363,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/preparatorio/$faculdade_/$curso': {
-      id: '/preparatorio/$faculdade_/$curso'
-      path: '/preparatorio/$faculdade/$curso'
-      fullPath: '/preparatorio/$faculdade/$curso'
-      preLoaderRoute: typeof PreparatorioFaculdadeCursoRouteImport
+    '/certificado/$id': {
+      id: '/certificado/$id'
+      path: '/certificado/$id'
+      fullPath: '/certificado/$id'
+      preLoaderRoute: typeof CertificadoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/concurso/$ministerio_/$sector': {
-      id: '/concurso/$ministerio_/$sector'
-      path: '/concurso/$ministerio/$sector'
-      fullPath: '/concurso/$ministerio/$sector'
-      preLoaderRoute: typeof ConcursoMinisterioSectorRouteImport
+    '/concurso/': {
+      id: '/concurso/'
+      path: '/concurso'
+      fullPath: '/concurso/'
+      preLoaderRoute: typeof ConcursoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concurso/$ministerio': {
+      id: '/concurso/$ministerio'
+      path: '/concurso/$ministerio'
+      fullPath: '/concurso/$ministerio'
+      preLoaderRoute: typeof ConcursoMinisterioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/livro/$id': {
+      id: '/livro/$id'
+      path: '/livro/$id'
+      fullPath: '/livro/$id'
+      preLoaderRoute: typeof LivroIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/noticias/$slug': {
+      id: '/noticias/$slug'
+      path: '/$slug'
+      fullPath: '/noticias/$slug'
+      preLoaderRoute: typeof NoticiasSlugRouteImport
+      parentRoute: typeof NoticiasRoute
+    }
+    '/preparatorio/': {
+      id: '/preparatorio/'
+      path: '/preparatorio'
+      fullPath: '/preparatorio/'
+      preLoaderRoute: typeof PreparatorioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preparatorio/$faculdade': {
+      id: '/preparatorio/$faculdade'
+      path: '/preparatorio/$faculdade'
+      fullPath: '/preparatorio/$faculdade'
+      preLoaderRoute: typeof PreparatorioFaculdadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat/$fn': {
@@ -433,11 +419,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatFnRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/simulado/$kind/$track/$sector': {
-      id: '/simulado/$kind/$track/$sector'
-      path: '/simulado/$kind/$track/$sector'
-      fullPath: '/simulado/$kind/$track/$sector'
-      preLoaderRoute: typeof SimuladoKindTrackSectorRouteImport
+    '/concurso/$ministerio_/$sector': {
+      id: '/concurso/$ministerio_/$sector'
+      path: '/concurso/$ministerio/$sector'
+      fullPath: '/concurso/$ministerio/$sector'
+      preLoaderRoute: typeof ConcursoMinisterioSectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preparatorio/$faculdade_/$curso': {
+      id: '/preparatorio/$faculdade_/$curso'
+      path: '/preparatorio/$faculdade/$curso'
+      fullPath: '/preparatorio/$faculdade/$curso'
+      preLoaderRoute: typeof PreparatorioFaculdadeCursoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/book-cover/$file': {
@@ -445,6 +438,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/book-cover/$file'
       fullPath: '/api/public/book-cover/$file'
       preLoaderRoute: typeof ApiPublicBookCoverFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulado/$kind/$track/$sector': {
+      id: '/simulado/$kind/$track/$sector'
+      path: '/simulado/$kind/$track/$sector'
+      fullPath: '/simulado/$kind/$track/$sector'
+      preLoaderRoute: typeof SimuladoKindTrackSectorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aula/$kind/$track/$sector/$module/$lesson': {
